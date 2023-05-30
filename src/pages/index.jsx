@@ -100,7 +100,7 @@ function Resume() {
     },
     {
       company: 'ae.live',
-      title: 'Broadcast Supervisor/Junior Software Developer',
+      title: 'Junior Software Developer',
       logo: AELogo,
       start: '2015',
       end: '2021',
