@@ -1,4 +1,6 @@
 import { ArticleLayout } from '@/components/ArticleLayout'
+import Image from 'next/image'
+import FrontEndDev from './frontenddev.jpg'
 
 export const meta = {
   author: 'Adam Spice',
@@ -11,9 +13,9 @@ export const meta = {
 
 export default (props) => <ArticleLayout meta={meta} {...props} />
 
-## Introduction
-
 Front-end web development has witnessed a remarkable transformation in recent years, with new technologies, frameworks, and tools revolutionising the way websites and web applications are built. This rapid evolution has not only improved the user experience, but also significantly transformed the workflow of front-end developers. In this article, we'll explore the changes in modern front-end web development and explore the reasons behind the dramatic shift in workflow.
+
+<Image src={FrontEndDev} alt="front end development" />
 
 ## The Traditional Front-End Workflow:
 
