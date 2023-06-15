@@ -5,6 +5,7 @@ import clsx from 'clsx'
 
 import { Container } from '@/components/Container'
 import {
+  DevToIcon,
   GitHubIcon,
   InstagramIcon,
   LinkedInIcon,
@@ -17,9 +18,9 @@ function SocialLink({ className, href, children, icon: Icon }) {
     <li className={clsx(className, 'flex')}>
       <Link
         href={href}
-        className="group flex text-sm font-medium text-zinc-800 transition hover:text-teal-500 dark:text-zinc-200 dark:hover:text-teal-500"
+        className="flex text-sm font-medium transition group text-zinc-800 hover:text-teal-500 dark:text-zinc-200 dark:hover:text-teal-500"
       >
-        <Icon className="h-6 w-6 flex-none fill-zinc-500 transition group-hover:fill-teal-500" />
+        <Icon className="flex-none w-6 h-6 transition fill-zinc-500 group-hover:fill-teal-500" />
         <span className="ml-4">{children}</span>
       </Link>
     </li>
@@ -55,16 +56,16 @@ export default function About() {
                 src={portraitImage}
                 alt=""
                 sizes="(min-width: 1024px) 32rem, 20rem"
-                className="aspect-square rotate-3 rounded-2xl bg-zinc-100 object-cover dark:bg-zinc-800"
+                className="object-cover aspect-square rotate-3 rounded-2xl bg-zinc-100 dark:bg-zinc-800"
               />
             </div>
           </div>
           <div className="lg:order-first lg:row-span-2">
             <h1 className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
-              I&apos;m Adam Spice. I live in Auckland, New Zealand, where I
-              geek out to my hearts content.
+              I&apos;m Adam Spice. I live in Auckland, New Zealand, where I geek
+              out to my hearts content.
             </h1>
-            <div className="mt-6 space-y-7 text-base text-zinc-600 dark:text-zinc-400">
+            <div className="mt-6 text-base space-y-7 text-zinc-600 dark:text-zinc-400">
               <p>
                 I first discovered my geekness when I was a kid. I got my first
                 computer - a Dragon 32 - and found that I loved writing programs
@@ -109,9 +110,16 @@ export default function About() {
                 Follow on LinkedIn
               </SocialLink>
               <SocialLink
+                href="https://dev.to/spiceydev"
+                icon={DevToIcon}
+                className="mt-4"
+              >
+                Follow on DEV
+              </SocialLink>
+              <SocialLink
                 href="mailto:adam@spicey.dev"
                 icon={MailIcon}
-                className="mt-8 border-t border-zinc-100 pt-8 dark:border-zinc-700/40"
+                className="pt-8 mt-8 border-t border-zinc-100 dark:border-zinc-700/40"
               >
                 adam@spicey.dev
               </SocialLink>
