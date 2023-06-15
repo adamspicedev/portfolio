@@ -11,7 +11,7 @@ export const meta = {
 
 export default (props) => <ArticleLayout meta={meta} {...props} />
 
-In the world of JavaScript, the keyword "this" holds a special place, often causing confusion and frustration among developers. Understanding how "this" behaves and its context is crucial for writing efficient and bug-free code. In this blog post, we'll explore the concept of "this" in JavaScript, examine its different behaviors in various contexts, and provide code examples to clarify its usage.
+In the world of JavaScript, the keyword "this" holds a special place, often causing confusion and frustration among developers. Understanding how "this" behaves and its context is crucial for writing efficient and bug-free code. In this blog post, we'll explore the concept of "this" in JavaScript, examine its different behaviours in various contexts, and provide code examples to clarify its usage.
 
 <Image src={ThisImage} alt="" />
 
@@ -19,8 +19,6 @@ In the world of JavaScript, the keyword "this" holds a special place, often caus
 
 The keyword "this" in JavaScript refers to the context in which a function is called. Its value is determined dynamically at runtime and can vary depending on how the function is invoked. "this" allows functions to access and operate on the properties of the object that invoked them.
 
-<ol>
-  <li>
         ## Global Context:
 
         When "this" is used in the global context (outside of any function), it
@@ -33,10 +31,9 @@ The keyword "this" in JavaScript refers to the context in which a function is ca
 
         ````
 
-  </li>
-  <li>
+
         ## Function Context:
-        Inside a regular function, "this" refers to the global object unless the function is part of an object and invoked as a method.
+        Inside a regular function, "this" refers to the global object, unless the function is part of an object and invoked as a method.
         ```c
         function greet() {
             console.log(this);
@@ -54,8 +51,7 @@ The keyword "this" in JavaScript refers to the context in which a function is ca
         person.greet(); // Output: John
         ```
 
-  </li>
-  <li>
+
         ## Method Context:
         When a function is called as a method of an object, "this" refers to the object itself. In this context, "this" allows access to the object's properties and methods.
         ```c
@@ -70,8 +66,7 @@ The keyword "this" in JavaScript refers to the context in which a function is ca
 
         ```
 
-  </li>
-  <li>
+
         ## Event Handlers:
         When a function is used as an event handler, "this" refers to the element that triggered the event. It allows manipulation of the specific element within the handler.
         ```c
@@ -83,8 +78,7 @@ The keyword "this" in JavaScript refers to the context in which a function is ca
 
         ```
 
-</li>
-<li>
+
         ## Constructor Functions:
         In constructor functions, "this" refers to the newly created instance of an object. It enables setting and accessing the instance's properties and methods.
         ```c
@@ -100,11 +94,8 @@ The keyword "this" in JavaScript refers to the context in which a function is ca
 
         ```
 
-</li>
-</ol>
-
 ## Conclusion
 
-Understanding the behaviour of "this" in JavaScript is essential for writing effective and bug-free code. By recognizing the context in which a function is invoked, you can determine the value of "this" and utilize it correctly within your code. Remember that "this" can change dynamically depending on how a function is called. By practicing with different examples and scenarios, you can gain a solid understanding of "this" and leverage its power to build robust applications.
+Understanding the behaviour of "this" in JavaScript is essential for writing effective and bug-free code. By recognising the context in which a function is invoked, you can determine the value of "this" and utilise it correctly within your code. Remember that "this" can change dynamically depending on how a function is called. By practising with different examples and scenarios, you can gain a solid understanding of "this" and leverage its power to build robust applications.
 
 By mastering the concept of "this" in JavaScript, you will unlock the ability to write cleaner, more maintainable code, and avoid common pitfalls. Embrace the power of "this" and let it guide you through the dynamic landscapes of JavaScript development. Happy coding!
