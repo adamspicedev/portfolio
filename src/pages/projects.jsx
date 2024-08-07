@@ -3,19 +3,22 @@ import Image from "next/image";
 
 import { Card } from "@/components/Card";
 import { SimpleLayout } from "@/components/SimpleLayout";
+import fdbk from "../images/fdbk.png";
 import ordinaryTraveller from "../images/ordinary-traveller.png";
 
 const projects = [
 	{
-		name: "ordinary Traveller",
-		description: `Just a simple looking blog site written in 
-      Angular and Tailwind CSS. Currently only a 
-      frontend project but will be adding backend functionality soon.`,
+		name: "fdBK",
+		description: ` This project encompasses two components: a micro-SaaS frontend and an embeddable widget for customers' websites. Initially developed as a learning exercise, it holds potential for future release.
+
+The widget is a React application utilizing Vite and Tailwind, with a Supabase client for direct database interaction. Designed as a web component, it can be seamlessly embedded in other websites.
+
+The SaaS stack includes NextJS, Supabase, Tailwind, and shadcn/ui, complemented by third-party services such as Clerk for authentication and Stripe for payments.`,
 		link: {
-			href: "https://ordinary-traveller.spicey.dev/",
-			label: "ordinary-traveller.spicey.dev",
+			href: "https://fdbk.spicey.dev/",
+			label: "fdbk.spicey.dev",
 		},
-		logo: ordinaryTraveller,
+		logo: fdbk,
 	},
 ];
 
