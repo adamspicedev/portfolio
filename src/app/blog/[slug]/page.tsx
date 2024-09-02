@@ -67,7 +67,7 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
         <title>{`${post.metadata.title} - Adam Spice`}</title>
         <meta name="description" content={post.metadata.summary} />
       </Head>
-      <section className="max-w-[45rem] mx-auto mb-10">
+      <section className="max-w-[45rem] mx-auto px-4 mb-10">
         <script
           type="application/ld+json"
           suppressHydrationWarning
