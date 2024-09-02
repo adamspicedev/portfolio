@@ -1,0 +1,107 @@
+---
+  publishedAt: '2024-07-09'
+  title: 'Finding and Fixing Memory Leaks in Node.js Applications'
+  summary: "Memory leaks in Node.js can be elusive and frustrating, often requiring a systematic approach to diagnose and resolve. In this article, we'll explore some common causes of memory leaks in Node.js applications and how to mitigate them using practical examples and tools."
+  imageUrl: '/images/blog_images/leak.webp'
+  tags: 'node.js, memory-leaks, debugging, performance'
+---
+
+Memory leaks in Node.js can be elusive and frustrating, often requiring a systematic approach to diagnose and resolve. In this article, we'll explore some common causes of memory leaks in Node.js applications and how to mitigate them using practical examples and tools.
+
+## Common Causes of Memory Leaks
+
+1. **Global Variables**: Global variables in Node.js remain in memory throughout the application's lifecycle, potentially causing leaks if not managed properly.
+2. **Closures**: Closures that retain references to variables in their lexical scope can lead to memory leaks, especially if they hold onto large objects.
+3. **Large Arrays or Objects**: Unmanaged large data structures can consume significant memory, persisting even after they are no longer needed.
+4. **Cyclic References**: When objects reference each other in a loop (cyclic references), the garbage collector may fail to reclaim memory, causing leaks.
+5. **EventEmitters**: If EventEmitters are not properly managed and their listeners not removed when no longer needed, they can accumulate and cause memory bloat.
+6. **Timers**: Timers created with setTimeout or setInterval that are not cleared can prevent associated resources from being freed.
+
+## Example Node.js Server Demonstrating Memory Leaks
+
+To illustrate these issues, let's examine a simple Express server:
+
+```JavaScript
+const express = require("express");
+const EventEmitter = require("node:events");
+
+const app = express();
+const port = 3000;
+const eventEmitter = new EventEmitter();
+
+// global variable
+const tasks = [];
+
+app.get("/", (req, res) => {
+	// closure with an external variable reference
+	tasks.push(() => req.headers);
+
+	// just far too much data, requires caching
+	const hugeArray = new Array(100000000).fill(req);
+
+	// cyclic reference
+	req.user = {
+		id: 1,
+		username: "bad user",
+		badObject: req,
+		hugeArray,
+	};
+
+	// event emitter not cleared
+	eventEmitter.on("start", () => {
+		console.log("Useless event emitted");
+	});
+
+	// timeout not cleared
+	setTimeout(() => res.send("Hello World!"));
+});
+
+app.listen(port, () => {
+	console.log(`Example app listening at http://localhost:${port}`);
+});
+
+```
+
+And to test it I have created a shell script that will spam the server until stopped:
+
+```bash
+#!/bin/bash
+target=${1:-"http://localhost:3000"}
+while true # loop forever
+do
+  for i in $(seq 100)
+  do
+    curl $target > /dev/null &
+  done
+
+  wait
+done
+```
+
+## Testing and Diagnosing Memory Leaks
+
+To test for memory leaks, use tools like --trace-gc with Node.js to trace garbage collection activities. For instance:
+
+```
+node --trace-gc index.js
+```
+
+## Mitigating Memory Leaks
+
+Here are steps to mitigate the memory leaks demonstrated in the example:
+
+    1. **Manage EventEmitters and Timers**: Ensure EventEmitters have listeners removed when no longer needed, and timers are cleared using clearTimeout() or clearInterval().
+
+    2. **Scope Variables Properly**: Avoid global variables; instead, scope variables locally where possible to limit their lifetime.
+
+    3. **Use Caching for Large Data**: Implement caching mechanisms like node-cache to manage large arrays or objects more efficiently.
+
+    4. **Break Cyclic References**: Manually nullify cyclic references when they are no longer needed to allow garbage collection to reclaim memory.
+
+    5. **Monitor and Refactor**: Continuously monitor memory usage and refactor code to prevent leaks, especially in long-running processes.
+
+## Conclusion
+
+Identifying and fixing memory leaks in Node.js applications requires vigilance and understanding of JavaScript memory management. By addressing common causes such as global variables, closures, large data structures, cyclic references, EventEmitters, and timers, developers can ensure their applications remain efficient and scalable.
+
+Memory leaks are a common challenge in JavaScript development, but with the right tools and practices, they can be effectively managed and minimized, ensuring optimal performance and stability of Node.js applications.
