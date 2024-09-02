@@ -7,7 +7,7 @@ interface CustomLinkProps extends LinkProps {
 }
 
 const CustomLink = (props: CustomLinkProps): JSX.Element => {
-  let href = props.href;
+  const href = props.href;
 
   if (href.startsWith("/")) {
     return <Link {...props}>{props.children}</Link>;

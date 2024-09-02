@@ -1,9 +1,9 @@
+import { getBlogPosts } from "@/app/blog/utils";
 import Link from "next/link";
-import { formatDate, getBlogPosts } from "@/app/blog/utils";
 import BlogCard from "./blog-card";
 
 export function BlogPosts() {
-  let allBlogs = getBlogPosts();
+  const allBlogs = getBlogPosts();
 
   return (
     <section>

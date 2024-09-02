@@ -1,12 +1,9 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
-import { links } from "@/lib/data";
-import Link from "next/link";
-import clsx from "clsx";
 import { useActiveSectionContext } from "@/context/active-section-context";
-import CustomLink from "./custom-link";
+import { links } from "@/lib/data";
+import clsx from "clsx";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 const Header = () => {

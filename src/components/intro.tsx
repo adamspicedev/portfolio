@@ -2,13 +2,13 @@
 
 import Image from "next/image";
 
-import { motion } from "framer-motion";
-import Link from "next/link";
-import { BsArrowRight, BsGithub, BsLinkedin } from "react-icons/bs";
-import { HiDownload } from "react-icons/hi";
 import { useActiveSectionContext } from "@/context/active-section-context";
 import { useSectionInView } from "@/lib/hooks";
+import { motion } from "framer-motion";
+import Link from "next/link";
+import { BsArrowRight, BsLinkedin } from "react-icons/bs";
 import { FaGithub } from "react-icons/fa";
+import { HiDownload } from "react-icons/hi";
 
 const Intro = () => {
   const { ref } = useSectionInView("Home", 0.5);

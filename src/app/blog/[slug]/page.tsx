@@ -6,7 +6,7 @@ import Head from "next/head";
 import ScrollToTop from "@/components/scroll-to-top";
 
 export async function generateStaticParams() {
-  let posts = getBlogPosts();
+  const posts = getBlogPosts();
 
   return posts.map((post) => ({
     slug: post.slug,
@@ -14,18 +14,18 @@ export async function generateStaticParams() {
 }
 
 export function generateMetadata({ params }: { params: { slug: string } }) {
-  let post = getBlogPosts().find((post) => post.slug === params.slug);
+  const post = getBlogPosts().find((post) => post.slug === params.slug);
   if (!post) {
     return;
   }
 
-  let {
+  const {
     title,
     publishedAt: publishedTime,
     summary: description,
     imageUrl,
   } = post.metadata;
-  let ogImage = imageUrl
+  const ogImage = imageUrl
     ? imageUrl
     : `${baseUrl}/og?title=${encodeURIComponent(title)}`;
 
@@ -54,7 +54,7 @@ export function generateMetadata({ params }: { params: { slug: string } }) {
 }
 
 export default function BlogPage({ params }: { params: { slug: string } }) {
-  let post = getBlogPosts().find((post) => post.slug === params.slug);
+  const post = getBlogPosts().find((post) => post.slug === params.slug);
 
   if (!post) {
     notFound();

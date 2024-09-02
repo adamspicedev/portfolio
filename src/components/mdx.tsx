@@ -5,7 +5,7 @@ import { highlight } from "sugar-high";
 import React from "react";
 
 function Table({ data }: { data: { headers: string[]; rows: string[][] } }) {
-  let headers = data.headers.map((header: string, index: number) => (
+  let headers = data.headers.map((header, index) => (
     <th key={index}>{header}</th>
   ));
   let rows = data.rows.map((row, index) => (
@@ -44,13 +44,12 @@ function CustomLink(props: any) {
   return <a target="_blank" rel="noopener noreferrer" {...props} />;
 }
 
-function RoundedImage({ alt, ...props }: { alt: string; src: string }) {
-  return <Image alt={alt} className="rounded-lg" {...props} />;
+function RoundedImage(props: any) {
+  return <Image alt={props.alt} className="rounded-lg" {...props} />;
 }
 
-function Code({ children, ...props }: { children: string }) {
+function Code({ children, ...props }: any) {
   let codeHTML = highlight(children);
-
   return <code dangerouslySetInnerHTML={{ __html: codeHTML }} {...props} />;
 }
 
