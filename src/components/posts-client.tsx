@@ -27,8 +27,8 @@ const PostsClient = ({ posts }: { posts: Post[] }) => {
           </motion.button>
         </AnimatePresence>
       )}
-      {filteredPosts.map((post) => (
-        <BlogCard post={post} setTag={setTag} />
+      {filteredPosts.map((post, index) => (
+        <BlogCard key={index} post={post} setTag={setTag} />
       ))}
     </>
   );
