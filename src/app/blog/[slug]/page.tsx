@@ -67,7 +67,7 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
         <title>{`${post.metadata.title} - Adam Spice`}</title>
         <meta name="description" content={post.metadata.summary} />
       </Head>
-      <section className="max-w-[45rem] mx-auto px-4 mb-10">
+      <section className="mx-auto mb-10 max-w-[45rem] px-4">
         <script
           type="application/ld+json"
           suppressHydrationWarning
@@ -90,15 +90,15 @@ export default function BlogPage({ params }: { params: { slug: string } }) {
             }),
           }}
         />
-        <h1 className="title font-semibold text-2xl tracking-tighter">
+        <h1 className="title text-2xl font-semibold tracking-tighter">
           {post.metadata.title}
         </h1>
-        <div className="flex justify-between items-center mt-2 mb-8 text-sm">
+        <div className="mb-8 mt-2 flex items-center justify-between text-sm">
           <p className="text-sm text-neutral-600 dark:text-neutral-400">
             {formatDate(post.metadata.publishedAt)}
           </p>
         </div>
-        <article className="prose ">
+        <article className="prose">
           <CustomMDX source={post.content} />
         </article>
       </section>

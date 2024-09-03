@@ -10,7 +10,7 @@ export function BlogPosts() {
       {allBlogs.map((post) => (
         <Link
           key={post.slug}
-          className="flex flex-col space-y-1 mb-4 justify-center items-center"
+          className="mb-4 flex flex-col items-center justify-center space-y-1"
           href={`/blog/${post.slug}`}
         >
           <BlogCard post={post} />

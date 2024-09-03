@@ -35,7 +35,7 @@ const Header = () => {
                     {
                       "text-gray-950 dark:text-gray-200":
                         activeSection === link.name,
-                    }
+                    },
                   )}
                   onClick={() => {
                     setActiveSection(link.name);
@@ -65,7 +65,7 @@ const Header = () => {
                     {
                       "text-gray-950 dark:text-gray-200":
                         activeSection === link.name,
-                    }
+                    },
                   )}
                   onClick={() => {
                     setActiveSection(link.name);

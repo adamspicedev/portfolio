@@ -30,13 +30,13 @@ const BlogCard = ({ post }: { post: Post }) => {
       className="group last:mb-0 sm:mb-10"
     >
       <Link prefetch={false} href={`/blog/${slug}`}>
-        <section className="relative mx-4 max-w-[25rem] sm:max-w-[42rem] sm:w-[42rem] overflow-hidden rounded-lg border border-black/5 bg-gray-100 transition hover:bg-gray-200 sm:pr-8 sm:group-even:pl-8 dark:bg-white/10 dark:text-white dark:hover:bg-white/20">
+        <section className="relative max-w-[25rem] overflow-hidden rounded-lg border border-black/5 bg-gray-100 transition hover:bg-gray-200 dark:bg-white/10 dark:text-white dark:hover:bg-white/20 sm:w-[42rem] sm:max-w-[42rem] sm:pr-8 sm:group-even:pl-8">
           <div className="flex h-full flex-col px-5 pb-7 pt-4 sm:max-w-[50%] sm:pl-10 sm:pr-2 sm:pt-10 sm:group-even:ml-[18rem]">
             <h3 className="text-2xl font-semibold">{metadata.title}</h3>
-            <p className="mt-2 text-neutral-600 dark:text-neutral-400 tabular-nums whitespace-nowrap">
+            <p className="mt-2 whitespace-nowrap tabular-nums text-neutral-600 dark:text-neutral-400">
               {formatDate(metadata.publishedAt)}
             </p>
-            <p className="mt-2 mb-6 leading-relaxed text-gray-700 dark:text-white/70">
+            <p className="mb-6 mt-2 leading-relaxed text-gray-700 dark:text-white/70">
               {metadata.summary}
             </p>
             <ul className="mt-8 flex flex-wrap gap-2 sm:mt-auto">

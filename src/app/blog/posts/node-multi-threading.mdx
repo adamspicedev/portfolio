@@ -53,9 +53,9 @@ In this setup, there are two endpoints:
     a heavy computation.
   </li>
 </ol>
-Timing the blocking endpoint results in the following: ``` time curl --get http://localhost:3000/block
-17.382 total ``` As expected, this is far too slow. Now, let's try to speed it up
-using worker threads.
+Timing the blocking endpoint results in the following: ``` time curl --get
+http://localhost:3000/block 17.382 total ``` As expected, this is far too slow.
+Now, let's try to speed it up using worker threads.
 
 ### Introducing Worker Threads
 
@@ -156,5 +156,5 @@ You can adjust the `MAX_THREADS` variable to suit your computer. I have 12 cores
   <li>Linux: `nproc`</li>
   <li>Windows: `echo %NUMBER_OF_PROCESSORS%`</li>
 </ul>
-The results speak for themselves: ``` time curl --get http://localhost:3000/block
-2.037 total ```
+The results speak for themselves: ``` time curl --get
+http://localhost:3000/block 2.037 total ```

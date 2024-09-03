@@ -52,7 +52,7 @@ function getMDXData(dir: string) {
 
 export function getBlogPosts() {
   return getMDXData(
-    path.join(process.cwd(), "src", "app", "blog", "posts")
+    path.join(process.cwd(), "src", "app", "blog", "posts"),
   ).sort((a, b) => {
     if (a.metadata.publishedAt < b.metadata.publishedAt) {
       return 1;

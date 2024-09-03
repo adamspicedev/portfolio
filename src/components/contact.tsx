@@ -10,7 +10,7 @@ const Contact = () => {
   return (
     <motion.section
       id="contact"
-      className="mb-20 w-[min(100%,38rem)] text-center sm:mb-28 mt-24"
+      className="mb-20 mt-24 w-[min(100%,38rem)] text-center sm:mb-28"
       initial={{
         opacity: 0,
       }}
