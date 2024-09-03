@@ -65,16 +65,13 @@ export const yearsBetweenAsWord = (
   return numberToWord(yearsDifference);
 };
 
-const capitalize = (word: string): string => {
-  return word[0].toUpperCase() + word.slice(1);
-};
+const capitalize = (word: string): string =>
+  word[0].toUpperCase() + word.slice(1);
 
-export function formatDate(dateString: string) {
-  console.log(dateString);
-  return new Date(`${dateString}T00:00:00Z`).toLocaleDateString("en-NZ", {
+export const formatDate = (dateString: string) =>
+  new Date(`${dateString}T00:00:00Z`).toLocaleDateString("en-NZ", {
     day: "numeric",
     month: "long",
     year: "numeric",
     timeZone: "NZ",
   });
-}
