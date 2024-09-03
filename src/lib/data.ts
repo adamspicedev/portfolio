@@ -9,7 +9,7 @@ import { createElement } from "react";
 export const links = [
   {
     name: "Home",
-    hash: "#home",
+    hash: "#",
   },
   {
     name: "About",

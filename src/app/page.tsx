@@ -9,7 +9,10 @@ import Skills from "@/components/skills";
 
 const Home = async () => {
   return (
-    <main className="flex flex-col items-center px-4">
+    <main
+      id="#"
+      className="mb-28 flex scroll-mt-28 flex-col items-center px-4 sm:mb-40"
+    >
       <Intro />
       <SectionDivider />
       <About />

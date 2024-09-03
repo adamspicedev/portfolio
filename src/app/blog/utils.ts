@@ -64,6 +64,11 @@ export function getBlogPosts() {
   }) as Post[];
 }
 
+export function getBlogPostsByTag(tag: string) {
+  const allPosts = getBlogPosts();
+  return allPosts.filter((post) => post.metadata.tags.includes(tag));
+}
+
 export function formatDate(date: string, includeRelative = false) {
   const currentDate = new Date();
   if (!date.includes("T")) {

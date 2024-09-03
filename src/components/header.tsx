@@ -28,7 +28,7 @@ const Header = () => {
               initial={{ y: -100, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
             >
-              {link.name === "Home" ? (
+              {/* {link.name === "Home" ? (
                 <div
                   className={clsx(
                     "flex w-full items-center justify-center px-3 py-3 transition hover:text-gray-950 dark:text-gray-500 dark:hover:text-gray-300",
@@ -58,36 +58,36 @@ const Header = () => {
                     ></motion.span>
                   )}
                 </div>
-              ) : (
-                <div
-                  className={clsx(
-                    "flex w-full items-center justify-center px-3 py-3 transition hover:text-gray-950 dark:text-gray-500 dark:hover:text-gray-300",
-                    {
-                      "text-gray-950 dark:text-gray-200":
-                        activeSection === link.name,
-                    },
-                  )}
-                  onClick={() => {
-                    setActiveSection(link.name);
-                    setTimeOfLastClick(Date.now());
-                    router.push(`/${link.hash}`);
-                  }}
-                >
-                  {link.name}
+              ) : ( */}
+              <div
+                className={clsx(
+                  "flex w-full items-center justify-center px-3 py-3 transition hover:text-gray-950 dark:text-gray-500 dark:hover:text-gray-300",
+                  {
+                    "text-gray-950 dark:text-gray-200":
+                      activeSection === link.name,
+                  },
+                )}
+                onClick={() => {
+                  setActiveSection(link.name);
+                  setTimeOfLastClick(Date.now());
+                  router.push(`/${link.hash}`);
+                }}
+              >
+                {link.name}
 
-                  {link.name === activeSection && (
-                    <motion.span
-                      className="absolute inset-0 -z-10 rounded-full bg-gray-100 dark:bg-gray-800"
-                      layoutId="activeSection"
-                      transition={{
-                        type: "spring",
-                        stiffness: 380,
-                        damping: 30,
-                      }}
-                    ></motion.span>
-                  )}
-                </div>
-              )}
+                {link.name === activeSection && (
+                  <motion.span
+                    className="absolute inset-0 -z-10 rounded-full bg-gray-100 dark:bg-gray-800"
+                    layoutId="activeSection"
+                    transition={{
+                      type: "spring",
+                      stiffness: 380,
+                      damping: 30,
+                    }}
+                  ></motion.span>
+                )}
+              </div>
+              {/* )} */}
             </motion.li>
           ))}
         </ul>
