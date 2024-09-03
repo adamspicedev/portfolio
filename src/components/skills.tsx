@@ -32,7 +32,7 @@ const Skills = () => {
       <ul className="flex flex-wrap justify-center gap-2 text-lg text-gray-800">
         {skillsData.map((skill, index) => (
           <motion.li
-            className="borderBlack rounded-xl bg-white px-5 py-3"
+            className="borderBlack rounded-xl bg-gray-100 px-5 py-3 dark:border-white/30 dark:bg-transparent dark:text-white"
             key={index}
             variants={fadeInAnimationVariants}
             initial="initial"

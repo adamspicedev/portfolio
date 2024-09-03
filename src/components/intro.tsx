@@ -9,6 +9,7 @@ import Link from "next/link";
 import { BsArrowRight, BsLinkedin } from "react-icons/bs";
 import { FaGithub } from "react-icons/fa";
 import { HiDownload } from "react-icons/hi";
+import { yearsBetweenAsWord } from "@/lib/utils";
 
 const Intro = () => {
   const { ref } = useSectionInView("Home", 0.5);
@@ -60,9 +61,12 @@ const Intro = () => {
       >
         <span className="font-bold">Hello there i&apos;m Adam. </span>A{" "}
         <span className="font-bold">full-stack developer</span> with{" "}
-        <span className="font-bold">6 years</span> of experience. I enjoy
-        building <span className="italic">full-stack apps</span> but my main
-        focus is <span className="underline">React (Next.js)</span>.
+        <span className="font-bold">
+          {yearsBetweenAsWord(2018, false)} years
+        </span>{" "}
+        of experience. I enjoy building{" "}
+        <span className="italic">full-stack apps</span> but my main focus is{" "}
+        <span className="underline">React (Next.js)</span>.
       </motion.h1>
 
       <motion.div
