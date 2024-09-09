@@ -5,6 +5,7 @@ import { LuGraduationCap } from "react-icons/lu";
 import fdbkImage from "../../public/images/fdbk.png";
 import cryptoMartImage from "../../public/images/crypto-mart.png";
 import { createElement } from "react";
+import { Article } from "./types";
 
 export const links = [
   {

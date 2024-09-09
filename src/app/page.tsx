@@ -1,5 +1,5 @@
 import About from "@/components/about";
-import BlogSection from "@/components/blog-section";
+import Blog from "@/components/blog";
 import Contact from "@/components/contact";
 import ExperienceAnimationWrapper from "@/components/experience-animation-wrapper";
 import Intro from "@/components/intro";
@@ -19,7 +19,7 @@ const Home = async () => {
       <Projects />
       <Skills />
       <ExperienceAnimationWrapper />
-      <BlogSection />
+      <Blog />
       <Contact />
     </main>
   );

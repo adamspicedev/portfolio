@@ -1,107 +1,64 @@
-import { notFound } from "next/navigation";
-import { CustomMDX } from "@/components/mdx";
-import { formatDate, getBlogPosts } from "@/app/blog/utils";
-import { baseUrl } from "@/sitemap";
-import Head from "next/head";
+import RenderArticle from "@/components/render-article";
+import { Article } from "@/lib/types";
+import { JSONContent } from "novel";
+import Image from "next/image";
 import ScrollToTop from "@/components/scroll-to-top";
 
-export async function generateStaticParams() {
-  const posts = getBlogPosts();
+const getData = async (slug: string) => {
+  const res = await fetch(`${process.env.WRITE_IT_UP_URL}/${slug}`);
+  const articleResponse = await res.json();
+  return articleResponse;
+};
 
-  return posts.map((post) => ({
-    slug: post.slug,
-  }));
-}
-
-export function generateMetadata({ params }: { params: { slug: string } }) {
-  const post = getBlogPosts().find((post) => post.slug === params.slug);
-  if (!post) {
-    return;
-  }
-
-  const {
-    title,
-    publishedAt: publishedTime,
-    summary: description,
-    imageUrl,
-  } = post.metadata;
-  const ogImage = imageUrl
-    ? imageUrl
-    : `${baseUrl}/og?title=${encodeURIComponent(title)}`;
-
-  return {
-    title,
-    description,
-    openGraph: {
-      title,
-      description,
-      type: "article",
-      publishedTime,
-      url: `${baseUrl}/blog/${post.slug}`,
-      images: [
-        {
-          url: ogImage,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [ogImage],
-    },
+type ArticlePageProps = {
+  params: {
+    slug: string;
   };
-}
+};
 
-export default function BlogPage({ params }: { params: { slug: string } }) {
-  const post = getBlogPosts().find((post) => post.slug === params.slug);
-
-  if (!post) {
-    notFound();
+const ArticlePage = async ({ params }: ArticlePageProps) => {
+  const { slug } = params;
+  let article: Article[] = [];
+  try {
+    const response = await getData(slug);
+    article = response.body;
+  } catch (error) {
+    console.error(error);
+    return <div>Failed to load articles</div>;
   }
 
   return (
-    <>
+    <section>
       <ScrollToTop />
-      <Head>
-        <title>{`${post.metadata.title} - Adam Spice`}</title>
-        <meta name="description" content={post.metadata.summary} />
-      </Head>
-      <section className="mx-auto mb-10 max-w-[45rem] px-4">
-        <script
-          type="application/ld+json"
-          suppressHydrationWarning
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "BlogPosting",
-              headline: post.metadata.title,
-              datePublished: post.metadata.publishedAt,
-              dateModified: post.metadata.publishedAt,
-              description: post.metadata.summary,
-              image: post.metadata.imageUrl
-                ? `${baseUrl}${post.metadata.imageUrl}`
-                : `/og?title=${encodeURIComponent(post.metadata.title)}`,
-              url: `${baseUrl}/blog/${post.slug}`,
-              author: {
-                "@type": "Person",
-                name: "My Portfolio",
-              },
-            }),
-          }}
-        />
-        <h1 className="title text-2xl font-semibold tracking-tighter">
-          {post.metadata.title}
-        </h1>
-        <div className="mb-8 mt-2 flex items-center justify-between text-sm">
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">
-            {formatDate(post.metadata.publishedAt)}
+      <div className="mb-10 flex flex-col items-center justify-center">
+        <div className="m-auto w-full text-center md:w-7/12">
+          <p className="text-muted-foreground m-auto my-5 w-10/12 text-sm font-light md:text-base">
+            {new Intl.DateTimeFormat("en-NZ", {
+              dateStyle: "medium",
+            }).format(new Date(article[0].createdAt))}
+          </p>
+          <h1 className="mb-5 text-3xl font-bold tracking-tight md:text-6xl">
+            {article[0].title}
+          </h1>
+          <p className="text-muted-foreground m-auto line-clamp-3 w-10/12">
+            {article[0].description}
           </p>
         </div>
-        <article className="prose">
-          <CustomMDX source={post.content} />
-        </article>
-      </section>
-    </>
+      </div>
+
+      <div className="relative m-auto mb-10 h-80 w-full max-w-screen-lg overflow-hidden md:mb-20 md:h-[450px] md:w-5/6 md:rounded-2xl lg:w-2/3">
+        <Image
+          src={article[0].imageUrl}
+          alt={article[0].title}
+          width={200}
+          height={50}
+          className="h-full w-full object-contain"
+          priority
+        />
+      </div>
+      <RenderArticle json={article[0].content as JSONContent} />
+    </section>
   );
-}
+};
+
+export default ArticlePage;

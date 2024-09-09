@@ -1,17 +1,14 @@
+import { JSONContent } from "novel";
 import { links } from "./data";
 
 export type SectionName = (typeof links)[number]["name"];
 
-export type Metadata = {
-  publishedAt: string;
-  title: string;
-  summary: string;
-  imageUrl?: string;
-  tags: string;
-};
-
-export type Post = {
-  metadata: Metadata;
+export type Article = {
+  id: string;
   slug: string;
-  content: string;
+  description: string;
+  imageUrl: string;
+  createdAt: Date;
+  title: string;
+  content: JSONContent;
 };

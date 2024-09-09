@@ -1,21 +1,12 @@
 "use client";
 
-import { Post } from "@/lib/types";
-import { formatDate } from "@/lib/utils";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { Article } from "@/lib/types";
+import { useScroll, useTransform, motion } from "framer-motion";
 import Image from "next/image";
-import Link from "next/link";
-import { Dispatch, SetStateAction, useRef } from "react";
-import { BsFiletypeMdx } from "react-icons/bs";
+import React, { useRef } from "react";
 
-const BlogCard = ({
-  post,
-  setTag,
-}: {
-  post: Post;
-  setTag?: Dispatch<SetStateAction<string>>;
-}) => {
-  const { metadata, slug } = post;
+const BlogCard = ({ article }: { article: Article }) => {
+  const { title, description, imageUrl } = article;
   const ref = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({
@@ -25,7 +16,7 @@ const BlogCard = ({
 
   const scaleProgress = useTransform(scrollYProgress, [0, 1], [0.8, 1]);
   const opacityProgress = useTransform(scrollYProgress, [0, 1], [0.6, 1]);
-
+  
   return (
     <motion.div
       ref={ref}
@@ -33,55 +24,35 @@ const BlogCard = ({
         scale: scaleProgress,
         opacity: opacityProgress,
       }}
-      className="group last:mb-0 sm:mb-10"
+      className="group mb-3 last:mb-0 sm:mb-8"
     >
-      <section className="relative max-w-[25rem] overflow-hidden rounded-lg border border-black/5 bg-gray-100 transition hover:bg-gray-200 dark:bg-white/10 dark:text-white dark:hover:bg-white/20 sm:w-[42rem] sm:max-w-[42rem] sm:pr-8 sm:group-even:pl-8">
-        <div className="flex h-full flex-col px-5 pb-7 pt-4 sm:max-w-[50%] sm:pl-10 sm:pr-2 sm:pt-10 sm:group-even:ml-[18rem]">
-          <Link href={`/blog/${slug}`}>
-            <h3 className="text-2xl font-semibold">{metadata.title}</h3>
-          </Link>
-          <p className="mt-2 whitespace-nowrap tabular-nums text-neutral-600 dark:text-neutral-400">
-            {formatDate(metadata.publishedAt)}
-          </p>
-          <p className="mb-6 mt-2 leading-relaxed text-gray-700 dark:text-white/70">
-            {metadata.summary}
-          </p>
-          <ul className="mt-8 flex flex-wrap gap-2 sm:mt-auto">
-            {metadata?.tags?.split(", ").map((tag, index) =>
-              setTag ? (
-                <li
-                  className="cursor-pointer rounded-full bg-black/[0.7] px-3 py-1 text-[0.7rem] uppercase tracking-wider text-white dark:text-white/70"
-                  key={index}
-                  onClick={() => setTag(tag)}
-                >
-                  {tag}
-                </li>
-              ) : (
-                <li
-                  className="rounded-full bg-black/[0.7] px-3 py-1 text-[0.7rem] uppercase tracking-wider text-white dark:text-white/70"
-                  key={index}
-                >
-                  {tag}
-                </li>
-              ),
-            )}
-          </ul>
-        </div>
-        {metadata.imageUrl ? (
+      <section className="relative max-w-[42rem] overflow-hidden rounded-lg border border-black/5 bg-gray-100 transition hover:bg-gray-200 dark:bg-white/10 dark:text-white dark:hover:bg-white/20 sm:h-[20rem] sm:pr-8 sm:group-even:pl-8 md:h-[35rem]">
+        <div className="flex md:flex-col-reverse md:items-center md:justify-center">
+          <div className="flex h-full flex-col px-5 pb-7 pt-4 sm:max-w-[50%] sm:pl-10 sm:pr-2 sm:pt-10 sm:group-even:ml-[18rem] md:mt-10 md:w-full md:max-w-[90%]">
+            <h3 className="text-2xl font-semibold">{title}</h3>
+            <p className="mt-2 leading-relaxed text-gray-700 dark:text-white/70">
+              {description}
+            </p>
+            {/* <ul className="mt-4 flex flex-wrap gap-2 sm:mt-auto">
+          {tags.map((tag, index) => (
+            <li
+              className="rounded-full bg-black/[0.7] px-3 py-1 text-[0.7rem] uppercase tracking-wider text-white dark:text-white/70"
+              key={index}
+            >
+              {tag}
+            </li>
+          ))}
+                </ul> */}
+          </div>
           <Image
-            width={200}
-            height={20}
-            src={metadata.imageUrl}
+            src={imageUrl}
             alt="Project I worked on"
+            width={1130}
+            height={678}
             quality={95}
-            className="absolute -right-40 top-8 hidden w-[28.25rem] rounded-t-lg shadow-2xl transition group-even:-left-40 group-even:right-[initial] group-hover:-translate-x-3 group-hover:translate-y-3 group-hover:-rotate-2 group-hover:scale-[1.04] group-even:group-hover:translate-x-3 group-even:group-hover:translate-y-3 group-even:group-hover:rotate-2 sm:block"
+            className="hidden w-[28.25rem] rounded-t-lg shadow-2xl transition group-even:right-[initial] group-hover:-translate-x-3 group-hover:translate-y-3 group-hover:-rotate-2 group-hover:scale-[1.04] group-even:group-hover:translate-x-3 group-even:group-hover:translate-y-3 group-even:group-hover:rotate-2 sm:absolute sm:-right-40 sm:top-8 sm:block md:relative md:left-4"
           />
-        ) : (
-          <BsFiletypeMdx
-            size={200}
-            className="absolute -right-40 top-8 hidden w-[50.25rem] rounded-t-lg transition group-even:-left-40 group-even:right-[initial] group-hover:-translate-x-3 group-hover:translate-y-3 group-hover:-rotate-2 group-hover:scale-[1.04] group-even:group-hover:translate-x-3 group-even:group-hover:translate-y-3 group-even:group-hover:rotate-2 sm:block"
-          />
-        )}
+        </div>
       </section>
     </motion.div>
   );

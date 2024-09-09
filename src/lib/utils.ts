@@ -1,3 +1,6 @@
+import clsx, { ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
 export const validateString = (
   value: unknown,
   maxLength: number
@@ -65,13 +68,17 @@ export const yearsBetweenAsWord = (
   return numberToWord(yearsDifference);
 };
 
-const capitalize = (word: string): string =>
-  word[0].toUpperCase() + word.slice(1);
+const capitalize = (word: string): string => {
+  return word[0].toUpperCase() + word.slice(1);
+};
 
-export const formatDate = (dateString: string) =>
-  new Date(`${dateString}T00:00:00Z`).toLocaleDateString("en-NZ", {
+export function formatDate(dateString: string | Date) {
+  return new Date(`${dateString}T00:00:00Z`).toLocaleDateString("en-NZ", {
     day: "numeric",
     month: "long",
     year: "numeric",
     timeZone: "NZ",
   });
+}
+
+export const cn = (...inputs: ClassValue[]): string => twMerge(clsx(...inputs));
