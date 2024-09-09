@@ -1,11 +1,10 @@
+import { createElement } from "react";
 import { CgWorkAlt } from "react-icons/cg";
 import { FaReact } from "react-icons/fa";
-import { SiScala } from "react-icons/si";
 import { LuGraduationCap } from "react-icons/lu";
-import fdbkImage from "../../public/images/fdbk.png";
+import { SiScala } from "react-icons/si";
 import cryptoMartImage from "../../public/images/crypto-mart.png";
-import { createElement } from "react";
-import { Article } from "./types";
+import fdbkImage from "../../public/images/fdbk.png";
 
 export const links = [
   {
