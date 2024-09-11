@@ -11,4 +11,19 @@ export type Article = {
   createdAt: Date;
   title: string;
   content: JSONContent;
+  tags: {
+    tag: {
+      id: string;
+      name: string;
+      createdAt: Date;
+      updatedAt: Date;
+    };
+  }[];
+};
+
+export type ArticleResponse = {
+  status: number;
+  body: {
+    articles: Article[];
+  };
 };

@@ -5,8 +5,10 @@ import { links } from "@/lib/data";
 import clsx from "clsx";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const Header = () => {
+  const router = useRouter();
   const { activeSection, setActiveSection, setTimeOfLastClick } =
     useActiveSectionContext();
 
@@ -40,7 +42,7 @@ const Header = () => {
                     setActiveSection(link.name);
                     setTimeOfLastClick(Date.now());
                     window.scrollTo(0, 0);
-                    window.history.pushState({}, "", "/#home");
+                    router.push("/");
                   }}
                 >
                   {link.name}
