@@ -1,11 +1,10 @@
 "use client";
 
 import { Article } from "@/lib/types";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import BlogCard from "./blog-card";
 import SectionHeading from "./section-heading";
-import { use, useEffect, useState } from "react";
 
 export type BlogProps = {
   articles: Article[];
@@ -28,7 +27,7 @@ const Blog = ({ articles }: BlogProps) => {
     } else {
       setIsAtMax(false);
     }
-  }, [numToShow, articles.length]);
+  }, [numToShow, articles]);
 
   return (
     <div id="blog" className="max-w-[53rem]">
