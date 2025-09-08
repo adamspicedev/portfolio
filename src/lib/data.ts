@@ -76,7 +76,15 @@ export const experiencesData = [
     description:
       "Enhanced and maintained a full-stack, multi-tenant application for mortgage and insurance advisors using Scala and scalajs-react.",
     icon: createElement(SiScala),
-    date: "2023 - Present",
+    date: "2023 - 2024",
+  },
+    {
+    title: "Money Sweetspot Ltd",
+    jobTitle: "Senior Software Developer",
+    description:
+      "Maintained and enhanced Money Sweetspot’s technology stack (Next.js, Vite, Express.js — all in TypeScript) within a Turborepo and deployed to AWS.",
+    icon: createElement(FaReact),
+    date: "2024 - 2025",
   },
 ] as const;
 
@@ -117,4 +125,5 @@ export const skillsData = [
   "Express",
   "PostgreSQL",
   "Framer Motion",
+  "TurboRepo"
 ] as const;
