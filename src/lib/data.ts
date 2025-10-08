@@ -3,8 +3,8 @@ import { CgWorkAlt } from "react-icons/cg";
 import { FaReact } from "react-icons/fa";
 import { LuGraduationCap } from "react-icons/lu";
 import { SiScala } from "react-icons/si";
-import cryptoMartImage from "../../public/images/crypto-mart.png";
-import fdbkImage from "../../public/images/fdbk.png";
+import storeItImage from "../../public/images/storeit.png";
+import movieMateImage from "../../public/images/movie-mate.png";
 
 export const links = [
   {
@@ -27,10 +27,10 @@ export const links = [
     name: "Experience",
     hash: "#experience",
   },
-  {
-    name: "Blog",
-    hash: "#blog",
-  },
+  // {
+  //   name: "Blog",
+  //   hash: "#blog",
+  // },
   {
     name: "Contact",
     hash: "#contact",
@@ -39,28 +39,12 @@ export const links = [
 
 export const experiencesData = [
   {
-    title: "Kiwi International Digital Systems",
-    jobTitle: "Operations Manager",
+    title: "Money Sweetspot Ltd",
+    jobTitle: "Senior Software Developer",
     description:
-      "Played a pivotal role in ensuring seamless business operations, encompassing equipment management, client graphics development, and team support.",
-    icon: createElement(CgWorkAlt),
-    date: "2009 - 2015",
-  },
-  {
-    title: "AE.LIVE",
-    jobTitle: "Broadcast Supervisor/Junior Software Developer",
-    description:
-      "Adeptly balanced responsibilities in both graphics broadcast supervision and full-stack software development using nodeJS and React.",
+      "Maintained and enhanced Money Sweetspot's technology stack (Next.js, Vite, Express.js — all in TypeScript) within a Turborepo and deployed to AWS.",
     icon: createElement(FaReact),
-    date: "2019 - 2021",
-  },
-  {
-    title: "Diploma in Software Development",
-    jobTitle: "Whitecliffe College of Technology",
-    description:
-      "Completed a diploma in software development, while studying part-time",
-    icon: createElement(LuGraduationCap),
-    date: "2020 - 2022",
+    date: "2024 - 2025",
   },
   {
     title: "Tella Ltd",
@@ -78,34 +62,57 @@ export const experiencesData = [
     icon: createElement(SiScala),
     date: "2023 - 2024",
   },
-    {
-    title: "Money Sweetspot Ltd",
-    jobTitle: "Senior Software Developer",
+  {
+    title: "Diploma in Software Development",
+    jobTitle: "Whitecliffe College of Technology",
     description:
-      "Maintained and enhanced Money Sweetspot’s technology stack (Next.js, Vite, Express.js — all in TypeScript) within a Turborepo and deployed to AWS.",
+      "Completed a diploma in software development, while studying part-time",
+    icon: createElement(LuGraduationCap),
+    date: "2020 - 2022",
+  },
+  {
+    title: "AE.LIVE",
+    jobTitle: "Broadcast Supervisor/Junior Software Developer",
+    description:
+      "Adeptly balanced responsibilities in both graphics broadcast supervision and full-stack software development using nodeJS and React.",
     icon: createElement(FaReact),
-    date: "2024 - 2025",
+    date: "2019 - 2021",
+  },
+  {
+    title: "Kiwi International Digital Systems",
+    jobTitle: "Operations Manager",
+    description:
+      "Played a pivotal role in ensuring seamless business operations, encompassing equipment management, client graphics development, and team support.",
+    icon: createElement(CgWorkAlt),
+    date: "2009 - 2015",
   },
 ] as const;
 
 export const projectsData = [
   {
-    title: "FDBK",
+    title: "Movie-Mate",
     description:
-      "This project encompasses two components: a SaaS frontend and an embeddable widget for websites.",
-    tags: ["React", "Next.js", "Postgres", "Tailwind", "Drizzle"],
-    imageUrl: fdbkImage,
+      "A modern movie discovery app built with React, TypeScript, and Tailwind CSS. Search movies, discover trending content, and enjoy infinite scrolling powered by TMDB API.",
+    tags: ["React", "Vite", "Appwrite", "Tailwind", "Tanstack Query"],
+    imageUrl: movieMateImage,
+    link: "https://movie-app.spicey.dev",
   },
   {
-    title: "Crypto-Mart",
+    title: "StroeIt",
     description:
-      "A vanilla JavaScript project that allows user to see up to date crypto prices.",
-    tags: ["JavaScript", "chartJS", "CSS", "HTML"],
-    imageUrl: cryptoMartImage,
+      "A modern, cloud-based file storage and management application built with Next.js 15",
+    tags: ["Next.js", "React", "TypeScript", "Appwrite", "Tailwind"],
+    imageUrl: storeItImage,
+    link: "https://storeit.spicey.dev",
   },
 ] as const;
 
 export const skillsData = [
+  "AWS",
+  "Appwrite",
+  "Vite",
+  "Turborepo",
+  "CI/CD",
   "HTML",
   "CSS",
   "JavaScript",
@@ -125,5 +132,6 @@ export const skillsData = [
   "Express",
   "PostgreSQL",
   "Framer Motion",
-  "TurboRepo"
+  "TurboRepo",
+  "Turbopack",
 ] as const;
