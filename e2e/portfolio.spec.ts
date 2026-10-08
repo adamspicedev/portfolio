@@ -373,3 +373,23 @@ test('public and private routes expose safe server-rendered social previews', as
   )
   expect((await request.get('/images/social-preview.jpg')).status()).toBe(200)
 })
+
+test('browser and touch icons use the shared site mark', async ({
+  request,
+}) => {
+  const html = await (await request.get('/')).text()
+  expect(html).toContain('href="/favicon.svg"')
+  expect(html).toContain('href="/favicon-32x32.png"')
+  expect(html).toContain('href="/apple-icon-180x180.png"')
+  expect(html).toContain('rel="manifest" href="/manifest.json"')
+  for (const path of [
+    '/favicon.svg',
+    '/favicon.ico',
+    '/favicon-16x16.png',
+    '/favicon-32x32.png',
+    '/apple-icon-180x180.png',
+  ])
+    expect((await request.get(path)).status()).toBe(200)
+  const manifest = await (await request.get('/manifest.json')).json()
+  expect(manifest.name).toBe('Adam Spice')
+})
