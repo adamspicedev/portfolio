@@ -9,7 +9,8 @@ export const getAdminDashboard = createServerFn({ method: 'GET' }).handler(
     const publishableKey = process.env.VITE_CLERK_PUBLISHABLE_KEY || ''
     if (identity.status !== 'admin')
       return { ...identity, publishableKey, stories: [] }
-    return { ...identity, publishableKey, stories: storyStore().all() }
+    const store = await storyStore()
+    return { ...identity, publishableKey, stories: await store.all() }
   },
 )
 export const saveCmsStory = createServerFn({ method: 'POST' })
@@ -17,7 +18,8 @@ export const saveCmsStory = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const actor = await requireAdmin()
     try {
-      return { ok: true, story: storyStore().save(data, actor) } as const
+      const store = await storyStore()
+      return { ok: true, story: await store.save(data, actor) } as const
     } catch (error) {
       if (error instanceof StoryConflict || error instanceof DuplicateSlug)
         return { ok: false, message: error.message } as const
@@ -34,9 +36,10 @@ export const archiveCmsStory = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const actor = await requireAdmin()
     try {
+      const store = await storyStore()
       return {
         ok: true,
-        story: storyStore().archive(
+        story: await store.archive(
           data.id,
           data.revision,
           data.archived,

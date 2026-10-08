@@ -8,7 +8,7 @@ export default defineConfig({
   resolve: { tsconfigPaths: true },
   plugins: [
     nitro({
-      preset: 'bun',
+      preset: process.env.VERCEL === '1' ? 'vercel' : 'bun',
       routeRules: {
         '/admin': { headers: { 'cache-control': 'private, no-store' } },
       },

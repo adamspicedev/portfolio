@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { storySeo, jsonLd, sitemapXml } from './seo'
-import { StoryStore } from './sqlite-stories.server'
+import { localDatabaseUrl, StoryStore } from './sqlite-stories.server'
 
 const story = {
   slug: 'test-story',
@@ -44,7 +44,7 @@ test('SEO falls back to visible content and resolves canonical and sharing image
     '<',
   )
 })
-test('version one SQLite files migrate without losing stories and persist SEO overrides', () => {
+test('version one SQLite files migrate without losing stories and persist SEO overrides', async () => {
   const folder = mkdtempSync(join(tmpdir(), 'portfolio-seo-'))
   const path = join(folder, 'stories.sqlite')
   try {
@@ -70,11 +70,11 @@ test('version one SQLite files migrate without losing stories and persist SEO ov
       'test',
     )
     db.close()
-    const store = new StoryStore(path)
-    const old = store.get(id)
+    const store = await StoryStore.connect(localDatabaseUrl(path))
+    const old = await store.get(id)
     expect(old.body).toBe(story.body)
     expect(old.seoTitle).toBe('')
-    const saved = store.save(
+    const saved = await store.save(
       {
         ...old,
         seoTitle: 'Saved search title',
@@ -82,19 +82,22 @@ test('version one SQLite files migrate without losing stories and persist SEO ov
       },
       'test',
     )
-    store.save({ ...story, slug: 'private-draft', draft: true }, 'test')
-    store.save({ ...story, slug: 'scheduled', date: '2099-01-01' }, 'test')
-    const archived = store.save({ ...story, slug: 'archived' }, 'test')
-    store.archive(archived.id, archived.revision, true, 'test')
-    const xml = sitemapXml(store.published('2026-10-08'))
+    await store.save({ ...story, slug: 'private-draft', draft: true }, 'test')
+    await store.save(
+      { ...story, slug: 'scheduled', date: '2099-01-01' },
+      'test',
+    )
+    const archived = await store.save({ ...story, slug: 'archived' }, 'test')
+    await store.archive(archived.id, archived.revision, true, 'test')
+    const xml = sitemapXml(await store.published('2026-10-08'))
     expect(xml).toContain('/blog/test-story')
     expect(xml).not.toContain('private-draft')
     expect(xml).not.toContain('scheduled')
     expect(xml).not.toContain('/blog/archived')
-    store.close()
-    const reopened = new StoryStore(path)
-    expect(reopened.get(saved.id).seoTitle).toBe('Saved search title')
-    reopened.close()
+    await store.close()
+    const reopened = await StoryStore.connect(localDatabaseUrl(path))
+    expect((await reopened.get(saved.id)).seoTitle).toBe('Saved search title')
+    await reopened.close()
   } finally {
     rmSync(folder, { recursive: true, force: true })
   }

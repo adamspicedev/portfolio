@@ -1,13 +1,14 @@
-import { Database } from 'bun:sqlite'
+import { createClient, type Client, type Transaction } from '@libsql/client'
 import { mkdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { z } from 'zod'
 import { editorSchema, type CmsStory, type EditorInput } from './cms-schema'
 import { publishedStories, type Story } from './story-schema'
 
 const rowSchema = z.object({
   id: z.string(),
-  revision: z.number(),
+  revision: z.coerce.number(),
   slug: z.string(),
   title: z.string(),
   description: z.string(),
@@ -15,8 +16,8 @@ const rowSchema = z.object({
   tags: z.string(),
   body: z.string(),
   cover: z.string(),
-  draft: z.number(),
-  archived: z.number(),
+  draft: z.coerce.number(),
+  archived: z.coerce.number(),
   updated_at: z.string(),
   seo_title: z.string(),
   seo_description: z.string(),
@@ -42,22 +43,30 @@ export class StoryConflict extends Error {}
 export class DuplicateSlug extends Error {}
 
 export class StoryStore {
-  private readonly db: Database
-  constructor(path: string, seeds: Story[] = []) {
-    if (path !== ':memory:')
-      mkdirSync(dirname(resolve(path)), { recursive: true })
-    this.db = new Database(path, { create: true, strict: true })
-    this.db.exec(
-      'PRAGMA journal_mode = WAL; PRAGMA busy_timeout = 5000; PRAGMA foreign_keys = ON;',
-    )
-    const version = this.db.query('PRAGMA user_version').get()
-    if (version && Number(Object.values(version)[0]) > 2) {
-      this.db.close()
-      throw new Error('The stories database needs a newer application version.')
+  private constructor(private readonly db: Client) {}
+
+  static async connect(url: string, authToken?: string, seeds: Story[] = []) {
+    const db = createClient({
+      url,
+      ...(authToken ? { authToken } : {}),
+    })
+    const store = new StoryStore(db)
+    try {
+      await store.initialize(seeds)
+      return store
+    } catch (error) {
+      await db.close()
+      throw error
     }
-    this.db.transaction(() => {
-      this.db.exec(`
+  }
+
+  private async initialize(seeds: Story[]) {
+    const tx = await this.db.transaction('write')
+    try {
+      await tx.execute(`
         CREATE TABLE IF NOT EXISTS cms_meta (key TEXT PRIMARY KEY, value TEXT NOT NULL);
+      `)
+      await tx.execute(`
         CREATE TABLE IF NOT EXISTS stories (
           id TEXT PRIMARY KEY, slug TEXT NOT NULL UNIQUE, title TEXT NOT NULL,
           description TEXT NOT NULL, date TEXT NOT NULL, tags TEXT NOT NULL,
@@ -65,40 +74,52 @@ export class StoryStore {
           archived INTEGER NOT NULL DEFAULT 0, revision INTEGER NOT NULL DEFAULT 1,
           updated_at TEXT NOT NULL, updated_by TEXT NOT NULL
         );
-
       `)
-      const columns = this.db.query('PRAGMA table_info(stories)').all()
-      const names = columns.map(
+      const columns = await tx.execute('PRAGMA table_info(stories)')
+      const names = columns.rows.map(
         (column) => z.object({ name: z.string() }).parse(column).name,
       )
       if (!names.includes('seo_title'))
-        this.db.exec(
+        await tx.execute(
           "ALTER TABLE stories ADD COLUMN seo_title TEXT NOT NULL DEFAULT ''",
         )
       if (!names.includes('seo_description'))
-        this.db.exec(
+        await tx.execute(
           "ALTER TABLE stories ADD COLUMN seo_description TEXT NOT NULL DEFAULT ''",
         )
-      this.db.exec('PRAGMA user_version = 2')
-      if (
-        !this.db.query("SELECT value FROM cms_meta WHERE key = 'seeded'").get()
-      ) {
-        for (const seed of seeds)
-          this.insert({ ...seed, cover: seed.cover ?? '' }, 'seed')
-        this.db
-          .query('INSERT INTO cms_meta (key, value) VALUES (?, ?)')
-          .run('seeded', '1')
+
+      const seeded = await tx.execute(
+        "SELECT value FROM cms_meta WHERE key = 'seeded'",
+      )
+      if (!seeded.rows.length) {
+        const count = await tx.execute('SELECT COUNT(*) AS count FROM stories')
+        const existingStories = z
+          .object({ count: z.coerce.number() })
+          .parse(count.rows[0]).count
+        if (existingStories === 0) {
+          for (const seed of seeds)
+            await this.insert(tx, { ...seed, cover: seed.cover ?? '' }, 'seed')
+        }
+        await tx.execute({
+          sql: 'INSERT INTO cms_meta (key, value) VALUES (?, ?)',
+          args: ['seeded', '1'],
+        })
       }
-    })()
+      await tx.commit()
+    } catch (error) {
+      await tx.rollback()
+      throw error
+    }
   }
-  private insert(input: EditorInput, actor: string) {
+
+  private async insert(tx: Transaction, input: EditorInput, actor: string) {
     const story = editorSchema.parse(input)
     const id = crypto.randomUUID()
-    this.db
-      .query(`INSERT INTO stories
-      (id,slug,title,description,date,tags,body,cover,draft,updated_at,updated_by,seo_title,seo_description)
-      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`)
-      .run(
+    await tx.execute({
+      sql: `INSERT INTO stories
+        (id,slug,title,description,date,tags,body,cover,draft,updated_at,updated_by,seo_title,seo_description)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      args: [
         id,
         story.slug,
         story.title,
@@ -112,27 +133,42 @@ export class StoryStore {
         actor,
         story.seoTitle,
         story.seoDescription,
-      )
-    return this.get(id)
+      ],
+    })
+    const result = await tx.execute({
+      sql: 'SELECT * FROM stories WHERE id = ?',
+      args: [id],
+    })
+    return decode(result.rows[0])
   }
-  all() {
-    return this.db
-      .query('SELECT * FROM stories ORDER BY date DESC, slug')
-      .all()
-      .map(decode)
+
+  async all() {
+    const result = await this.db.execute(
+      'SELECT * FROM stories ORDER BY date DESC, slug',
+    )
+    return result.rows.map(decode)
   }
-  get(id: string) {
-    const row = this.db.query('SELECT * FROM stories WHERE id = ?').get(id)
-    if (!row) throw new StoryConflict('This story no longer exists.')
-    return decode(row)
+
+  async get(id: string) {
+    const result = await this.db.execute({
+      sql: 'SELECT * FROM stories WHERE id = ?',
+      args: [id],
+    })
+    if (!result.rows[0]) throw new StoryConflict('This story no longer exists.')
+    return decode(result.rows[0])
   }
-  bySlug(slug: string) {
-    const row = this.db.query('SELECT * FROM stories WHERE slug = ?').get(slug)
-    return row ? decode(row) : undefined
+
+  async bySlug(slug: string) {
+    const result = await this.db.execute({
+      sql: 'SELECT * FROM stories WHERE slug = ?',
+      args: [slug],
+    })
+    return result.rows[0] ? decode(result.rows[0]) : undefined
   }
-  published(today?: string): Story[] {
+
+  async published(today?: string, stories?: CmsStory[]): Promise<Story[]> {
     return publishedStories(
-      this.all()
+      (stories ?? (await this.all()))
         .filter((story) => !story.archived)
         .map((story) => ({
           slug: story.slug,
@@ -154,20 +190,34 @@ export class StoryStore {
       today,
     )
   }
-  save(raw: EditorInput, actor: string) {
+
+  async save(raw: EditorInput, actor: string) {
     const input = editorSchema.parse(raw)
-    return this.db.transaction(() => {
-      const duplicate = this.bySlug(input.slug)
+    const tx = await this.db.transaction('write')
+    try {
+      const duplicateResult = await tx.execute({
+        sql: 'SELECT * FROM stories WHERE slug = ?',
+        args: [input.slug],
+      })
+      const duplicate = duplicateResult.rows[0]
+        ? decode(duplicateResult.rows[0])
+        : undefined
       if (duplicate && duplicate.id !== input.id)
         throw new DuplicateSlug(
           'A story already uses this slug, including archived stories.',
         )
-      if (!input.id) return this.insert(input, actor)
-      const result = this.db
-        .query(`UPDATE stories SET slug=?, title=?, description=?, date=?, tags=?,
-        body=?, cover=?, draft=?, seo_title=?, seo_description=?, revision=revision+1, updated_at=?, updated_by=?
-        WHERE id=? AND revision=? AND archived=0`)
-        .run(
+
+      if (!input.id) {
+        const story = await this.insert(tx, input, actor)
+        await tx.commit()
+        return story
+      }
+
+      const result = await tx.execute({
+        sql: `UPDATE stories SET slug=?, title=?, description=?, date=?, tags=?,
+          body=?, cover=?, draft=?, seo_title=?, seo_description=?, revision=revision+1, updated_at=?, updated_by=?
+          WHERE id=? AND revision=? AND archived=0`,
+        args: [
           input.slug,
           input.title,
           input.description,
@@ -182,30 +232,63 @@ export class StoryStore {
           actor,
           input.id,
           input.revision ?? 0,
-        )
-      if (!result.changes)
+        ],
+      })
+      if (!result.rowsAffected)
         throw new StoryConflict(
           'This story changed in another tab or was archived. Reload it before saving.',
         )
-      return this.get(input.id)
-    })()
+      const saved = await tx.execute({
+        sql: 'SELECT * FROM stories WHERE id = ?',
+        args: [input.id],
+      })
+      const story = decode(saved.rows[0])
+      await tx.commit()
+      return story
+    } catch (error) {
+      await tx.rollback()
+      throw error
+    }
   }
-  archive(id: string, revision: number, archived: boolean, actor: string) {
-    const result = this.db
-      .query(`UPDATE stories SET archived=?, revision=revision+1, updated_at=?, updated_by=?
-      WHERE id=? AND revision=?`)
-      .run(Number(archived), new Date().toISOString(), actor, id, revision)
-    if (!result.changes)
-      throw new StoryConflict(
-        'This story changed in another tab. Reload it before continuing.',
-      )
-    return this.get(id)
+
+  async archive(
+    id: string,
+    revision: number,
+    archived: boolean,
+    actor: string,
+  ) {
+    const tx = await this.db.transaction('write')
+    try {
+      const result = await tx.execute({
+        sql: `UPDATE stories SET archived=?, revision=revision+1, updated_at=?, updated_by=?
+          WHERE id=? AND revision=?`,
+        args: [Number(archived), new Date().toISOString(), actor, id, revision],
+      })
+      if (!result.rowsAffected)
+        throw new StoryConflict(
+          'This story changed in another tab. Reload it before continuing.',
+        )
+      const updated = await tx.execute({
+        sql: 'SELECT * FROM stories WHERE id = ?',
+        args: [id],
+      })
+      const story = decode(updated.rows[0])
+      await tx.commit()
+      return story
+    } catch (error) {
+      await tx.rollback()
+      throw error
+    }
   }
-  backup(destination: string) {
-    // VACUUM INTO creates a consistent standalone snapshot, including WAL changes.
-    this.db.query('VACUUM INTO ?').run(destination)
-  }
+
   close() {
-    this.db.close()
+    return this.db.close()
   }
+}
+
+export function localDatabaseUrl(path: string) {
+  if (path === ':memory:') return 'file::memory:'
+  const absolutePath = resolve(path)
+  mkdirSync(dirname(absolutePath), { recursive: true })
+  return pathToFileURL(absolutePath).href
 }

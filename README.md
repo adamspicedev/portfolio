@@ -63,7 +63,7 @@ Open `/admin`, or use **Story studio** in the footer. Sign in with Clerk using a
 
 Archiving removes a story from the public site and reserves its slug. Restore it from the archive to recover its original draft/date settings. Stale saves are rejected so a second tab cannot silently overwrite newer changes. Unsaved edits stay in the editor on failure.
 
-The six existing Markdown stories seed a new SQLite database on its first use. After initialization, the database is authoritative. Editing or adding files in `content/stories/` does not change an existing database. The `bun run story "Title"` helper remains useful for preparing seed content for a new installation. Copy the production database or restore a backup when moving servers; starting with an empty database reimports the original seed stories.
+The six existing Markdown stories seed a new, empty database on its first use. After initialization, the database is authoritative. Editing or adding files in `content/stories/` does not change an existing database. The `bun run story "Title"` helper remains useful for preparing seed content for a new installation.
 
 Covers support existing local image paths and hosted HTTPS URLs. This version does not upload files. Raw HTML in Markdown is not executed.
 
@@ -74,7 +74,9 @@ Create or use a Clerk application and add these values to `.env` locally and to 
 - `VITE_CLERK_PUBLISHABLE_KEY`: the public key for that Clerk application.
 - `CLERK_SECRET_KEY`: its server-only secret key.
 - `CMS_ADMIN_USER_IDS`: a comma-separated list of exact Clerk user IDs.
-- `DATABASE_PATH`: the SQLite file path, defaulting to `./data/portfolio.sqlite`.
+- `DATABASE_PATH`: optional local SQLite file path, defaulting to `./data/portfolio.sqlite`; ignored when `TURSO_DATABASE_URL` is set.
+- `TURSO_DATABASE_URL`: your Turso database URL (for example, `libsql://<database>-<organization>.turso.io`).
+- `TURSO_AUTH_TOKEN`: the auth token generated for that database. Keep it server-only; never use a `VITE_` prefix.
 
 Sign in at `/admin`. If your account is not yet authorized, the page displays your own Clerk user ID; add it to `CMS_ADMIN_USER_IDS` and restart the server. An empty allowlist authorizes nobody. Signing up or signing in alone never grants publishing access. Every CMS server function checks authorization, and TanStack's CSRF middleware protects server-function requests.
 
@@ -82,7 +84,7 @@ Without Clerk keys, the public site still works and `/admin` shows setup instruc
 
 ## Existing blog service
 
-The old blog fetched rich-text articles from `WRITE_IT_UP_URL`. If you still use that service, set the same server environment variable. The site merges those stories with SQLite stories and converts the supported rich-text blocks to Markdown. A database story takes precedence over a remote article with the same slug, including when it is a draft or archived.
+The old blog fetched rich-text articles from `WRITE_IT_UP_URL`. If you still use that service, set the same server environment variable. The site merges those stories with CMS database stories and converts the supported rich-text blocks to Markdown. A database story takes precedence over a remote article with the same slug, including when it is a draft or archived.
 
 Old `/story-slug` links redirect to `/blog/story-slug`. If the service is unavailable, local stories remain available. Remote stories use a one-minute in-process cache. Remote availability and the original articles need checking against your actual service; it isn't configured in this checkout. The adapter supports paragraphs, headings, links, emphasis, lists, quotes, code blocks, dividers and images. Custom editor blocks need an explicit mapping in `src/lib/legacy-stories.server.ts`.
 
@@ -107,9 +109,9 @@ The recipient remains `adam@spicey.dev`. Without an API key, the form directs vi
 
 The scene loads only on the client as it approaches the viewport. It caps pixel density, suspends offscreen and in background tabs, and disposes GPU resources when leaving the page. Visitors can pause or spin the computer. Reduced motion disables ambient animation and makes rotation immediate. A static SVG illustration remains when WebGL is unavailable.
 
-## Deploy on a Bun server
+## Deploy on Bun or Vercel
 
-This CMS uses Bun's native SQLite driver and requires a persistent filesystem. It no longer targets Vercel functions. Keep the current live site until the Bun deployment is verified, then point the domain at the new server.
+By default, the CMS uses a local SQLite database. On a Bun server, that file needs a persistent filesystem. Vercel deployments use Turso by setting `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` instead. Keep the current live site until the replacement deployment and its CMS have been verified.
 
 `Dockerfile` builds the app and runs it as the unprivileged `bun` user. `compose.yml` mounts a named volume at `/app/data` and binds port 3000 to the server's loopback address. Place an HTTPS reverse proxy in front of it and run one app instance against the volume. Configure Clerk and mail variables in `.env` on that server, then:
 
@@ -117,7 +119,11 @@ This CMS uses Bun's native SQLite driver and requires a persistent filesystem. I
 docker compose up -d --build
 ```
 
-The volume persists across container updates. Do not run `docker compose down -v` unless you intend to delete the database. Keep database files and backups outside `public/` and source control. A normal Bun deployment can also use `bun install --frozen-lockfile`, `bun run build`, and `bun run start`, with `DATABASE_PATH` pointing to a persistent directory writable by the application user.
+The volume persists across container updates. Do not run `docker compose down -v` unless you intend to delete the database. Keep database files and backups outside `public/` and source control. A normal Bun deployment can also use `bun install --frozen-lockfile`, `bun run build`, and `bun run start`, with `DATABASE_PATH` pointing to a persistent directory writable by the application user. To use Turso on a Bun deployment, set the same two Turso variables instead.
+
+For Vercel, add `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` in **Project Settings → Environment Variables**, for each environment where the CMS should work. Use the database URL and token from Turso's database connection details; do not commit the token. Nitro switches to its Vercel output preset during the Vercel build and `vercel.json` selects Vercel's Bun runtime. Leave Vercel's Output Directory setting unset so it detects Nitro's generated output; `.output` is only for standalone Bun deployments. The app connects to Turso at runtime, applies its schema migrations, and seeds the included stories only if that remote database is empty. Existing imported stories are preserved.
+
+`bun run db:backup` backs up a local SQLite file only. Use Turso's backup/export tooling for the remote database.
 
 ### Backup and restore
 

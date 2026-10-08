@@ -1,16 +1,27 @@
-import { StoryStore } from './sqlite-stories.server'
+import { localDatabaseUrl, StoryStore } from './sqlite-stories.server'
 import { seedStories } from './seed-stories.server'
 export { StoryConflict, DuplicateSlug } from './sqlite-stories.server'
 
-let store: StoryStore | undefined
-export function storyStore() {
-  if (process.env.VERCEL)
-    throw new Error(
-      'The SQLite CMS requires a Bun server with persistent storage. Vercel functions cannot store this database.',
-    )
-  store ??= new StoryStore(
-    process.env.DATABASE_PATH || './data/portfolio.sqlite',
-    seedStories,
-  )
+let store: Promise<StoryStore> | undefined
+export function storyStore(): Promise<StoryStore> {
+  if (!store) {
+    const tursoUrl = process.env.TURSO_DATABASE_URL
+    if (process.env.VERCEL && !tursoUrl)
+      throw new Error(
+        'TURSO_DATABASE_URL must be configured for the CMS on Vercel.',
+      )
+    if (tursoUrl && !process.env.TURSO_AUTH_TOKEN)
+      throw new Error('TURSO_AUTH_TOKEN must be configured with Turso.')
+
+    store = tursoUrl
+      ? StoryStore.connect(tursoUrl, process.env.TURSO_AUTH_TOKEN, seedStories)
+      : StoryStore.connect(
+          localDatabaseUrl(
+            process.env.DATABASE_PATH || './data/portfolio.sqlite',
+          ),
+          undefined,
+          seedStories,
+        )
+  }
   return store
 }

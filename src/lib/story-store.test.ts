@@ -1,8 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from 'bun:test'
+import { Database } from 'bun:sqlite'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import {
+  localDatabaseUrl,
   StoryStore,
   StoryConflict,
   DuplicateSlug,
@@ -24,99 +26,149 @@ const seed: Story = { ...input, cover: undefined, readingMinutes: 1 }
 let directory: string
 let path: string
 let store: StoryStore
-beforeEach(() => {
+
+beforeEach(async () => {
   directory = mkdtempSync(join(tmpdir(), 'portfolio-cms-'))
   path = join(directory, 'stories.sqlite')
-  store = new StoryStore(path, [seed])
+  store = await StoryStore.connect(localDatabaseUrl(path), undefined, [seed])
 })
-afterEach(() => {
-  store.close()
+
+afterEach(async () => {
+  await store.close()
   rmSync(directory, { recursive: true, force: true })
 })
 
 describe('SQLite publishing', () => {
-  it('seeds only once and preserves edits across a server restart', () => {
-    const first = store.all()[0]!
-    store.save({ ...first, title: 'An edited title' }, 'user_admin')
-    store.close()
-    store = new StoryStore(path, [
+  it('seeds only once and preserves edits across a server restart', async () => {
+    const first = (await store.all())[0]!
+    await store.save({ ...first, title: 'An edited title' }, 'user_admin')
+    await store.close()
+    store = await StoryStore.connect(localDatabaseUrl(path), undefined, [
       seed,
       { ...seed, slug: 'new-file-after-seed' },
     ])
-    expect(store.all()).toHaveLength(1)
-    expect(store.all()[0]?.title).toBe('An edited title')
+    expect(await store.all()).toHaveLength(1)
+    expect((await store.all())[0]?.title).toBe('An edited title')
   })
-  it('keeps drafts, scheduled stories and archived slugs private without losing their records', () => {
-    const first = store.all()[0]!
-    const draft = store.save(
+
+  it('preserves imported stories when the imported database has no seed marker', async () => {
+    const importedPath = join(directory, 'imported.sqlite')
+    const imported = new Database(importedPath)
+    const importedId = crypto.randomUUID()
+    imported.exec(`
+      CREATE TABLE stories (
+        id TEXT PRIMARY KEY, slug TEXT NOT NULL UNIQUE, title TEXT NOT NULL,
+        description TEXT NOT NULL, date TEXT NOT NULL, tags TEXT NOT NULL,
+        body TEXT NOT NULL, cover TEXT NOT NULL DEFAULT '', draft INTEGER NOT NULL,
+        archived INTEGER NOT NULL DEFAULT 0, revision INTEGER NOT NULL DEFAULT 1,
+        updated_at TEXT NOT NULL, updated_by TEXT NOT NULL
+      );
+    `)
+    imported
+      .query(
+        `INSERT INTO stories
+        (id,slug,title,description,date,tags,body,cover,draft,updated_at,updated_by)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?)`,
+      )
+      .run(
+        importedId,
+        'imported-story',
+        'Imported story',
+        'From Turso import',
+        '2026-10-08',
+        '[]',
+        'Imported body',
+        '',
+        0,
+        new Date().toISOString(),
+        'import',
+      )
+    imported.close()
+
+    const importedStore = await StoryStore.connect(
+      localDatabaseUrl(importedPath),
+      undefined,
+      [seed],
+    )
+    try {
+      expect(await importedStore.all()).toHaveLength(1)
+      expect((await importedStore.get(importedId)).title).toBe('Imported story')
+    } finally {
+      await importedStore.close()
+    }
+  })
+
+  it('keeps drafts, scheduled stories and archived slugs private without losing their records', async () => {
+    const first = (await store.all())[0]!
+    const draft = await store.save(
       { ...input, slug: 'draft-story', draft: true },
       'user_admin',
     )
-    store.save(
+    await store.save(
       { ...input, slug: 'future-story', date: '2026-10-09' },
       'user_admin',
     )
-    expect(store.published('2026-10-08').map((story) => story.slug)).toEqual([
-      first.slug,
-    ])
-    store.archive(first.id, first.revision, true, 'user_admin')
-    expect(store.published('2026-10-08')).toEqual([])
-    expect(store.bySlug(first.slug)?.archived).toBe(true)
-    expect(store.bySlug(draft.slug)?.draft).toBe(true)
+    expect(
+      (await store.published('2026-10-08')).map((story) => story.slug),
+    ).toEqual([first.slug])
+    await store.archive(first.id, first.revision, true, 'user_admin')
+    expect(await store.published('2026-10-08')).toEqual([])
+    expect((await store.bySlug(first.slug))?.archived).toBe(true)
+    expect((await store.bySlug(draft.slug))?.draft).toBe(true)
   })
-  it('publishes a draft without a rebuild and restores archived stories', () => {
-    const draft = store.save(
+
+  it('publishes a draft without a rebuild and restores archived stories', async () => {
+    const draft = await store.save(
       { ...input, slug: 'draft-story', draft: true },
       'user_admin',
     )
-    const published = store.save({ ...draft, draft: false }, 'user_admin')
+    const published = await store.save({ ...draft, draft: false }, 'user_admin')
     expect(
-      store.published('2026-10-08').some((story) => story.slug === draft.slug),
+      (await store.published('2026-10-08')).some(
+        (story) => story.slug === draft.slug,
+      ),
     ).toBe(true)
-    const archived = store.archive(
+    const archived = await store.archive(
       published.id,
       published.revision,
       true,
       'user_admin',
     )
     expect(
-      store.published('2026-10-08').some((story) => story.slug === draft.slug),
+      (await store.published('2026-10-08')).some(
+        (story) => story.slug === draft.slug,
+      ),
     ).toBe(false)
-    store.archive(archived.id, archived.revision, false, 'user_admin')
+    await store.archive(archived.id, archived.revision, false, 'user_admin')
     expect(
-      store.published('2026-10-08').some((story) => story.slug === draft.slug),
+      (await store.published('2026-10-08')).some(
+        (story) => story.slug === draft.slug,
+      ),
     ).toBe(true)
   })
-  it('rejects stale edits and archive requests instead of overwriting newer data', () => {
-    const first = store.all()[0]!
-    store.save({ ...first, title: 'Newer edit' }, 'user_admin')
-    expect(() =>
+
+  it('rejects stale edits and archive requests instead of overwriting newer data', async () => {
+    const first = (await store.all())[0]!
+    await store.save({ ...first, title: 'Newer edit' }, 'user_admin')
+    await expect(
       store.save({ ...first, title: 'Stale edit' }, 'user_admin'),
-    ).toThrow(StoryConflict)
-    expect(() =>
+    ).rejects.toThrow(StoryConflict)
+    await expect(
       store.archive(first.id, first.revision, true, 'user_admin'),
-    ).toThrow(StoryConflict)
-    expect(store.get(first.id).title).toBe('Newer edit')
+    ).rejects.toThrow(StoryConflict)
+    expect((await store.get(first.id)).title).toBe('Newer edit')
   })
-  it('reserves duplicate slugs even for archives and treats SQL-like body text as data', () => {
-    const first = store.all()[0]!
-    store.archive(first.id, first.revision, true, 'user_admin')
-    expect(() => store.save(input, 'user_admin')).toThrow(DuplicateSlug)
+
+  it('reserves duplicate slugs even for archives and treats SQL-like body text as data', async () => {
+    const first = (await store.all())[0]!
+    await store.archive(first.id, first.revision, true, 'user_admin')
+    await expect(store.save(input, 'user_admin')).rejects.toThrow(DuplicateSlug)
     const body = "'); DROP TABLE stories; --"
-    const story = store.save({ ...input, slug: 'sql-text', body }, 'user_admin')
-    expect(store.get(story.id).body).toBe(body)
-    expect(store.all()).toHaveLength(2)
-  })
-  it('backs up live WAL changes to a consistent standalone database', () => {
-    store.save({ ...input, slug: 'backup-story' }, 'user_admin')
-    const destination = join(directory, 'backup.sqlite')
-    store.backup(destination)
-    const backup = new StoryStore(destination)
-    try {
-      expect(backup.all()).toEqual(store.all())
-    } finally {
-      backup.close()
-    }
-    expect(() => store.backup(destination)).toThrow()
+    const story = await store.save(
+      { ...input, slug: 'sql-text', body },
+      'user_admin',
+    )
+    expect((await store.get(story.id)).body).toBe(body)
+    expect(await store.all()).toHaveLength(2)
   })
 })
