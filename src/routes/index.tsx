@@ -309,7 +309,7 @@ function Home() {
           <div
             className={`grid gap-6 ${stories.length > 1 ? 'md:grid-cols-2 lg:grid-cols-3' : 'story-feature-grid'}`}
           >
-            {stories.slice(0, 3).map((story) => (
+            {stories.slice(0, 6).map((story) => (
               <StoryCard key={story.slug} story={story} />
             ))}
             {stories.length === 1 && (

@@ -13,6 +13,16 @@ test('homepage renders on the server and links to the real résumé', async ({
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
     'I build thingsfor the web.',
   )
+  const homeStories = page.locator('.stories-section a.story-card')
+  await expect(homeStories).toHaveCount(6)
+  const publicationDates = await homeStories
+    .locator('time')
+    .evaluateAll((elements) =>
+      elements.map((element) => element.getAttribute('datetime')),
+    )
+  expect(publicationDates).toEqual(
+    [...publicationDates].sort((a, b) => (b ?? '').localeCompare(a ?? '')),
+  )
   await expect(page.getByRole('link', { name: 'Grab my CV' })).toHaveAttribute(
     'href',
     '/files/AdamSpiceResume.pdf',
