@@ -1,0 +1,7 @@
+# Run package scripts and Node-shebang tools with Bun.
+[run]
+bun = true
+
+# Playwright owns the browser suite; Bun runs the unit tests.
+[test]
+pathIgnorePatterns = ["**/e2e/**"]

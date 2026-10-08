@@ -1,0 +1,20 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "react", "jsx-a11y", "unicorn", "oxc"],
+  "categories": { "correctness": "error" },
+  "rules": {
+    "react/rules-of-hooks": "error",
+    "react/exhaustive-deps": "error",
+    "jsx-a11y/alt-text": "error",
+    "jsx-a11y/anchor-has-content": "error",
+    "jsx-a11y/label-has-associated-control": "error"
+  },
+  "ignorePatterns": [
+    "src/routeTree.gen.ts",
+    ".output/**",
+    ".tanstack/**",
+    "playwright-report/**",
+    "test-results/**"
+  ],
+  "overrides": [{ "files": ["**/*.test.ts"], "plugins": ["jest"] }]
+}
