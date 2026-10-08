@@ -4,6 +4,7 @@ date: '2026-10-08'
 description: 'Quantum-resistant cryptography is moving into real migration plans. The first job is finding the encryption you already depend on.'
 tags: ['Security', 'Infrastructure']
 cover: '/images/stories/quantum.webp'
+coverAlt: 'A blue padlock floats inside a lavender geometric frame with orange orbiting spheres.'
 draft: false
 ---
 

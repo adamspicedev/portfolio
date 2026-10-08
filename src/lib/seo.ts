@@ -1,6 +1,10 @@
 import type { Story } from './story-schema'
 
 export const siteUrl = 'https://spicey.dev'
+export const socialImage = '/images/social-preview.jpg'
+export const socialImageAlt =
+  'Adam Spice, full-stack developer, beside the spicey wordmark on a lavender background'
+
 export const homeTitle = 'Adam Spice · Developer, curious human'
 export const homeDescription =
   'Adam Spice is a full-stack developer who enjoys building apps with React and TypeScript. Explore his projects, stories, and the things he is making.'
@@ -9,14 +13,18 @@ export function pageSeo({
   title,
   description,
   path,
-  image = '/images/avatar.png',
+  image = socialImage,
+  imageAlt = socialImageAlt,
   article = false,
+  index = true,
 }: {
   title: string
   description: string
   path: string
   image?: string
+  imageAlt?: string
   article?: boolean
+  index?: boolean
 }) {
   const url = new URL(path, siteUrl).href
   const imageUrl = new URL(image, siteUrl).href
@@ -24,15 +32,21 @@ export function pageSeo({
     meta: [
       { title },
       { name: 'description', content: description },
+      {
+        name: 'robots',
+        content: index ? 'index, follow' : 'noindex, nofollow',
+      },
       { property: 'og:title', content: title },
       { property: 'og:description', content: description },
       { property: 'og:type', content: article ? 'article' : 'website' },
       { property: 'og:url', content: url },
       { property: 'og:image', content: imageUrl },
+      { property: 'og:image:alt', content: imageAlt },
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:title', content: title },
       { name: 'twitter:description', content: description },
       { name: 'twitter:image', content: imageUrl },
+      { name: 'twitter:image:alt', content: imageAlt },
     ],
     links: [{ rel: 'canonical', href: url }],
   }
@@ -53,7 +67,8 @@ export function storySeo(story: Story) {
       title: `${story.seoTitle || story.title} · Adam Spice`,
       description,
       path: `/blog/${story.slug}`,
-      image: story.cover || '/images/avatar.png',
+      image: story.cover || socialImage,
+      imageAlt: story.cover ? story.coverAlt || '' : socialImageAlt,
       article: true,
     }),
     scripts: [
@@ -68,7 +83,7 @@ export function storySeo(story: Story) {
           url,
           datePublished: story.date,
           ...(story.updatedAt ? { dateModified: story.updatedAt } : {}),
-          image: [new URL(story.cover || '/images/avatar.png', siteUrl).href],
+          image: [new URL(story.cover || socialImage, siteUrl).href],
           author: { '@type': 'Person', name: 'Adam Spice', url: siteUrl },
         }),
       },

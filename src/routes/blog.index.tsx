@@ -7,13 +7,21 @@ import { StoryCard } from '../components/story-card'
 
 export const Route = createFileRoute('/blog/')({
   loader: () => getStories(),
-  head: () =>
-    pageSeo({
-      title: 'Stories · Adam Spice',
-      description:
-        'Notes on development, things I have learned, and the stories behind the projects.',
-      path: '/blog',
-    }),
+  head: ({ loaderData }) =>
+    !loaderData
+      ? pageSeo({
+          title: 'Page unavailable · Adam Spice',
+          description:
+            'This page is temporarily unavailable. Please try again.',
+          path: '/',
+          index: false,
+        })
+      : pageSeo({
+          title: 'Stories · Adam Spice',
+          description:
+            'Notes on development, things I have learned, and the stories behind the projects.',
+          path: '/blog',
+        }),
   component: Stories,
 })
 function Stories() {

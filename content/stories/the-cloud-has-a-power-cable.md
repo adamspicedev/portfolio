@@ -4,6 +4,7 @@ date: '2026-10-08'
 description: 'Data centre growth is making electricity, cooling and grid connections central to tech. Software still has to fit inside a physical world.'
 tags: ['Infrastructure', 'Energy', 'AI']
 cover: '/images/stories/power.webp'
+coverAlt: 'A blue data centre connects to wind turbines and a large orange power plug.'
 draft: false
 ---
 

@@ -1,3 +1,4 @@
+import { pageSeo } from '../lib/seo'
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import type { ReactNode } from 'react'
 import { Footer, Header, NotFound } from '../components/site-shell'
@@ -6,26 +7,17 @@ import appCss from '../styles.css?url'
 export const Route = createRootRoute({
   head: () => ({
     meta: [
+      ...pageSeo({
+        title: 'Page unavailable · Adam Spice',
+        description:
+          'This page is unavailable. Explore Adam Spice’s portfolio and stories.',
+        path: '/',
+        index: false,
+      }).meta,
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'Adam Spice · Developer, curious human' },
-      {
-        name: 'description',
-        content:
-          'Adam Spice is a full-stack developer who enjoys building apps with React and TypeScript. Explore his projects, stories, and the things he is making.',
-      },
       { name: 'theme-color', content: '#eee9ff' },
       { property: 'og:site_name', content: 'Adam Spice' },
-      { property: 'og:type', content: 'website' },
-      {
-        property: 'og:title',
-        content: 'Adam Spice · Developer, curious human',
-      },
-      {
-        property: 'og:description',
-        content:
-          'Full-stack apps, stories from the keyboard, and a little spice.',
-      },
     ],
     links: [
       { rel: 'stylesheet', href: appCss },

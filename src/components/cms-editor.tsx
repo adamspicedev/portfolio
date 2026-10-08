@@ -25,6 +25,7 @@ export function CmsEditor({
     date: story?.date ?? publicationDate(),
     tags: story?.tags.join(', ') ?? '',
     cover: story?.cover ?? '',
+    coverAlt: story?.coverAlt ?? '',
     body: story?.body ?? '',
     draft: story?.draft ?? true,
   }
@@ -199,6 +200,20 @@ export function CmsEditor({
             </small>
           </label>
         </div>
+        <label>
+          Cover description (alt text)
+          <input
+            value={form.coverAlt}
+            maxLength={500}
+            onChange={(event) =>
+              setForm({ ...form, coverAlt: event.target.value })
+            }
+          />
+          <small>
+            Describe the visible artwork briefly. Leave blank only for a
+            decorative cover.
+          </small>
+        </label>
         <fieldset className="cms-fields">
           <legend className="font-mono text-sm">Search & sharing</legend>
           <p className="text-sm text-muted">
@@ -261,7 +276,7 @@ export function CmsEditor({
               <h2>{form.title || 'Untitled story'}</h2>
               <p>{form.description}</p>
               {safeContentUrl(form.cover) && (
-                <img src={safeContentUrl(form.cover)} alt="Cover preview" />
+                <img src={safeContentUrl(form.cover)} alt={form.coverAlt} />
               )}
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}

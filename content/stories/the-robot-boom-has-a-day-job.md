@@ -4,6 +4,7 @@ date: '2026-10-08'
 description: 'While humanoid demos grab attention, millions of robots already do useful work. Reliability is the story worth following.'
 tags: ['Robotics', 'Hardware', 'Engineering']
 cover: '/images/stories/robots.webp'
+coverAlt: 'A cream and blue robot arm sorts orange blocks from a conveyor belt into blue bins.'
 draft: false
 ---
 

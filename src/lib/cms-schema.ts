@@ -32,6 +32,7 @@ export const editorSchema = z
           /^https:\/\//i.test(url),
         'Use a local image path or HTTPS URL',
       ),
+    coverAlt: z.string().trim().max(500).default(''),
     seoTitle: z.string().trim().max(160).default(''),
     seoDescription: z.string().trim().max(320).default(''),
     draft: z.boolean(),

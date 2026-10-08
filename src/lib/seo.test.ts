@@ -3,7 +3,7 @@ import { Database } from 'bun:sqlite'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { storySeo, jsonLd, sitemapXml } from './seo'
+import { storySeo, pageSeo, jsonLd, sitemapXml } from './seo'
 import { localDatabaseUrl, StoryStore } from './sqlite-stories.server'
 
 const story = {
@@ -101,4 +101,73 @@ test('version one SQLite files migrate without losing stories and persist SEO ov
   } finally {
     rmSync(folder, { recursive: true, force: true })
   }
+})
+
+test('sharing includes descriptive cover alt and branded fallback for stories without covers', () => {
+  const head = storySeo({
+    ...story,
+    coverAlt: 'A robot selecting useful review comments',
+  })
+  expect(
+    head.meta.find((meta) => meta.property === 'og:image:alt')?.content,
+  ).toBe('A robot selecting useful review comments')
+  expect(
+    head.meta.find((meta) => meta.name === 'twitter:image:alt')?.content,
+  ).toBe('A robot selecting useful review comments')
+  const fallback = storySeo({ ...story, cover: undefined })
+  expect(
+    fallback.meta.find((meta) => meta.property === 'og:image')?.content,
+  ).toBe('https://spicey.dev/images/social-preview.jpg')
+})
+
+test('cover descriptions migrate additively, persist and remain readable by previous schemas', async () => {
+  const folder = mkdtempSync(join(tmpdir(), 'portfolio-alt-'))
+  const path = join(folder, 'stories.sqlite')
+  try {
+    const store = await StoryStore.connect(localDatabaseUrl(path), undefined, [
+      story,
+    ])
+    const existing = (await store.all())[0]!
+    expect(existing.coverAlt).toBe('')
+    const saved = await store.save(
+      { ...existing, coverAlt: 'Power cables connecting a data centre' },
+      'test',
+    )
+    expect((await store.published('2026-10-09'))[0]?.coverAlt).toBe(
+      saved.coverAlt,
+    )
+    await store.close()
+    const oldClient = new Database(path)
+    expect(
+      oldClient
+        .query('SELECT title,body,cover FROM stories WHERE id=?')
+        .get(saved.id),
+    ).toEqual({ title: story.title, body: story.body, cover: story.cover })
+    oldClient
+      .query('UPDATE stories SET seo_title=? WHERE id=?')
+      .run('Older application edit', saved.id)
+    oldClient.close()
+    const reopened = await StoryStore.connect(localDatabaseUrl(path))
+    expect((await reopened.get(saved.id)).coverAlt).toBe(saved.coverAlt)
+    await reopened.close()
+  } finally {
+    rmSync(folder, { recursive: true, force: true })
+  }
+})
+
+test('public page previews have absolute URLs and social descriptions', () => {
+  const head = pageSeo({
+    title: 'Stories · Adam Spice',
+    description: 'Notes from the keyboard',
+    path: '/blog',
+  })
+  expect(head.meta.find((meta) => meta.property === 'og:url')?.content).toBe(
+    'https://spicey.dev/blog',
+  )
+  expect(
+    head.meta.find((meta) => meta.property === 'og:image:alt')?.content,
+  ).toContain('Adam Spice')
+  expect(head.meta.find((meta) => meta.name === 'robots')?.content).toBe(
+    'index, follow',
+  )
 })

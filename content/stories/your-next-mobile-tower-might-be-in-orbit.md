@@ -4,6 +4,7 @@ date: '2026-10-08'
 description: 'Satellite-to-phone services are becoming commercial networks. Their biggest promise is helping at the edges of ordinary mobile coverage.'
 tags: ['Connectivity', 'Space', 'Mobile']
 cover: '/images/stories/satellites.webp'
+coverAlt: 'A blue satellite with lavender solar panels floats above a phone on an orange planet.'
 draft: false
 ---
 

@@ -19,6 +19,7 @@ const rowSchema = z.object({
   draft: z.coerce.number(),
   archived: z.coerce.number(),
   updated_at: z.string(),
+  cover_alt: z.string(),
   seo_title: z.string(),
   seo_description: z.string(),
 })
@@ -26,6 +27,7 @@ function decode(raw: unknown): CmsStory {
   const row = rowSchema.parse(raw)
   const story = editorSchema.parse({
     ...row,
+    coverAlt: row.cover_alt,
     seoTitle: row.seo_title,
     seoDescription: row.seo_description,
     tags: JSON.parse(row.tags),
@@ -79,6 +81,10 @@ export class StoryStore {
       const names = columns.rows.map(
         (column) => z.object({ name: z.string() }).parse(column).name,
       )
+      if (!names.includes('cover_alt'))
+        await tx.execute(
+          "ALTER TABLE stories ADD COLUMN cover_alt TEXT NOT NULL DEFAULT ''",
+        )
       if (!names.includes('seo_title'))
         await tx.execute(
           "ALTER TABLE stories ADD COLUMN seo_title TEXT NOT NULL DEFAULT ''",
@@ -117,8 +123,8 @@ export class StoryStore {
     const id = crypto.randomUUID()
     await tx.execute({
       sql: `INSERT INTO stories
-        (id,slug,title,description,date,tags,body,cover,draft,updated_at,updated_by,seo_title,seo_description)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+        (id,slug,title,description,date,tags,body,cover,draft,updated_at,updated_by,seo_title,seo_description,cover_alt)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       args: [
         id,
         story.slug,
@@ -133,6 +139,7 @@ export class StoryStore {
         actor,
         story.seoTitle,
         story.seoDescription,
+        story.coverAlt,
       ],
     })
     const result = await tx.execute({
@@ -174,6 +181,7 @@ export class StoryStore {
           slug: story.slug,
           title: story.title,
           description: story.description,
+          coverAlt: story.coverAlt,
           seoTitle: story.seoTitle,
           seoDescription: story.seoDescription,
           updatedAt: story.updatedAt,
@@ -215,7 +223,7 @@ export class StoryStore {
 
       const result = await tx.execute({
         sql: `UPDATE stories SET slug=?, title=?, description=?, date=?, tags=?,
-          body=?, cover=?, draft=?, seo_title=?, seo_description=?, revision=revision+1, updated_at=?, updated_by=?
+          body=?, cover=?, draft=?, seo_title=?, seo_description=?, cover_alt=?, revision=revision+1, updated_at=?, updated_by=?
           WHERE id=? AND revision=? AND archived=0`,
         args: [
           input.slug,
@@ -228,6 +236,7 @@ export class StoryStore {
           Number(input.draft),
           input.seoTitle,
           input.seoDescription,
+          input.coverAlt,
           new Date().toISOString(),
           actor,
           input.id,

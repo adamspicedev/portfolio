@@ -17,8 +17,16 @@ import { getStories } from '../lib/stories.functions'
 
 export const Route = createFileRoute('/')({
   loader: () => getStories(),
-  head: () =>
-    pageSeo({ title: homeTitle, description: homeDescription, path: '/' }),
+  head: ({ loaderData }) =>
+    !loaderData
+      ? pageSeo({
+          title: 'Page unavailable · Adam Spice',
+          description:
+            'This page is temporarily unavailable. Please try again.',
+          path: '/',
+          index: false,
+        })
+      : pageSeo({ title: homeTitle, description: homeDescription, path: '/' }),
   component: Home,
 })
 

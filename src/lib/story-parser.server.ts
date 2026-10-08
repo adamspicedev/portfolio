@@ -21,6 +21,7 @@ const metadataSchema = z.object({
     .max(8)
     .default([])
     .transform((tags) => [...new Set(tags)]),
+  coverAlt: z.string().trim().max(500).optional(),
   draft: z.boolean().default(false),
   cover: z
     .string()

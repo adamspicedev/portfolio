@@ -1,3 +1,4 @@
+import { pageSeo } from '../lib/seo'
 import { createFileRoute } from '@tanstack/react-router'
 import { ClerkProvider, SignIn, UserButton } from '@clerk/tanstack-react-start'
 import { useState } from 'react'
@@ -9,12 +10,13 @@ import { publicationDate } from '../lib/story-schema'
 
 export const Route = createFileRoute('/admin')({
   loader: () => getAdminDashboard(),
-  head: () => ({
-    meta: [
-      { title: 'Story studio · Adam Spice' },
-      { name: 'robots', content: 'noindex, nofollow' },
-    ],
-  }),
+  head: () =>
+    pageSeo({
+      title: 'Story studio · Adam Spice',
+      description: 'Sign in to manage stories on Adam Spice’s website.',
+      path: '/admin',
+      index: false,
+    }),
   component: AdminPage,
 })
 function AdminPage() {

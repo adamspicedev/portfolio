@@ -334,3 +334,42 @@ test('crawler HTML includes canonical, sharing metadata and article schema; site
     'Sitemap: https://spicey.dev/sitemap.xml',
   )
 })
+
+test('public and private routes expose safe server-rendered social previews', async ({
+  request,
+}) => {
+  for (const path of ['/', '/blog', '/blog/it-started-with-a-dragon-32']) {
+    const response = await request.get(path)
+    const html = await response.text()
+    expect(response.status()).toBe(200)
+    expect(html).toContain(
+      'property="og:image" content="https://spicey.dev/images/social-preview.jpg"',
+    )
+    expect(html).toContain(
+      'property="og:image:alt" content="Adam Spice, full-stack developer',
+    )
+    expect(html).toContain('name="twitter:image:alt"')
+    expect(html).toContain('name="robots" content="index, follow"')
+  }
+  for (const path of ['/admin', '/blog/missing-story', '/missing-page']) {
+    const html = await (await request.get(path)).text()
+    expect(html).toContain('name="robots" content="noindex, nofollow"')
+    expect(html).toContain('name="twitter:card" content="summary_large_image"')
+    expect(html).not.toContain(
+      'property="og:title" content="The cloud has a power cable',
+    )
+  }
+  const article = await (
+    await request.get('/blog/the-cloud-has-a-power-cable')
+  ).text()
+  expect(article).toContain(
+    'alt="A blue data centre connects to wind turbines and a large orange power plug."',
+  )
+  expect(article).toContain(
+    'property="og:image:alt" content="A blue data centre connects',
+  )
+  expect(await (await request.get('/blog')).text()).toContain(
+    'alt="A blue data centre connects',
+  )
+  expect((await request.get('/images/social-preview.jpg')).status()).toBe(200)
+})

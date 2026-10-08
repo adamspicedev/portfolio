@@ -4,6 +4,7 @@ date: '2026-10-08'
 description: 'Passwordless sign-in is reaching billions of credentials. The interesting work now is making it understandable when things go wrong.'
 tags: ['Security', 'Web', 'UX']
 cover: '/images/stories/passkeys.webp'
+coverAlt: 'A blue key passes through a lavender smartphone, surrounded by orange fingerprint symbols.'
 draft: false
 ---
 

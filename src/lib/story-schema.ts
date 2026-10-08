@@ -4,6 +4,7 @@ import type { StoryMetadata } from './story-parser.server'
 export type Story = StoryMetadata & {
   slug: string
   body: string
+  coverAlt?: string
   seoTitle?: string
   seoDescription?: string
   updatedAt?: string

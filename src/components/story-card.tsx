@@ -13,7 +13,7 @@ export function StoryCard({ story }: { story: StorySummary }) {
         {story.cover ? (
           <img
             src={story.cover}
-            alt=""
+            alt={story.coverAlt ?? ''}
             loading="lazy"
             className="h-full w-full object-cover"
           />

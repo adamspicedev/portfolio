@@ -153,3 +153,9 @@ The story editor includes optional SEO title and description fields with a searc
 Public pages render canonical URLs and Open Graph/Twitter metadata on the server. Articles also include BlogPosting structured data. `/sitemap.xml` reads the published stories at request time, so publishing, scheduling, or archiving needs no rebuild. Drafts and archived stories are excluded. `/admin` remains noindex. Canonical URLs use `https://spicey.dev` in `src/lib/seo.ts`; update that constant if the production domain changes.
 
 After deployment, submit `https://spicey.dev/sitemap.xml` in Google Search Console and validate an article with Google's Rich Results Test. Local checks verify markup, not indexing or search rankings.
+
+### Cover descriptions and social previews
+
+Set **Cover description (alt text)** in Story studio after viewing the artwork. It is used on the article, story cards, editor preview and Open Graph/Twitter image descriptions. Existing stories remain compatible with an empty description; Markdown seed stories may also set `coverAlt`. Home, Stories and articles without a cover use `public/images/social-preview.jpg`, a 1200×630 card based on Adam's existing portrait. Public metadata is rendered on the server. Admin and unavailable pages use generic previews and remain noindex.
+
+The cover-description migration adds `cover_alt TEXT NOT NULL DEFAULT ''` to the stories table on first database connection. It preserves all existing columns and content. Previous application versions can still read and update their existing columns; leave the additional column in place during rollback. Existing deployed stories must be updated through Story studio because Markdown only seeds an empty database.

@@ -1,4 +1,4 @@
-import { storySeo } from '../lib/seo'
+import { pageSeo, storySeo } from '../lib/seo'
 import { createFileRoute, Link, notFound } from '@tanstack/react-router'
 import { ArrowLeft, ArrowUpRight } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
@@ -20,7 +20,13 @@ export const Route = createFileRoute('/blog/$slug')({
   head: ({ loaderData }) =>
     loaderData
       ? storySeo(loaderData)
-      : { meta: [{ name: 'robots', content: 'noindex' }] },
+      : pageSeo({
+          title: 'Story unavailable · Adam Spice',
+          description:
+            'This story is unavailable. Explore Adam Spice’s published stories.',
+          path: '/blog',
+          index: false,
+        }),
   component: Story,
 })
 function Story() {
@@ -53,7 +59,11 @@ function Story() {
           </div>
         </header>
         {story.cover && (
-          <img src={story.cover} alt="" className="article-cover" />
+          <img
+            src={story.cover}
+            alt={story.coverAlt ?? ''}
+            className="article-cover"
+          />
         )}
         <article className="article-prose">
           <ReactMarkdown
