@@ -1,3 +1,4 @@
+import { useHomeMotion } from '../components/home-motion'
 import { pageSeo, homeTitle, homeDescription } from '../lib/seo'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import {
@@ -31,6 +32,7 @@ export const Route = createFileRoute('/')({
 })
 
 function Home() {
+  useHomeMotion()
   const stories = Route.useLoaderData()
   return (
     <main id="main-content">

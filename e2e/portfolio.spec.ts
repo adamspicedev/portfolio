@@ -401,3 +401,33 @@ test('browser and touch icons use the shared site mark', async ({
   const manifest = await (await request.get('/manifest.json')).json()
   expect(manifest.name).toBe('Adam Spice')
 })
+
+test('homepage entrances respect reduced motion and keep content visible', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await page.goto('/')
+  await page.locator('#projects').scrollIntoViewIfNeeded()
+  await expect(page.locator('.project-card').first()).toBeVisible()
+  expect(
+    await page
+      .locator('.project-card')
+      .first()
+      .evaluate((element) => element.getAnimations().length),
+  ).toBe(0)
+  await page.emulateMedia({ reducedMotion: 'no-preference' })
+  await page.reload()
+  await page.locator('#projects').scrollIntoViewIfNeeded()
+  await expect(page.locator('.project-card').first()).toBeVisible()
+  await expect
+    .poll(() =>
+      page
+        .locator('.project-card')
+        .first()
+        .evaluate((element) => ({
+          opacity: getComputedStyle(element).opacity,
+          animations: element.getAnimations().length,
+        })),
+    )
+    .toEqual({ opacity: '1', animations: 0 })
+})
