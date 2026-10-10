@@ -447,3 +447,30 @@ test('orange ribbon has visible looping motion and a working pause control', asy
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await expect(star).toHaveCSS('animation-name', 'none')
 })
+
+test('phone cards visibly animate when scrolled into view', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.emulateMedia({ reducedMotion: 'no-preference' })
+  await page.addInitScript(() => {
+    const original = Element.prototype.animate
+    Element.prototype.animate = function (frames, options) {
+      if (this.matches('.project-card, .story-card'))
+        this.setAttribute('data-entrance-started', 'true')
+      return original.call(this, frames, options)
+    }
+  })
+  await page.goto('/')
+  const card = page.locator('.project-card').first()
+  await expect(card).not.toHaveAttribute('data-entrance-started', 'true')
+  await card.scrollIntoViewIfNeeded()
+  await expect(card).toHaveAttribute('data-entrance-started', 'true')
+  const timing = await card.evaluate((element) =>
+    element
+      .getAnimations()
+      .map((animation) => animation.effect?.getTiming().duration),
+  )
+  expect(timing).toContain(650)
+  await expect(card).toHaveCSS('opacity', '1')
+})

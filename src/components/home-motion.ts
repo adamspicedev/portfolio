@@ -11,34 +11,30 @@ export function useHomeMotion() {
         for (const entry of entries) {
           if (!entry.isIntersecting) continue
           observer.unobserve(entry.target)
-          const targets = [entry.target]
-          targets.forEach((target, index) => {
-            const star = target.matches('.ribbon-inner svg')
-            const animation = target.animate(
-              star
-                ? [
-                    { transform: 'rotate(-90deg)', opacity: 0.4 },
-                    { transform: 'rotate(0deg)', opacity: 1 },
-                  ]
-                : [
-                    { transform: 'translateY(20px)', opacity: 0.35 },
-                    { transform: 'translateY(0)', opacity: 1 },
-                  ],
+          const card = entry.target.matches('.project-card, .story-card')
+          const animation = entry.target.animate(
+            [
               {
-                duration: 250,
-                delay: Math.min(index, 5) * 50,
-                easing: 'cubic-bezier(0.23, 1, 0.32, 1)',
+                transform: `translateY(${card ? 48 : 20}px)`,
+                opacity: card ? 0 : 0.35,
               },
-            )
-            animations.add(animation)
-            void animation.finished.then(
-              () => animations.delete(animation),
-              () => animations.delete(animation),
-            )
-          })
+              { transform: 'translateY(0)', opacity: 1 },
+            ],
+            {
+              duration: card ? 650 : 250,
+              easing: card
+                ? 'cubic-bezier(0.16, 1, 0.3, 1)'
+                : 'cubic-bezier(0.23, 1, 0.32, 1)',
+            },
+          )
+          animations.add(animation)
+          void animation.finished.then(
+            () => animations.delete(animation),
+            () => animations.delete(animation),
+          )
         }
       },
-      { threshold: 0.12 },
+      { threshold: 0.2, rootMargin: '0px 0px -48px 0px' },
     )
     document
       .querySelectorAll(
