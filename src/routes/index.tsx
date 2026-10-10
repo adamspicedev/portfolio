@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useHomeMotion } from '../components/home-motion'
 import { pageSeo, homeTitle, homeDescription } from '../lib/seo'
 import { createFileRoute, Link } from '@tanstack/react-router'
@@ -33,6 +34,7 @@ export const Route = createFileRoute('/')({
 
 function Home() {
   useHomeMotion()
+  const [ribbonPaused, setRibbonPaused] = useState(false)
   const stories = Route.useLoaderData()
   return (
     <main id="main-content">
@@ -93,7 +95,11 @@ function Home() {
           <span className="font-mono text-[10px]">There's more down here</span>
         </a>
       </section>
-      <div className="skills-ribbon" aria-label="Favourite technologies">
+      <div
+        className="skills-ribbon"
+        data-paused={ribbonPaused}
+        aria-label="Favourite technologies"
+      >
         <div className="page-width ribbon-inner">
           <span>REACT</span>
           <Asterisk />
@@ -106,6 +112,14 @@ function Home() {
           <span>BUILDING WITH CURIOSITY</span>
           <Asterisk />
         </div>
+        <button
+          type="button"
+          className="ribbon-motion-control"
+          aria-pressed={ribbonPaused}
+          onClick={() => setRibbonPaused(!ribbonPaused)}
+        >
+          {ribbonPaused ? 'Play stars' : 'Pause stars'}
+        </button>
       </div>
       <section id="projects" className="page-width section-space">
         <div className="section-heading">

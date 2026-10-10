@@ -11,10 +11,7 @@ export function useHomeMotion() {
         for (const entry of entries) {
           if (!entry.isIntersecting) continue
           observer.unobserve(entry.target)
-          const children = entry.target.querySelectorAll(
-            '.section-heading, .project-card, .story-card, .experience-row, .ribbon-inner svg',
-          )
-          const targets = children.length ? [...children] : [entry.target]
+          const targets = [entry.target]
           targets.forEach((target, index) => {
             const star = target.matches('.ribbon-inner svg')
             const animation = target.animate(
@@ -44,7 +41,9 @@ export function useHomeMotion() {
       { threshold: 0.12 },
     )
     document
-      .querySelectorAll('.hero-copy, .skills-ribbon, main > section:not(.hero)')
+      .querySelectorAll(
+        '.hero-copy, .section-heading, .project-card, .story-card, .experience-row',
+      )
       .forEach((element) => observer.observe(element))
     const stop = () => {
       if (!preference.matches) return

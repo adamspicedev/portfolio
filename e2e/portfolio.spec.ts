@@ -431,3 +431,19 @@ test('homepage entrances respect reduced motion and keep content visible', async
     )
     .toEqual({ opacity: '1', animations: 0 })
 })
+
+test('orange ribbon has visible looping motion and a working pause control', async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' })
+  await page.goto('/')
+  const star = page.locator('.ribbon-inner svg').first()
+  await expect(star).toHaveCSS('animation-name', 'ribbon-star-turn')
+  await expect(star).toHaveCSS('animation-play-state', 'running')
+  await page.getByRole('button', { name: 'Pause stars' }).click()
+  await expect(star).toHaveCSS('animation-play-state', 'paused')
+  await page.getByRole('button', { name: 'Play stars' }).click()
+  await expect(star).toHaveCSS('animation-play-state', 'running')
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await expect(star).toHaveCSS('animation-name', 'none')
+})

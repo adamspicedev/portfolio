@@ -1654,3 +1654,34 @@ body:has(.hero) .site-header::before {
     transform: translateX(3px);
   }
 }
+
+.skills-ribbon {
+  position: relative;
+}
+.ribbon-motion-control {
+  display: block;
+  margin-inline: auto;
+  padding: 4px 12px 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+@keyframes ribbon-star-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .ribbon-inner svg {
+    animation: ribbon-star-turn 12s linear infinite;
+  }
+  .skills-ribbon[data-paused='true'] .ribbon-inner svg {
+    animation-play-state: paused;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ribbon-motion-control {
+    display: none;
+  }
+}
