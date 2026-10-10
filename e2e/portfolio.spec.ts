@@ -338,7 +338,7 @@ test('crawler HTML includes canonical, sharing metadata and article schema; site
 test('public and private routes expose safe server-rendered social previews', async ({
   request,
 }) => {
-  for (const path of ['/', '/blog', '/blog/it-started-with-a-dragon-32']) {
+  for (const path of ['/', '/blog']) {
     const response = await request.get(path)
     const html = await response.text()
     expect(response.status()).toBe(200)
@@ -351,6 +351,14 @@ test('public and private routes expose safe server-rendered social previews', as
     expect(html).toContain('name="twitter:image:alt"')
     expect(html).toContain('name="robots" content="index, follow"')
   }
+  const dragon = await request.get('/blog/it-started-with-a-dragon-32')
+  expect(dragon.status()).toBe(200)
+  expect(await dragon.text()).toContain(
+    'property="og:image" content="https://spicey.dev/images/stories/dragon32.webp"',
+  )
+  expect(await dragon.text()).toContain(
+    'property="og:image:alt" content="A cream Dragon 32 computer',
+  )
   for (const path of ['/admin', '/blog/missing-story', '/missing-page']) {
     const html = await (await request.get(path)).text()
     expect(html).toContain('name="robots" content="noindex, nofollow"')

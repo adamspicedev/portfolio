@@ -415,7 +415,7 @@ button:disabled {
   gap: 20px;
   min-height: 58px;
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 14px;
   letter-spacing: 0.025em;
 }
 .ribbon-inner svg {
@@ -1065,7 +1065,7 @@ button:disabled {
     flex-wrap: wrap;
     gap: 15px;
     padding-block: 16px;
-    font-size: 9px;
+    font-size: 13px;
   }
   .ribbon-inner span:nth-of-type(5),
   .ribbon-inner svg:last-child {
@@ -1233,7 +1233,7 @@ button:disabled {
   .ribbon-inner {
     gap: 12px;
     min-height: 54px;
-    font-size: 8px;
+    font-size: 12px;
   }
   .ribbon-inner span:nth-of-type(4),
   .ribbon-inner svg:nth-of-type(4) {
