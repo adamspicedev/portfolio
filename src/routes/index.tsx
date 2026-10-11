@@ -10,6 +10,8 @@ import {
   Braces,
   Code2,
   Sparkles,
+  Pause,
+  Play,
 } from 'lucide-react'
 import { Computer } from '../components/computer'
 import { Contact } from '../components/contact'
@@ -43,9 +45,20 @@ function Home() {
           <div className="hero-intro">
             <img src="/images/avatar.png" width="38" height="38" alt="" />
             <span className="font-mono text-xs">Hey, I'm Adam Spice.</span>
-            <span className="intro-wave" aria-hidden="true">
-              ✳
-            </span>
+            <span className="player-badge font-mono">PLAYER 01</span>
+          </div>
+          <div className="retro-controller" aria-hidden="true">
+            <svg
+              viewBox="0 0 32 18"
+              fill="currentColor"
+              shapeRendering="crispEdges"
+            >
+              <path
+                d="M4 2h24v2h2v12h-2v2h-8v-4h-8v4H4v-2H2V4h2V2zm2 4v2H4v2h2v2h2v-2h2V8H8V6H6zm16 0v4h4V6h-4zm-4 4v4h4v-4h-4z"
+                fillRule="evenodd"
+              />
+            </svg>
+            <span className="font-mono">CODE · PLAY · REPEAT</span>
           </div>
           <h1>
             I build things
@@ -72,7 +85,7 @@ function Home() {
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a href="#projects" className="button button-primary">
-              Explore my work <ArrowUpRight size={18} />
+              Select a project <ArrowUpRight size={18} />
             </a>
             <a
               href="/files/AdamSpiceResume.pdf"
@@ -115,10 +128,15 @@ function Home() {
         <button
           type="button"
           className="ribbon-motion-control"
+          aria-label={ribbonPaused ? 'Play stars' : 'Pause stars'}
           aria-pressed={ribbonPaused}
           onClick={() => setRibbonPaused(!ribbonPaused)}
         >
-          {ribbonPaused ? 'Play stars' : 'Pause stars'}
+          {ribbonPaused ? (
+            <Play size={14} aria-hidden="true" />
+          ) : (
+            <Pause size={14} aria-hidden="true" />
+          )}
         </button>
       </div>
       <section id="projects" className="page-width section-space">
@@ -138,7 +156,7 @@ function Home() {
           </p>
         </div>
         <div className="grid gap-7 md:grid-cols-2">
-          {projectsData.map((project) => (
+          {projectsData.map((project, index) => (
             <article className="project-card" key={project.title}>
               <a
                 className={`project-art project-art-${project.color}`}
@@ -148,6 +166,7 @@ function Home() {
                 aria-label={`Open ${project.title} (opens in a new tab)`}
               >
                 <span className="project-category font-mono">
+                  <span className="cartridge-number">0{index + 1}</span>{' '}
                   {project.category}
                 </span>
                 <div className="project-browser">
@@ -203,7 +222,7 @@ function Home() {
           <div className="about-portrait">
             <div className="portrait-frame">
               <div className="portrait-caption font-mono">
-                <span>meet the human</span>
+                <span>player profile</span>
                 <span>↗</span>
               </div>
               <img
@@ -227,7 +246,7 @@ function Home() {
             </div>
           </div>
           <div>
-            <p className="eyebrow">Behind the keyboard</p>
+            <p className="eyebrow">Behind the keyboard · Player profile</p>
             <h2 className="section-title">
               A lifelong
               <br />

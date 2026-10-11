@@ -1685,3 +1685,51 @@ body:has(.hero) .site-header::before {
     display: none;
   }
 }
+
+/* Retro console details, using the existing palette and typefaces. */
+.player-badge {
+  border: 1px solid currentColor;
+  padding: 5px 7px;
+  font-size: 10px;
+  color: var(--color-cobalt);
+  letter-spacing: 0.06em;
+  box-shadow: 2px 2px 0 currentColor;
+}
+.retro-controller {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-block: 24px 16px;
+  color: var(--color-cobalt);
+}
+.retro-controller svg {
+  width: 64px;
+  height: 36px;
+}
+.retro-controller span {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+}
+.cartridge-number {
+  display: inline-block;
+  border: 1px solid currentColor;
+  padding: 3px 5px;
+  margin-right: 6px;
+  font-size: 11px;
+}
+.ribbon-motion-control {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  text-decoration: none;
+}
+@media (max-width: 640px) {
+  .player-badge {
+    font-size: 9px;
+  }
+  .retro-controller {
+    margin-top: 18px;
+  }
+}
