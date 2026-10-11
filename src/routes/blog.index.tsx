@@ -38,7 +38,7 @@ function Stories() {
   )
   return (
     <main id="main-content" className="page-width blog-index">
-      <p className="eyebrow">Notes from the keyboard</p>
+      <p className="eyebrow">The journal · Stories</p>
       <h1 className="section-title blog-title">
         A curious mind.
         <br />A few <span className="font-serif italic">stories.</span>

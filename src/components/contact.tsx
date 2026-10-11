@@ -49,7 +49,7 @@ export function Contact() {
     <section id="contact" className="contact-section section-space">
       <div className="page-width grid gap-12 lg:grid-cols-2 lg:gap-24">
         <div>
-          <p className="eyebrow">Got an idea?</p>
+          <p className="eyebrow">Next quest · Contact</p>
           <h2 className="section-title">
             Let's make
             <br />

@@ -1733,3 +1733,144 @@ body:has(.hero) .site-header::before {
     margin-top: 18px;
   }
 }
+
+/* Console panels use the original palette throughout. */
+.game-world .section-heading .eyebrow,
+.game-world .experience-intro .eyebrow {
+  display: inline-block;
+  border-bottom: 3px solid var(--color-orange);
+  padding-bottom: 8px;
+}
+.character-card,
+.story-card {
+  border: 2px solid var(--color-ink);
+  border-radius: 2px;
+  box-shadow: 5px 5px 0 var(--color-ink);
+  overflow: hidden;
+}
+.game-panel-bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  background: var(--color-lavender);
+  border-bottom: 2px solid var(--color-ink);
+}
+.character-card .project-art {
+  height: 280px;
+  border-radius: 0;
+  border: 0;
+  border-bottom: 2px solid var(--color-ink);
+}
+.character-card .project-details {
+  padding: 24px;
+}
+.character-stats,
+.player-stats {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+}
+.character-stats > div,
+.player-stats > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 10px;
+}
+.character-stats dt,
+.player-stats dt,
+.game-field-label {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+.character-stats dd,
+.player-stats dd {
+  font-size: 12px;
+  text-align: right;
+}
+.game-field-label {
+  margin-top: 22px;
+}
+.game-card-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 24px;
+  border-top: 2px solid var(--color-ink);
+  padding-top: 16px;
+  font-size: 13px;
+  color: var(--color-cobalt);
+}
+.player-profile-panel {
+  padding: clamp(20px, 4vw, 36px);
+  border: 2px solid var(--color-ink);
+  box-shadow: 6px 6px 0 var(--color-orange);
+}
+.player-profile-panel .section-title {
+  margin-top: 28px;
+}
+.game-world .portrait-frame {
+  border-radius: 2px;
+  border: 2px solid var(--color-ink);
+}
+.game-world .toolbox-grid {
+  gap: 10px;
+  padding: 16px;
+  border: 2px solid var(--color-ink);
+  box-shadow: 5px 5px 0 var(--color-ink);
+}
+.game-world .toolbox-item {
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.inventory-slot {
+  font-size: 10px;
+  padding-right: 10px;
+  border-right: 1px solid currentColor;
+  opacity: 0.65;
+}
+.game-world .experience-row {
+  border: 2px solid var(--color-ink);
+  padding: 22px;
+  margin-bottom: 14px;
+  box-shadow: 4px 4px 0 var(--color-lavender);
+}
+.quest-date {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 11px;
+}
+.quest-marker {
+  color: var(--color-orange);
+  font-size: 22px;
+}
+.game-world .button {
+  border-radius: 2px;
+}
+@media (max-width: 640px) {
+  .character-card .project-details {
+    padding: 20px;
+  }
+  .game-panel-bar {
+    font-size: 10px;
+  }
+  .quest-date {
+    flex-direction: row;
+    align-items: center;
+  }
+  .game-world .experience-row {
+    padding: 18px;
+  }
+}
+.game-world .contact-form {
+  border: 2px solid var(--color-ink);
+  border-radius: 2px;
+  box-shadow: 5px 5px 0 var(--color-orange);
+}

@@ -474,3 +474,27 @@ test('phone cards visibly animate when scrolled into view', async ({
   expect(timing).toContain(650)
   await expect(card).toHaveCSS('opacity', '1')
 })
+
+test('game panels retain real project details and fit a phone screen', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/')
+  await expect(page.locator('.character-card')).toHaveCount(2)
+  await expect(page.locator('.character-card').first()).toContainText(
+    'Movie discovery',
+  )
+  await expect(page.locator('.character-card').first()).toContainText(
+    '4 technologies',
+  )
+  await expect(page.locator('.player-stats')).toContainText('Dragon 32')
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= window.innerWidth,
+    ),
+  ).toBe(true)
+  const links = page.locator('.character-card .game-card-action')
+  expect(await links.first().getAttribute('href')).toBe(
+    'https://movie-app.spicey.dev',
+  )
+})

@@ -39,7 +39,7 @@ function Home() {
   const [ribbonPaused, setRibbonPaused] = useState(false)
   const stories = Route.useLoaderData()
   return (
-    <main id="main-content">
+    <main id="main-content" className="game-world">
       <section className="hero page-width">
         <div className="hero-copy">
           <div className="hero-intro">
@@ -142,22 +142,29 @@ function Home() {
       <section id="projects" className="page-width section-space">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">Some things I've made</p>
+            <p className="eyebrow">Character select · Projects</p>
             <h2 className="section-title">
-              A little work.
-              <br />A lot of{' '}
-              <span className="font-serif italic">curiosity.</span>
+              Choose your
+              <br />
+              <span className="font-serif italic">project.</span>
             </h2>
           </div>
           <p className="section-note">
-            From a first idea to the last little detail.
+            Two builds from my collection.
             <br />
-            Here are a couple of projects I've enjoyed building.
+            Inspect their abilities, then take one for a spin.
           </p>
         </div>
         <div className="grid gap-7 md:grid-cols-2">
           {projectsData.map((project, index) => (
-            <article className="project-card" key={project.title}>
+            <article
+              className="project-card character-card"
+              key={project.title}
+            >
+              <div className="game-panel-bar font-mono">
+                <span>BUILD 0{index + 1}</span>
+                <span>PROJECT FILE</span>
+              </div>
               <a
                 className={`project-art project-art-${project.color}`}
                 href={project.link}
@@ -202,16 +209,36 @@ function Home() {
                   </h3>
                   <ArrowUpRight size={19} />
                 </a>
+                <dl className="character-stats font-mono">
+                  <div>
+                    <dt>CLASS</dt>
+                    <dd>{project.category}</dd>
+                  </div>
+                  <div>
+                    <dt>ABILITIES</dt>
+                    <dd>{project.tags.length} technologies</dd>
+                  </div>
+                </dl>
                 <p className="mt-3 max-w-md leading-relaxed text-muted">
                   {project.description}
                 </p>
-                <div className="mt-5 flex flex-wrap gap-2">
+                <p className="game-field-label font-mono">EQUIPPED STACK</p>
+                <div className="mt-3 flex flex-wrap gap-2">
                   {project.tags.map((tag) => (
                     <span className="tag" key={tag}>
                       {tag}
                     </span>
                   ))}
                 </div>
+                <a
+                  className="game-card-action font-mono"
+                  href={project.link}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  View project <ArrowUpRight size={16} />
+                  <span className="sr-only"> (opens in a new tab)</span>
+                </a>
               </div>
             </article>
           ))}
@@ -245,8 +272,22 @@ function Home() {
               that's me! ↗
             </div>
           </div>
-          <div>
-            <p className="eyebrow">Behind the keyboard · Player profile</p>
+          <div className="player-profile-panel">
+            <p className="eyebrow">Player profile · Adam Spice</p>
+            <dl className="player-stats font-mono">
+              <div>
+                <dt>CLASS</dt>
+                <dd>Full-stack developer</dd>
+              </div>
+              <div>
+                <dt>ORIGIN</dt>
+                <dd>Dragon 32</dd>
+              </div>
+              <div>
+                <dt>OFF DUTY</dt>
+                <dd>Gaming · Movies</dd>
+              </div>
+            </dl>
             <h2 className="section-title">
               A lifelong
               <br />
@@ -279,8 +320,8 @@ function Home() {
       <section id="skills" className="page-width toolkit-section section-space">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">Tools of the trade</p>
-            <h2 className="section-title">My digital toolbox.</h2>
+            <p className="eyebrow">Inventory · Skills</p>
+            <h2 className="section-title">My equipped stack.</h2>
           </div>
           <Braces
             size={57}
@@ -289,9 +330,12 @@ function Home() {
           />
         </div>
         <div className="toolbox-grid">
-          {[...new Set(skillsData)].map((skill) => (
+          {[...new Set(skillsData)].map((skill, index) => (
             <span key={skill} className="toolbox-item">
-              {skill}
+              <span className="inventory-slot font-mono" aria-hidden="true">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <span>{skill}</span>
             </span>
           ))}
         </div>
@@ -301,13 +345,11 @@ function Home() {
         className="experience-section page-width section-space"
       >
         <div className="experience-intro">
-          <p className="eyebrow">The road so far</p>
+          <p className="eyebrow">Quest log · Experience</p>
           <h2 className="section-title">
-            Many hats.
+            The story
             <br />
-            One curious
-            <br />
-            <span className="font-serif italic">head.</span>
+            so <span className="font-serif italic">far.</span>
           </h2>
           <Sparkles className="mt-8 text-cobalt" size={36} strokeWidth={1.2} />
         </div>
@@ -318,9 +360,12 @@ function Home() {
             )
             .map((experience) => (
               <article className="experience-row" key={experience.title}>
-                <p className="font-mono text-[11px] text-muted">
-                  {experience.date}
-                </p>
+                <div className="quest-date font-mono">
+                  <span className="quest-marker" aria-hidden="true">
+                    ◆
+                  </span>
+                  <span>{experience.date}</span>
+                </div>
                 <div>
                   <h3 className="text-xl font-semibold tracking-tight">
                     {experience.title}
@@ -340,9 +385,9 @@ function Home() {
         <div className="page-width">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">Notes from the keyboard</p>
+              <p className="eyebrow">Journal · Stories</p>
               <h2 className="section-title">
-                A few <span className="font-serif italic">stories.</span>
+                From the <span className="font-serif italic">journal.</span>
               </h2>
             </div>
             <Link to="/blog" className="button button-outline">
