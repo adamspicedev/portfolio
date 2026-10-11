@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useHomeMotion } from '../components/home-motion'
 import { pageSeo, homeTitle, homeDescription } from '../lib/seo'
 import { createFileRoute, Link } from '@tanstack/react-router'
@@ -10,8 +9,6 @@ import {
   Braces,
   Code2,
   Sparkles,
-  Pause,
-  Play,
 } from 'lucide-react'
 import { Computer } from '../components/computer'
 import { Contact } from '../components/contact'
@@ -36,29 +33,17 @@ export const Route = createFileRoute('/')({
 
 function Home() {
   useHomeMotion()
-  const [ribbonPaused, setRibbonPaused] = useState(false)
   const stories = Route.useLoaderData()
   return (
-    <main id="main-content" className="game-world">
+    <main id="main-content">
       <section className="hero page-width">
         <div className="hero-copy">
           <div className="hero-intro">
             <img src="/images/avatar.png" width="38" height="38" alt="" />
             <span className="font-mono text-xs">Hey, I'm Adam Spice.</span>
-            <span className="player-badge font-mono">PLAYER 01</span>
-          </div>
-          <div className="retro-controller" aria-hidden="true">
-            <svg
-              viewBox="0 0 32 18"
-              fill="currentColor"
-              shapeRendering="crispEdges"
-            >
-              <path
-                d="M4 2h24v2h2v12h-2v2h-8v-4h-8v4H4v-2H2V4h2V2zm2 4v2H4v2h2v2h2v-2h2V8H8V6H6zm16 0v4h4V6h-4zm-4 4v4h4v-4h-4z"
-                fillRule="evenodd"
-              />
-            </svg>
-            <span className="font-mono">CODE · PLAY · REPEAT</span>
+            <span className="intro-wave" aria-hidden="true">
+              ✳
+            </span>
           </div>
           <h1>
             I build things
@@ -85,7 +70,7 @@ function Home() {
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a href="#projects" className="button button-primary">
-              Select a project <ArrowUpRight size={18} />
+              Explore my work <ArrowUpRight size={18} />
             </a>
             <a
               href="/files/AdamSpiceResume.pdf"
@@ -108,11 +93,7 @@ function Home() {
           <span className="font-mono text-[10px]">There's more down here</span>
         </a>
       </section>
-      <div
-        className="skills-ribbon"
-        data-paused={ribbonPaused}
-        aria-label="Favourite technologies"
-      >
+      <div className="skills-ribbon" aria-label="Favourite technologies">
         <div className="page-width ribbon-inner">
           <span>REACT</span>
           <Asterisk />
@@ -125,46 +106,26 @@ function Home() {
           <span>BUILDING WITH CURIOSITY</span>
           <Asterisk />
         </div>
-        <button
-          type="button"
-          className="ribbon-motion-control"
-          aria-label={ribbonPaused ? 'Play stars' : 'Pause stars'}
-          aria-pressed={ribbonPaused}
-          onClick={() => setRibbonPaused(!ribbonPaused)}
-        >
-          {ribbonPaused ? (
-            <Play size={14} aria-hidden="true" />
-          ) : (
-            <Pause size={14} aria-hidden="true" />
-          )}
-        </button>
       </div>
       <section id="projects" className="page-width section-space">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">Character select · Projects</p>
+            <p className="eyebrow">Some things I've made</p>
             <h2 className="section-title">
-              Choose your
-              <br />
-              <span className="font-serif italic">project.</span>
+              A little work.
+              <br />A lot of{' '}
+              <span className="font-serif italic">curiosity.</span>
             </h2>
           </div>
           <p className="section-note">
-            Two builds from my collection.
+            From a first idea to the last little detail.
             <br />
-            Inspect their abilities, then take one for a spin.
+            Here are a couple of projects I've enjoyed building.
           </p>
         </div>
         <div className="grid gap-7 md:grid-cols-2">
-          {projectsData.map((project, index) => (
-            <article
-              className="project-card character-card"
-              key={project.title}
-            >
-              <div className="game-panel-bar font-mono">
-                <span>BUILD 0{index + 1}</span>
-                <span>PROJECT FILE</span>
-              </div>
+          {projectsData.map((project) => (
+            <article className="project-card" key={project.title}>
               <a
                 className={`project-art project-art-${project.color}`}
                 href={project.link}
@@ -173,7 +134,6 @@ function Home() {
                 aria-label={`Open ${project.title} (opens in a new tab)`}
               >
                 <span className="project-category font-mono">
-                  <span className="cartridge-number">0{index + 1}</span>{' '}
                   {project.category}
                 </span>
                 <div className="project-browser">
@@ -209,36 +169,16 @@ function Home() {
                   </h3>
                   <ArrowUpRight size={19} />
                 </a>
-                <dl className="character-stats font-mono">
-                  <div>
-                    <dt>CLASS</dt>
-                    <dd>{project.category}</dd>
-                  </div>
-                  <div>
-                    <dt>ABILITIES</dt>
-                    <dd>{project.tags.length} technologies</dd>
-                  </div>
-                </dl>
                 <p className="mt-3 max-w-md leading-relaxed text-muted">
                   {project.description}
                 </p>
-                <p className="game-field-label font-mono">EQUIPPED STACK</p>
-                <div className="mt-3 flex flex-wrap gap-2">
+                <div className="mt-5 flex flex-wrap gap-2">
                   {project.tags.map((tag) => (
                     <span className="tag" key={tag}>
                       {tag}
                     </span>
                   ))}
                 </div>
-                <a
-                  className="game-card-action font-mono"
-                  href={project.link}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  View project <ArrowUpRight size={16} />
-                  <span className="sr-only"> (opens in a new tab)</span>
-                </a>
               </div>
             </article>
           ))}
@@ -249,7 +189,7 @@ function Home() {
           <div className="about-portrait">
             <div className="portrait-frame">
               <div className="portrait-caption font-mono">
-                <span>player profile</span>
+                <span>meet the human</span>
                 <span>↗</span>
               </div>
               <img
@@ -272,22 +212,8 @@ function Home() {
               that's me! ↗
             </div>
           </div>
-          <div className="player-profile-panel">
-            <p className="eyebrow">Player profile · Adam Spice</p>
-            <dl className="player-stats font-mono">
-              <div>
-                <dt>CLASS</dt>
-                <dd>Full-stack developer</dd>
-              </div>
-              <div>
-                <dt>ORIGIN</dt>
-                <dd>Dragon 32</dd>
-              </div>
-              <div>
-                <dt>OFF DUTY</dt>
-                <dd>Gaming · Movies</dd>
-              </div>
-            </dl>
+          <div>
+            <p className="eyebrow">Behind the keyboard</p>
             <h2 className="section-title">
               A lifelong
               <br />
@@ -320,8 +246,8 @@ function Home() {
       <section id="skills" className="page-width toolkit-section section-space">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">Inventory · Skills</p>
-            <h2 className="section-title">My equipped stack.</h2>
+            <p className="eyebrow">Tools of the trade</p>
+            <h2 className="section-title">My digital toolbox.</h2>
           </div>
           <Braces
             size={57}
@@ -330,12 +256,9 @@ function Home() {
           />
         </div>
         <div className="toolbox-grid">
-          {[...new Set(skillsData)].map((skill, index) => (
+          {[...new Set(skillsData)].map((skill) => (
             <span key={skill} className="toolbox-item">
-              <span className="inventory-slot font-mono" aria-hidden="true">
-                {String(index + 1).padStart(2, '0')}
-              </span>
-              <span>{skill}</span>
+              {skill}
             </span>
           ))}
         </div>
@@ -345,11 +268,13 @@ function Home() {
         className="experience-section page-width section-space"
       >
         <div className="experience-intro">
-          <p className="eyebrow">Quest log · Experience</p>
+          <p className="eyebrow">The road so far</p>
           <h2 className="section-title">
-            The story
+            Many hats.
             <br />
-            so <span className="font-serif italic">far.</span>
+            One curious
+            <br />
+            <span className="font-serif italic">head.</span>
           </h2>
           <Sparkles className="mt-8 text-cobalt" size={36} strokeWidth={1.2} />
         </div>
@@ -360,12 +285,9 @@ function Home() {
             )
             .map((experience) => (
               <article className="experience-row" key={experience.title}>
-                <div className="quest-date font-mono">
-                  <span className="quest-marker" aria-hidden="true">
-                    ◆
-                  </span>
-                  <span>{experience.date}</span>
-                </div>
+                <p className="font-mono text-[11px] text-muted">
+                  {experience.date}
+                </p>
                 <div>
                   <h3 className="text-xl font-semibold tracking-tight">
                     {experience.title}
@@ -385,9 +307,9 @@ function Home() {
         <div className="page-width">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">Journal · Stories</p>
+              <p className="eyebrow">Notes from the keyboard</p>
               <h2 className="section-title">
-                From the <span className="font-serif italic">journal.</span>
+                A few <span className="font-serif italic">stories.</span>
               </h2>
             </div>
             <Link to="/blog" className="button button-outline">

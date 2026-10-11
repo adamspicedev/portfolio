@@ -9,10 +9,6 @@ export function StoryCard({ story }: { story: StorySummary }) {
       params={{ slug: story.slug }}
       className="story-card group"
     >
-      <div className="game-panel-bar font-mono">
-        <span>JOURNAL ENTRY</span>
-        <span>{story.readingMinutes} MIN READ</span>
-      </div>
       <div className="story-art">
         {story.cover ? (
           <img
@@ -51,9 +47,6 @@ export function StoryCard({ story }: { story: StorySummary }) {
             </span>
           ))}
         </div>
-        <span className="game-card-action font-mono">
-          Read entry <ArrowUpRight size={16} />
-        </span>
       </div>
     </Link>
   )

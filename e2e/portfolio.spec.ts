@@ -432,7 +432,7 @@ test('homepage entrances respect reduced motion and keep content visible', async
     .toEqual({ opacity: '1', animations: 0 })
 })
 
-test('orange ribbon has visible looping motion and a working pause control', async ({
+test('orange ribbon spins faster without a pause button and respects reduced motion', async ({
   page,
 }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' })
@@ -440,10 +440,8 @@ test('orange ribbon has visible looping motion and a working pause control', asy
   const star = page.locator('.ribbon-inner svg').first()
   await expect(star).toHaveCSS('animation-name', 'ribbon-star-turn')
   await expect(star).toHaveCSS('animation-play-state', 'running')
-  await page.getByRole('button', { name: 'Pause stars' }).click()
-  await expect(star).toHaveCSS('animation-play-state', 'paused')
-  await page.getByRole('button', { name: 'Play stars' }).click()
-  await expect(star).toHaveCSS('animation-play-state', 'running')
+  await expect(star).toHaveCSS('animation-duration', '4s')
+  await expect(page.locator('.skills-ribbon button')).toHaveCount(0)
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await expect(star).toHaveCSS('animation-name', 'none')
 })
@@ -473,28 +471,4 @@ test('phone cards visibly animate when scrolled into view', async ({
   )
   expect(timing).toContain(650)
   await expect(card).toHaveCSS('opacity', '1')
-})
-
-test('game panels retain real project details and fit a phone screen', async ({
-  page,
-}) => {
-  await page.setViewportSize({ width: 390, height: 844 })
-  await page.goto('/')
-  await expect(page.locator('.character-card')).toHaveCount(2)
-  await expect(page.locator('.character-card').first()).toContainText(
-    'Movie discovery',
-  )
-  await expect(page.locator('.character-card').first()).toContainText(
-    '4 technologies',
-  )
-  await expect(page.locator('.player-stats')).toContainText('Dragon 32')
-  expect(
-    await page.evaluate(
-      () => document.documentElement.scrollWidth <= window.innerWidth,
-    ),
-  ).toBe(true)
-  const links = page.locator('.character-card .game-card-action')
-  expect(await links.first().getAttribute('href')).toBe(
-    'https://movie-app.spicey.dev',
-  )
 })
