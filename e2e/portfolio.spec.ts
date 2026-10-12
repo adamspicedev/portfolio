@@ -432,18 +432,17 @@ test('homepage entrances respect reduced motion and keep content visible', async
     .toEqual({ opacity: '1', animations: 0 })
 })
 
-test('orange ribbon spins faster without a pause button and respects reduced motion', async ({
+test('orange ticker attributes Hacker News and has no pause button', async ({
   page,
 }) => {
-  await page.emulateMedia({ reducedMotion: 'no-preference' })
   await page.goto('/')
-  const star = page.locator('.ribbon-inner svg').first()
-  await expect(star).toHaveCSS('animation-name', 'ribbon-star-turn')
-  await expect(star).toHaveCSS('animation-play-state', 'running')
-  await expect(star).toHaveCSS('animation-duration', '4s')
-  await expect(page.locator('.skills-ribbon button')).toHaveCount(0)
-  await page.emulateMedia({ reducedMotion: 'reduce' })
-  await expect(star).toHaveCSS('animation-name', 'none')
+  const ticker = page.getByRole('complementary', {
+    name: 'Hacker News headlines',
+  })
+  await expect(
+    ticker.getByRole('link', { name: 'HN HEADLINES' }),
+  ).toHaveAttribute('href', 'https://news.ycombinator.com/')
+  await expect(ticker.getByRole('button')).toHaveCount(0)
 })
 
 test('phone cards visibly animate when scrolled into view', async ({

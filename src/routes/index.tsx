@@ -1,3 +1,5 @@
+import { getHeadlines } from '../lib/headlines.functions'
+import { NewsTicker } from '../components/news-ticker'
 import { useHomeMotion } from '../components/home-motion'
 import { pageSeo, homeTitle, homeDescription } from '../lib/seo'
 import { createFileRoute, Link } from '@tanstack/react-router'
@@ -17,7 +19,13 @@ import { experiencesData, projectsData, skillsData } from '../lib/portfolio'
 import { getStories } from '../lib/stories.functions'
 
 export const Route = createFileRoute('/')({
-  loader: () => getStories(),
+  loader: async () => {
+    const [stories, headlines] = await Promise.all([
+      getStories(),
+      getHeadlines(),
+    ])
+    return { stories, headlines }
+  },
   head: ({ loaderData }) =>
     !loaderData
       ? pageSeo({
@@ -33,7 +41,7 @@ export const Route = createFileRoute('/')({
 
 function Home() {
   useHomeMotion()
-  const stories = Route.useLoaderData()
+  const { stories, headlines } = Route.useLoaderData()
   return (
     <main id="main-content">
       <section className="hero page-width">
@@ -93,20 +101,7 @@ function Home() {
           <span className="font-mono text-[10px]">There's more down here</span>
         </a>
       </section>
-      <div className="skills-ribbon" aria-label="Favourite technologies">
-        <div className="page-width ribbon-inner">
-          <span>REACT</span>
-          <Asterisk />
-          <span>TYPESCRIPT</span>
-          <Asterisk />
-          <span>NODE.JS</span>
-          <Asterisk />
-          <span>THINKING IN CODE</span>
-          <Asterisk />
-          <span>BUILDING WITH CURIOSITY</span>
-          <Asterisk />
-        </div>
-      </div>
+      <NewsTicker headlines={headlines} />
       <section id="projects" className="page-width section-space">
         <div className="section-heading">
           <div>
