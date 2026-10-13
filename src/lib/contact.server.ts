@@ -4,6 +4,7 @@ import {
   type ContactInput,
   type ContactResult,
 } from './contact-schema'
+import { logPostHogServer } from './posthog-logs.server'
 
 const allowContact = createContactLimiter()
 export async function deliverContact(
@@ -43,6 +44,10 @@ export async function deliverContact(
           'Your message could not be sent. Try again, or email adam@spicey.dev directly.',
       }
     }
+    logPostHogServer({
+      body: 'contact email delivered',
+      attributes: { channel: 'contact_form' },
+    })
     return { ok: true }
   } catch {
     console.error('Contact email provider could not be reached.')

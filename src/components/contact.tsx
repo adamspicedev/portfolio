@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { ArrowUpRight, LoaderCircle, Send } from 'lucide-react'
+import { usePostHog } from 'posthog-js/react'
 import { sendContact } from '../lib/contact.functions'
 import { contactSchema } from '../lib/contact-schema'
 
@@ -11,6 +12,7 @@ type FormState =
   | { kind: 'error'; message: string }
 
 export function Contact() {
+  const posthog = usePostHog()
   const [state, setState] = useState<FormState>({ kind: 'idle' })
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -34,6 +36,10 @@ export function Contact() {
     try {
       const response = await sendContact({ data: result.data })
       if (response.ok) {
+        posthog.capture('contact_message_sent')
+        posthog.logger.info('contact message sent', {
+          channel: 'contact_form',
+        })
         form.reset()
         setState({ kind: 'success' })
       } else setState({ kind: 'error', message: response.message })

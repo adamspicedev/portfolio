@@ -3,6 +3,7 @@ import type { FormEvent } from 'react'
 import { Link, useBlocker } from '@tanstack/react-router'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { usePostHog } from 'posthog-js/react'
 import { editorSchema, type CmsStory } from '../lib/cms-schema'
 import { saveCmsStory } from '../lib/cms.functions'
 import { publicationDate, safeContentUrl } from '../lib/story-schema'
@@ -16,6 +17,7 @@ export function CmsEditor({
   onSaved: (story: CmsStory) => void
   onClose: () => void
 }) {
+  const posthog = usePostHog()
   const initial = {
     seoTitle: story?.seoTitle ?? '',
     seoDescription: story?.seoDescription ?? '',
@@ -62,8 +64,16 @@ export function CmsEditor({
     setSaving(true)
     try {
       const result = await saveCmsStory({ data: parsed.data })
-      if (result.ok) onSaved(result.story)
-      else setMessage(result.message)
+      if (result.ok) {
+        posthog.capture('cms_story_saved', {
+          publication_status: result.story.draft
+            ? 'draft'
+            : result.story.date > publicationDate()
+              ? 'scheduled'
+              : 'published',
+        })
+        onSaved(result.story)
+      } else setMessage(result.message)
     } catch {
       setMessage(
         'Unable to save. Check your connection and sign-in, then try again. Your edits are still here.',

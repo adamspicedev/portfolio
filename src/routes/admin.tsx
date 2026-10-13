@@ -1,7 +1,13 @@
 import { pageSeo } from '../lib/seo'
 import { createFileRoute } from '@tanstack/react-router'
-import { ClerkProvider, SignIn, UserButton } from '@clerk/tanstack-react-start'
-import { useState } from 'react'
+import {
+  ClerkProvider,
+  SignIn,
+  UserButton,
+  useUser,
+} from '@clerk/tanstack-react-start'
+import { usePostHog } from 'posthog-js/react'
+import { useEffect, useRef, useState } from 'react'
 import { Plus, Archive, RotateCcw, FilePenLine } from 'lucide-react'
 import { getAdminDashboard, archiveCmsStory } from '../lib/cms.functions'
 import { CmsEditor } from '../components/cms-editor'
@@ -45,6 +51,7 @@ function AdminPage() {
     )
   return (
     <ClerkProvider publishableKey={data.publishableKey}>
+      <PostHogIdentity />
       <main id="main-content" className="page-width cms-page">
         <div className="cms-toolbar">
           <p className="eyebrow">Story studio</p>
@@ -75,7 +82,35 @@ function AdminPage() {
     </ClerkProvider>
   )
 }
+
+function PostHogIdentity() {
+  const posthog = usePostHog()
+  const { isLoaded, isSignedIn, user } = useUser()
+  const identifiedUserId = useRef<string | null>(null)
+
+  useEffect(() => {
+    if (!isLoaded) return
+
+    if (!isSignedIn || !user) {
+      if (identifiedUserId.current) {
+        posthog.reset()
+        identifiedUserId.current = null
+      }
+      return
+    }
+
+    if (identifiedUserId.current === user.id) return
+
+    if (identifiedUserId.current) posthog.reset()
+    posthog.identify(user.id)
+    identifiedUserId.current = user.id
+  }, [isLoaded, isSignedIn, posthog, user])
+
+  return null
+}
+
 function CmsDashboard({ initialStories }: { initialStories: CmsStory[] }) {
+  const posthog = usePostHog()
   const [stories, setStories] = useState(initialStories)
   const [editing, setEditing] = useState<CmsStory | 'new' | null>(null)
   const [showArchived, setShowArchived] = useState(false)
@@ -107,6 +142,9 @@ function CmsDashboard({ initialStories }: { initialStories: CmsStory[] }) {
         },
       })
       if (result.ok) {
+        posthog.capture('cms_story_archive_updated', {
+          action: result.story.archived ? 'archived' : 'restored',
+        })
         replace(result.story)
         setMessage(
           result.story.archived
@@ -148,7 +186,10 @@ function CmsDashboard({ initialStories }: { initialStories: CmsStory[] }) {
         <button
           type="button"
           className="button button-primary"
-          onClick={() => setEditing('new')}
+          onClick={() => {
+            posthog.capture('cms_story_editor_opened', { mode: 'create' })
+            setEditing('new')
+          }}
         >
           <Plus size={18} /> New story
         </button>
@@ -197,7 +238,10 @@ function CmsDashboard({ initialStories }: { initialStories: CmsStory[] }) {
                 <button
                   type="button"
                   className="button button-outline"
-                  onClick={() => setEditing(story)}
+                  onClick={() => {
+                    posthog.capture('cms_story_editor_opened', { mode: 'edit' })
+                    setEditing(story)
+                  }}
                 >
                   Edit<span className="sr-only"> {story.title}</span>
                 </button>

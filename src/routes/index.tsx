@@ -3,6 +3,7 @@ import { NewsTicker } from '../components/news-ticker'
 import { useHomeMotion } from '../components/home-motion'
 import { pageSeo, homeTitle, homeDescription } from '../lib/seo'
 import { createFileRoute, Link } from '@tanstack/react-router'
+import { usePostHog } from 'posthog-js/react'
 import {
   ArrowDown,
   ArrowDownToLine,
@@ -41,6 +42,7 @@ export const Route = createFileRoute('/')({
 
 function Home() {
   useHomeMotion()
+  const posthog = usePostHog()
   const { stories, headlines } = Route.useLoaderData()
   return (
     <main id="main-content">
@@ -84,6 +86,7 @@ function Home() {
               href="/files/AdamSpiceResume.pdf"
               download
               className="button button-plain"
+              onClick={() => posthog.capture('resume_downloaded')}
             >
               Grab my CV <ArrowDownToLine size={16} />
             </a>
@@ -127,6 +130,11 @@ function Home() {
                 target="_blank"
                 rel="noreferrer"
                 aria-label={`Open ${project.title} (opens in a new tab)`}
+                onClick={() =>
+                  posthog.capture('project_opened', {
+                    project_category: project.category,
+                  })
+                }
               >
                 <span className="project-category font-mono">
                   {project.category}
@@ -158,6 +166,11 @@ function Home() {
                   target="_blank"
                   rel="noreferrer"
                   className="flex items-center justify-between gap-4"
+                  onClick={() =>
+                    posthog.capture('project_opened', {
+                      project_category: project.category,
+                    })
+                  }
                 >
                   <h3 className="text-2xl font-semibold tracking-tight">
                     {project.title}
