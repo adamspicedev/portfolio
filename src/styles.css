@@ -1539,6 +1539,25 @@ body:has(.hero) .site-header::before {
   display: grid;
   gap: 2rem;
 }
+.cms-cover-upload {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+}
+.cms-cover-preview {
+  width: 100%;
+  max-width: 32rem;
+  max-height: 22rem;
+  object-fit: contain;
+  border-radius: 0.75rem;
+}
+.cms-cover-upload input[type='file'] {
+  max-width: 100%;
+  min-width: 0;
+}
+.cms-cover-upload progress {
+  width: 100%;
+}
 .cms-fields {
   display: grid;
   gap: 1.25rem;

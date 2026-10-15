@@ -2,6 +2,25 @@ import { readdir } from 'node:fs/promises'
 import { toJSON } from 'seroval'
 import { expect, test } from '@playwright/test'
 
+test('image upload endpoint denies unsigned and cross-origin requests', async ({
+  request,
+}) => {
+  for (const origin of ['http://127.0.0.1:4173', 'https://attacker.example']) {
+    const response = await request.post('/api/story-images', {
+      headers: { origin },
+      multipart: {
+        file: {
+          name: 'x.png',
+          mimeType: 'image/png',
+          buffer: Buffer.from('bad'),
+        },
+      },
+    })
+    expect(response.status()).toBe(403)
+    expect(response.headers()['cache-control']).toContain('no-store')
+  }
+})
+
 test('homepage renders on the server and links to the real résumé', async ({
   page,
   request,

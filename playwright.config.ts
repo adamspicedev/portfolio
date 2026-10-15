@@ -14,20 +14,28 @@ export default defineConfig({
     launchOptions: { args: ['--enable-unsafe-swiftshader'] },
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
-  webServer: {
-    command: 'bun run start',
-    url: 'http://127.0.0.1:4173',
-    reuseExistingServer: false,
-    timeout: 30_000,
-    env: {
-      PORT: '4173',
-      HOST: '127.0.0.1',
-      RESEND_API_KEY: '',
-      WRITE_IT_UP_URL: '',
-      CLERK_SECRET_KEY: '',
-      VITE_CLERK_PUBLISHABLE_KEY: '',
-      CMS_ADMIN_USER_IDS: '',
-      DATABASE_PATH: '.output/test-stories.sqlite',
+  webServer: [
+    {
+      command: 'bun run start',
+      url: 'http://127.0.0.1:4173',
+      reuseExistingServer: false,
+      timeout: 30_000,
+      env: {
+        PORT: '4173',
+        HOST: '127.0.0.1',
+        RESEND_API_KEY: '',
+        WRITE_IT_UP_URL: '',
+        CLERK_SECRET_KEY: '',
+        VITE_CLERK_PUBLISHABLE_KEY: '',
+        CMS_ADMIN_USER_IDS: '',
+        DATABASE_PATH: '.output/test-stories.sqlite',
+      },
     },
-  },
+    {
+      command:
+        'bunx vite e2e/fixtures/upload --config e2e/fixtures/upload/vite.config.ts --port 4174',
+      url: 'http://127.0.0.1:4174',
+      reuseExistingServer: false,
+    },
+  ],
 })
