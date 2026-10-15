@@ -14,6 +14,7 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { Computer } from '../components/computer'
+import { OpenSourceContributions } from '../components/open-source-contributions'
 import { Contact } from '../components/contact'
 import { StoryCard } from '../components/story-card'
 import { experiencesData, projectsData, skillsData } from '../lib/portfolio'
@@ -192,6 +193,7 @@ function Home() {
           ))}
         </div>
       </section>
+      <OpenSourceContributions />
       <section id="about" className="about-section section-space">
         <div className="page-width about-grid">
           <div className="about-portrait">

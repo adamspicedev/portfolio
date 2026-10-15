@@ -2,6 +2,56 @@ import { readdir } from 'node:fs/promises'
 import { toJSON } from 'seroval'
 import { expect, test } from '@playwright/test'
 
+test('selected open-source contributions have verified upstream links and dated merged statuses', async ({
+  page,
+  request,
+}) => {
+  const html = await (await request.get('/')).text()
+  expect(html.indexOf('id="projects"')).toBeLessThan(
+    html.indexOf('id="open-source"'),
+  )
+  expect(html.indexOf('id="open-source"')).toBeLessThan(
+    html.indexOf('id="about"'),
+  )
+  await page.goto('/#open-source')
+  const section = page.getByRole('region', {
+    name: 'Open-source contributions',
+  })
+  await expect(section.locator('article')).toHaveCount(3)
+  await expect(section.getByText('Merged', { exact: true })).toHaveCount(3)
+  await expect(section.getByText(/Selected contributions/)).toBeVisible()
+  await expect(section.locator('.contributions-snapshot time')).toHaveAttribute(
+    'datetime',
+    '2026-10-16',
+  )
+  await expect(section.locator('.contribution-details time')).toHaveCount(3)
+  for (const number of [3209, 3207, 3213])
+    await expect(
+      section.getByRole('link', { name: `View Bambuddy PR #${number}` }),
+    ).toHaveAttribute(
+      'href',
+      `https://github.com/maziggy/bambuddy/pull/${number}`,
+    )
+  await expect(
+    section.getByRole('link', { name: 'Supporting documentation PR #106' }),
+  ).toHaveAttribute('href', 'https://github.com/maziggy/bambuddy-wiki/pull/106')
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 })
+    await expect(section).toBeVisible()
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true)
+    const cols = await section
+      .locator('.contribution-grid')
+      .evaluate(
+        (el) => getComputedStyle(el).gridTemplateColumns.split(' ').length,
+      )
+    expect(cols).toBe(width < 900 ? 1 : 3)
+  }
+})
+
 test('image upload endpoint denies unsigned and cross-origin requests', async ({
   request,
 }) => {
