@@ -289,28 +289,24 @@ function Home() {
           <Sparkles className="mt-8 text-cobalt" size={36} strokeWidth={1.2} />
         </div>
         <div className="experience-list">
-          {[...experiencesData]
-            .sort(
-              (a, b) => Number(b.date.slice(0, 4)) - Number(a.date.slice(0, 4)),
-            )
-            .map((experience) => (
-              <article className="experience-row" key={experience.title}>
-                <p className="font-mono text-[11px] text-muted">
-                  {experience.date}
+          {experiencesData.map((experience) => (
+            <article className="experience-row" key={experience.title}>
+              <p className="font-mono text-[11px] text-muted">
+                {experience.date}
+              </p>
+              <div>
+                <h3 className="text-xl font-semibold tracking-tight">
+                  {experience.title}
+                </h3>
+                <p className="mt-1 text-sm text-cobalt">
+                  {experience.jobTitle}
                 </p>
-                <div>
-                  <h3 className="text-xl font-semibold tracking-tight">
-                    {experience.title}
-                  </h3>
-                  <p className="mt-1 text-sm text-cobalt">
-                    {experience.jobTitle}
-                  </p>
-                  <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted">
-                    {experience.description}
-                  </p>
-                </div>
-              </article>
-            ))}
+                <p className="mt-3 max-w-lg text-sm leading-relaxed text-muted">
+                  {experience.description}
+                </p>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
       <section className="stories-section section-space">
