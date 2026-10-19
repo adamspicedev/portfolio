@@ -7,6 +7,19 @@ import {
 import { logPostHogServer } from './posthog-logs.server'
 
 const allowContact = createContactLimiter()
+function logContact(failure?: 'provider_rejected' | 'provider_unreachable') {
+  try {
+    logPostHogServer({
+      body: failure
+        ? 'contact email delivery failed'
+        : 'contact email delivered',
+      severity: failure ? 'error' : 'info',
+      attributes: { channel: 'contact_form', ...(failure ? { failure } : {}) },
+    })
+  } catch {
+    // Telemetry must never change the result of an email delivery.
+  }
+}
 export async function deliverContact(
   input: ContactInput,
 ): Promise<ContactResult> {
@@ -35,22 +48,17 @@ export async function deliverContact(
       text: `From: ${input.email}\n\n${input.message}`,
     })
     if (error) {
-      console.error('Contact email provider rejected the message.', {
-        code: error.name,
-      })
+      logContact('provider_rejected')
       return {
         ok: false,
         message:
           'Your message could not be sent. Try again, or email adam@spicey.dev directly.',
       }
     }
-    logPostHogServer({
-      body: 'contact email delivered',
-      attributes: { channel: 'contact_form' },
-    })
+    logContact()
     return { ok: true }
   } catch {
-    console.error('Contact email provider could not be reached.')
+    logContact('provider_unreachable')
     return {
       ok: false,
       message:

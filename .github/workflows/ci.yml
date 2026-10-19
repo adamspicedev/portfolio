@@ -45,8 +45,8 @@ jobs:
         with:
           bun-version-file: .bun-version
       - run: bun install --frozen-lockfile
-      - name: Install Chromium and system dependencies
-        run: bun run playwright install --with-deps chromium
+      - name: Install browser engines and system dependencies
+        run: bun run playwright install --with-deps chromium webkit
       - run: bun run build
       - run: bun run test:e2e
       - name: Upload browser failure details

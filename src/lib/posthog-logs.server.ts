@@ -48,13 +48,19 @@ function posthogServerLogger() {
 export function logPostHogServer({
   body,
   attributes,
+  severity = 'info',
 }: {
   body: string
+  severity?: 'info' | 'error'
   attributes: Record<string, string | number | boolean>
 }) {
-  posthogServerLogger()?.emit({
-    severityText: 'info',
-    body,
-    attributes,
-  })
+  try {
+    posthogServerLogger()?.emit({
+      severityText: severity,
+      body,
+      attributes,
+    })
+  } catch {
+    // Observability is best effort, including SDK setup and malformed config.
+  }
 }

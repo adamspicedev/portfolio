@@ -1,3 +1,5 @@
+import { usePostHog } from 'posthog-js/react'
+import { reportHandledError } from '../lib/client-telemetry'
 import { useEffect, useRef, useState } from 'react'
 import { safeContentUrl } from '../lib/story-schema'
 
@@ -14,6 +16,7 @@ export function CoverUpload({
   onUploaded: (url: string) => void
   onBusy: (busy: boolean) => void
 }) {
+  const posthog = usePostHog()
   const [busy, setBusy] = useState(false)
   const [progress, setProgress] = useState(0)
   const [message, setMessage] = useState('')
@@ -57,7 +60,8 @@ export function CoverUpload({
       if (mounted.current && e.lengthComputable)
         setProgress(Math.round((e.loaded / e.total) * 100))
     }
-    xhr.onerror = xhr.ontimeout = () => {
+    xhr.onerror = xhr.ontimeout = (event) => {
+      reportHandledError(posthog, event, 'cover_upload')
       if (mounted.current)
         setError(
           'Upload interrupted. Check your connection and sign-in, then choose the image again.',
@@ -84,7 +88,10 @@ export function CoverUpload({
                 ? result.message
                 : 'Unable to upload. Your existing cover is unchanged. Choose the image again.',
             )
-        } catch {
+        } catch (error) {
+          // Expected non-success responses (including authorization) are not exceptions.
+          if (xhr.status >= 200 && xhr.status < 300)
+            reportHandledError(posthog, error, 'cover_upload')
           setError(
             'Unable to upload. Check your connection and sign-in, then choose the image again.',
           )

@@ -1,7 +1,9 @@
 import { pageSeo } from '../lib/seo'
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { PostHogErrorBoundary, PostHogProvider } from 'posthog-js/react'
-import type { ReactNode } from 'react'
+import { useEffect, type ReactNode } from 'react'
+import { usePostHog } from 'posthog-js/react'
+import { reportHandledError } from '../lib/client-telemetry'
 import { Footer, Header, NotFound } from '../components/site-shell'
 import appCss from '../styles.css?url'
 
@@ -40,7 +42,16 @@ export const Route = createRootRoute({
     ],
   }),
   notFoundComponent: NotFound,
-  errorComponent: ({ reset }) => (
+  errorComponent: RouteError,
+  shellComponent: RootDocument,
+})
+
+function RouteError({ error, reset }: { error: unknown; reset: () => void }) {
+  const posthog = usePostHog()
+  useEffect(() => {
+    reportHandledError(posthog, error, 'route')
+  }, [posthog, error])
+  return (
     <main id="main-content" className="page-width error-page">
       <p className="eyebrow">Something went wrong</p>
       <h1 className="section-title">A crossed wire.</h1>
@@ -49,9 +60,8 @@ export const Route = createRootRoute({
         Try again
       </button>
     </main>
-  ),
-  shellComponent: RootDocument,
-})
+  )
+}
 
 function RootDocument({ children }: { children: ReactNode }) {
   const apiKey = import.meta.env.VITE_PUBLIC_POSTHOG_PROJECT_TOKEN

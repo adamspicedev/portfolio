@@ -1,3 +1,4 @@
+import { runTelemetry } from '../lib/client-telemetry'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useBlocker } from '@tanstack/react-router'
@@ -71,13 +72,15 @@ export function CmsEditor({
     try {
       const result = await saveCmsStory({ data: parsed.data })
       if (result.ok) {
-        posthog.capture('cms_story_saved', {
-          publication_status: result.story.draft
-            ? 'draft'
-            : result.story.date > publicationDate()
-              ? 'scheduled'
-              : 'published',
-        })
+        runTelemetry(() =>
+          posthog.capture('cms_story_saved', {
+            publication_status: result.story.draft
+              ? 'draft'
+              : result.story.date > publicationDate()
+                ? 'scheduled'
+                : 'published',
+          }),
+        )
         onSaved(result.story)
       } else setMessage(result.message)
     } catch {

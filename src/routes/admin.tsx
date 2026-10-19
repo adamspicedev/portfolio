@@ -1,3 +1,4 @@
+import { runTelemetry } from '../lib/client-telemetry'
 import { pageSeo } from '../lib/seo'
 import { createFileRoute } from '@tanstack/react-router'
 import {
@@ -93,7 +94,7 @@ function PostHogIdentity() {
 
     if (!isSignedIn || !user) {
       if (identifiedUserId.current) {
-        posthog.reset()
+        runTelemetry(() => posthog.reset())
         identifiedUserId.current = null
       }
       return
@@ -101,8 +102,8 @@ function PostHogIdentity() {
 
     if (identifiedUserId.current === user.id) return
 
-    if (identifiedUserId.current) posthog.reset()
-    posthog.identify(user.id)
+    if (identifiedUserId.current) runTelemetry(() => posthog.reset())
+    runTelemetry(() => posthog.identify(user.id))
     identifiedUserId.current = user.id
   }, [isLoaded, isSignedIn, posthog, user])
 
@@ -142,9 +143,11 @@ function CmsDashboard({ initialStories }: { initialStories: CmsStory[] }) {
         },
       })
       if (result.ok) {
-        posthog.capture('cms_story_archive_updated', {
-          action: result.story.archived ? 'archived' : 'restored',
-        })
+        runTelemetry(() =>
+          posthog.capture('cms_story_archive_updated', {
+            action: result.story.archived ? 'archived' : 'restored',
+          }),
+        )
         replace(result.story)
         setMessage(
           result.story.archived
@@ -187,7 +190,9 @@ function CmsDashboard({ initialStories }: { initialStories: CmsStory[] }) {
           type="button"
           className="button button-primary"
           onClick={() => {
-            posthog.capture('cms_story_editor_opened', { mode: 'create' })
+            runTelemetry(() =>
+              posthog.capture('cms_story_editor_opened', { mode: 'create' }),
+            )
             setEditing('new')
           }}
         >
@@ -239,7 +244,11 @@ function CmsDashboard({ initialStories }: { initialStories: CmsStory[] }) {
                   type="button"
                   className="button button-outline"
                   onClick={() => {
-                    posthog.capture('cms_story_editor_opened', { mode: 'edit' })
+                    runTelemetry(() =>
+                      posthog.capture('cms_story_editor_opened', {
+                        mode: 'edit',
+                      }),
+                    )
                     setEditing(story)
                   }}
                 >

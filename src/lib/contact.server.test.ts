@@ -1,4 +1,5 @@
 import type { Resend } from 'resend'
+import * as telemetry from './posthog-logs.server'
 import {
   afterEach,
   beforeEach,
@@ -37,6 +38,7 @@ beforeEach(() => {
     .mockReset()
     .mockResolvedValue({ data: { id: 'test-id' }, error: null, headers: null })
   constructor.mockClear()
+  spyOn(telemetry, 'logPostHogServer').mockImplementation(() => {})
   spyOn(console, 'error').mockImplementation(() => {})
 })
 afterEach(() => {
@@ -60,6 +62,7 @@ describe('contact email delivery', () => {
       message: expect.stringContaining('currently offline'),
     })
     expect(send).not.toHaveBeenCalled()
+    expect(telemetry.logPostHogServer).not.toHaveBeenCalled()
     expect(constructor).not.toHaveBeenCalled()
   })
   it('silently discards honeypot submissions without sending mail', async () => {
@@ -107,6 +110,46 @@ describe('contact email delivery', () => {
       })
     },
   )
+  it('preserves delivered success when telemetry fails', async () => {
+    spyOn(telemetry, 'logPostHogServer').mockImplementation(() => {
+      throw new Error('Telemetry setup failed')
+    })
+    expect(await deliverContact(message('telemetry@example.com'))).toEqual({
+      ok: true,
+    })
+    expect(send).toHaveBeenCalledTimes(1)
+  })
+  it.each(['rejection', 'exception'])(
+    'logs a sanitized provider %s',
+    async (kind) => {
+      const privateDetails =
+        'secret token visitor@example.com private form message'
+      if (kind === 'rejection')
+        send.mockResolvedValue({
+          data: null,
+          error: {
+            name: privateDetails as 'validation_error',
+            message: privateDetails,
+            statusCode: 500,
+          },
+          headers: null,
+        })
+      else send.mockRejectedValue(new Error(privateDetails))
+      await deliverContact(message(`sanitized-${kind}@example.com`))
+      expect(telemetry.logPostHogServer).toHaveBeenCalledWith({
+        body: 'contact email delivery failed',
+        severity: 'error',
+        attributes: {
+          channel: 'contact_form',
+          failure:
+            kind === 'rejection' ? 'provider_rejected' : 'provider_unreachable',
+        },
+      })
+      expect(
+        JSON.stringify((console.error as ReturnType<typeof spyOn>).mock.calls),
+      ).not.toContain(privateDetails)
+    },
+  )
   it('throttles repeated submissions case-insensitively before calling the provider', async () => {
     for (let i = 0; i < 3; i++)
       expect(await deliverContact(message('limited@example.com'))).toEqual({
@@ -117,5 +160,6 @@ describe('contact email delivery', () => {
       message: expect.stringContaining('Too many messages'),
     })
     expect(send).toHaveBeenCalledTimes(3)
+    expect(telemetry.logPostHogServer).toHaveBeenCalledTimes(3)
   })
 })

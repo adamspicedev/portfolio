@@ -13,7 +13,14 @@ export default defineConfig({
     screenshot: 'only-on-failure',
     launchOptions: { args: ['--enable-unsafe-swiftshader'] },
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    {
+      name: 'webkit-mobile',
+      testMatch: 'edge-hydration.spec.ts',
+      use: { ...devices['iPhone 13'], launchOptions: {} },
+    },
+  ],
   webServer: [
     {
       command: 'bun run start',
