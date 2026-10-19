@@ -1,4 +1,5 @@
 import { defineConfig } from 'vite'
+import { posthogSourceMaps } from './build/posthog-sourcemaps'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
@@ -24,5 +25,6 @@ export default defineConfig({
     tailwindcss(),
     tanstackStart(),
     viteReact(),
+    ...posthogSourceMaps(process.env),
   ],
 })

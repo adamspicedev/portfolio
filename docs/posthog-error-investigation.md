@@ -52,8 +52,9 @@ does not promise durable delivery after a serverless process is suspended.
 
 ## Source maps
 
-The current Vite configuration generates no production client source maps and
-has no PostHog upload plugin/step. Inspected production minified stacks therefore
+At the investigation baseline, the Vite configuration generated no production client source maps and
+had no PostHog upload plugin/step. The prepared integration and remaining authenticated
+verification are documented in [posthog-source-maps.md](./posthog-source-maps.md). Inspected production minified stacks therefore
 cannot be reliably mapped back to original source. Repository Actions secret
 names did not show an existing source-map upload credential. No credential value
 was read or created and no upload access was configured.
