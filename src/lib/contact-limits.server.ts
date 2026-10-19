@@ -1,6 +1,15 @@
 import { createClient, type Client, type Transaction } from '@libsql/client'
 import { createHmac } from 'node:crypto'
 
+export const CONTACT_LIMIT_SCHEMA = [
+  `CREATE TABLE IF NOT EXISTS contact_rate_limits (
+    bucket_key TEXT PRIMARY KEY,
+    count INTEGER NOT NULL CHECK (count >= 0),
+    expires_at INTEGER NOT NULL
+  )`,
+  'CREATE INDEX IF NOT EXISTS contact_rate_limits_expiry ON contact_rate_limits(expires_at)',
+]
+
 type Submission = { email: string; ip: string; hashSecret: string }
 type Reservation = {
   allowed: boolean
@@ -33,17 +42,7 @@ export class ContactLimitStore {
       ...(authToken ? { authToken } : {}),
     })
     try {
-      await db.batch(
-        [
-          `CREATE TABLE IF NOT EXISTS contact_rate_limits (
-          bucket_key TEXT PRIMARY KEY,
-          count INTEGER NOT NULL CHECK (count >= 0),
-          expires_at INTEGER NOT NULL
-        )`,
-          'CREATE INDEX IF NOT EXISTS contact_rate_limits_expiry ON contact_rate_limits(expires_at)',
-        ],
-        'write',
-      )
+      await db.batch(CONTACT_LIMIT_SCHEMA, 'write')
       return new ContactLimitStore(db, url)
     } catch (error) {
       db.close()

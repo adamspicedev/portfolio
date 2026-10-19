@@ -1,7 +1,7 @@
 # Contact form anti-spam
 
-Prepared on `contact-anti-spam`. No production publication, live email, live
-Siteverify call, load test or production database migration has been performed.
+Prepared on `contact-anti-spam`. Initial preparation used no live email, live Siteverify call, load test or
+production database migration. Publication and schema preparation require approval.
 
 ## Adam's setup
 
@@ -60,8 +60,11 @@ additive `CREATE TABLE IF NOT EXISTS contact_rate_limits` creates only
 `bucket_key TEXT PRIMARY KEY`, `count INTEGER`, `expires_at INTEGER`, plus its
 expiry index. No existing story table, schema, seed, content or record changes.
 No new subscription, service credential or destructive migration is required.
-The table is not created by builds; it is initialised on first verified use after
-an approved deployment. If credentials cannot create/write it, sending fails closed.
+An approved Vercel Production build now prepares this isolated table/index and
+checks write permissions with a zero-row UPDATE inside a rolled-back transaction.
+It queries only these schema objects, never story rows. Failure aborts deployment.
+Other builds skip this step. Runtime initialisation remains idempotent as well.
+If credentials cannot create/write it, sending fails closed.
 
 Keys are domain-separated HMAC-SHA256 hashes of the bucket identity and window,
 using `TURNSTILE_SECRET_KEY` as the server-side HMAC key. No raw email, address,
