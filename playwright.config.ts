@@ -17,11 +17,17 @@ export default defineConfig({
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
     {
       name: 'webkit-mobile',
-      testMatch: 'edge-hydration.spec.ts',
+      testMatch: ['edge-hydration.spec.ts', 'contact-antispam.spec.ts'],
       use: { ...devices['iPhone 13'], launchOptions: {} },
     },
   ],
   webServer: [
+    {
+      command:
+        'bunx vite e2e/fixtures/contact --config e2e/fixtures/contact/vite.config.ts --port 4176',
+      url: 'http://127.0.0.1:4176',
+      reuseExistingServer: false,
+    },
     {
       command: 'bun run start',
       url: 'http://127.0.0.1:4173',

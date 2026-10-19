@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test'
-import { contactSchema, createContactLimiter } from './contact-schema'
+import { contactSchema } from './contact-schema'
 
 describe('contact boundary', () => {
   it('rejects malformed email, empty messages, oversized messages, and non-string input', () => {
@@ -23,19 +23,7 @@ describe('contact boundary', () => {
       email: 'me@example.com',
       message: 'A valid message here.',
       website: '',
+      turnstileToken: '',
     })
-  })
-  it('limits attempts, isolates senders, and expires the window', () => {
-    let now = 0
-    const allow = createContactLimiter(() => now)
-    expect([allow('a'), allow('a'), allow('a'), allow('a')]).toEqual([
-      true,
-      true,
-      true,
-      false,
-    ])
-    expect(allow('b')).toBe(true)
-    now = 600_000
-    expect(allow('a')).toBe(true)
   })
 })

@@ -1,4 +1,5 @@
 import type { Resend } from 'resend'
+import * as protection from './contact-protection.server'
 import * as telemetry from './posthog-logs.server'
 import {
   afterEach,
@@ -32,6 +33,7 @@ const originalEnvironment = new Map(
 )
 
 beforeEach(() => {
+  spyOn(protection, 'authorizeContact').mockResolvedValue({ ok: true })
   process.env.RESEND_API_KEY = 'test-api-key'
   process.env.RESEND_FROM_EMAIL = 'Portfolio <hello@example.com>'
   send
@@ -52,6 +54,7 @@ const message = (email: string) => ({
   email,
   message: 'A useful message from a visitor.',
   website: '',
+  turnstileToken: 'local-test-token',
 })
 
 describe('contact email delivery', () => {
@@ -150,16 +153,15 @@ describe('contact email delivery', () => {
       ).not.toContain(privateDetails)
     },
   )
-  it('throttles repeated submissions case-insensitively before calling the provider', async () => {
-    for (let i = 0; i < 3; i++)
-      expect(await deliverContact(message('limited@example.com'))).toEqual({
-        ok: true,
-      })
-    expect(await deliverContact(message('LIMITED@example.com'))).toEqual({
+  it('does not send when verification or shared throttling rejects a request', async () => {
+    spyOn(protection, 'authorizeContact').mockResolvedValue({
       ok: false,
-      message: expect.stringContaining('Too many messages'),
+      message: 'Sending is paused to prevent spam.',
     })
-    expect(send).toHaveBeenCalledTimes(3)
-    expect(telemetry.logPostHogServer).toHaveBeenCalledTimes(3)
+    expect(await deliverContact(message('limited@example.com'))).toEqual({
+      ok: false,
+      message: 'Sending is paused to prevent spam.',
+    })
+    expect(send).not.toHaveBeenCalled()
   })
 })

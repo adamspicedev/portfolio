@@ -136,7 +136,7 @@ test('old article URLs redirect and missing stories return a proper 404', async 
   ).toBeVisible()
 })
 
-test('contact form retains a failed message and offers direct email when offline', async ({
+test('contact form disables sending and offers direct email when verification is unconfigured', async ({
   page,
 }) => {
   await page.goto('/#contact')
@@ -145,8 +145,10 @@ test('contact form retains a failed message and offers direct email when offline
     .fill('visitor@example.com')
   const text = 'A message that should stay in the form if sending fails.'
   await page.getByLabel("What's on your mind?", { exact: true }).fill(text)
-  await page.getByRole('button', { name: 'Send message', exact: true }).click()
-  await expect(page.getByRole('alert')).toContainText('currently offline')
+  await expect(
+    page.getByRole('button', { name: 'Send message', exact: true }),
+  ).toBeDisabled()
+  await expect(page.getByRole('status')).toContainText('currently offline')
   await expect(
     page.getByLabel("What's on your mind?", { exact: true }),
   ).toHaveValue(text)

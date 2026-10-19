@@ -1,12 +1,8 @@
 import { Resend } from 'resend'
-import {
-  createContactLimiter,
-  type ContactInput,
-  type ContactResult,
-} from './contact-schema'
+import { type ContactInput, type ContactResult } from './contact-schema'
 import { logPostHogServer } from './posthog-logs.server'
 
-const allowContact = createContactLimiter()
+import { authorizeContact } from './contact-protection.server'
 function logContact(failure?: 'provider_rejected' | 'provider_unreachable') {
   try {
     logPostHogServer({
@@ -22,6 +18,7 @@ function logContact(failure?: 'provider_rejected' | 'provider_unreachable') {
 }
 export async function deliverContact(
   input: ContactInput,
+  ip?: string,
 ): Promise<ContactResult> {
   if (input.website) return { ok: true }
   const apiKey = process.env.RESEND_API_KEY
@@ -31,13 +28,8 @@ export async function deliverContact(
       message:
         'The contact form is currently offline. Email adam@spicey.dev directly.',
     }
-  if (!allowContact(input.email.toLowerCase())) {
-    return {
-      ok: false,
-      message:
-        'Too many messages. Try again in 10 minutes, or email adam@spicey.dev directly.',
-    }
-  }
+  const authorization = await authorizeContact(input, ip)
+  if (!authorization.ok) return authorization
   try {
     const { error } = await new Resend(apiKey).emails.send({
       from:
