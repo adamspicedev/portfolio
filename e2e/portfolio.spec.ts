@@ -12,6 +12,75 @@ test('delivery webhook fails closed when its signing secret is missing', async (
   expect(await response.text()).toBe('Webhook unavailable')
 })
 
+test('selected open-source contributions have verified upstream links and dated merged statuses', async ({
+  page,
+  request,
+}) => {
+  const html = await (await request.get('/')).text()
+  expect(html.indexOf('id="projects"')).toBeLessThan(
+    html.indexOf('id="open-source"'),
+  )
+  expect(html.indexOf('id="open-source"')).toBeLessThan(
+    html.indexOf('id="about"'),
+  )
+  await page.goto('/#open-source')
+  const section = page.getByRole('region', {
+    name: 'Open-source contributions',
+  })
+  await expect(section.locator('article')).toHaveCount(3)
+  await expect(section.getByText('Merged', { exact: true })).toHaveCount(3)
+  await expect(section.getByText(/Selected contributions/)).toBeVisible()
+  await expect(section.locator('.contributions-snapshot time')).toHaveAttribute(
+    'datetime',
+    '2026-10-16',
+  )
+  await expect(section.locator('.contribution-details time')).toHaveCount(3)
+  for (const number of [3209, 3207, 3213])
+    await expect(
+      section.getByRole('link', { name: `View Bambuddy PR #${number}` }),
+    ).toHaveAttribute(
+      'href',
+      `https://github.com/maziggy/bambuddy/pull/${number}`,
+    )
+  await expect(
+    section.getByRole('link', { name: 'Supporting documentation PR #106' }),
+  ).toHaveAttribute('href', 'https://github.com/maziggy/bambuddy-wiki/pull/106')
+  for (const width of [320, 390, 768, 1440]) {
+    await page.setViewportSize({ width, height: 900 })
+    await expect(section).toBeVisible()
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true)
+    const cols = await section
+      .locator('.contribution-grid')
+      .evaluate(
+        (el) => getComputedStyle(el).gridTemplateColumns.split(' ').length,
+      )
+    expect(cols).toBe(width < 900 ? 1 : 3)
+  }
+})
+
+test('image upload endpoint denies unsigned and cross-origin requests', async ({
+  request,
+}) => {
+  for (const origin of ['http://127.0.0.1:4173', 'https://attacker.example']) {
+    const response = await request.post('/api/story-images', {
+      headers: { origin },
+      multipart: {
+        file: {
+          name: 'x.png',
+          mimeType: 'image/png',
+          buffer: Buffer.from('bad'),
+        },
+      },
+    })
+    expect(response.status()).toBe(403)
+    expect(response.headers()['cache-control']).toContain('no-store')
+  }
+})
+
 test('homepage renders on the server and links to the real résumé', async ({
   page,
   request,
@@ -77,7 +146,7 @@ test('old article URLs redirect and missing stories return a proper 404', async 
   ).toBeVisible()
 })
 
-test('contact form retains a failed message and offers direct email when offline', async ({
+test('contact form disables sending and offers direct email when verification is unconfigured', async ({
   page,
 }) => {
   await page.goto('/#contact')
@@ -86,8 +155,10 @@ test('contact form retains a failed message and offers direct email when offline
     .fill('visitor@example.com')
   const text = 'A message that should stay in the form if sending fails.'
   await page.getByLabel("What's on your mind?", { exact: true }).fill(text)
-  await page.getByRole('button', { name: 'Send message', exact: true }).click()
-  await expect(page.getByRole('alert')).toContainText('currently offline')
+  await expect(
+    page.getByRole('button', { name: 'Send message', exact: true }),
+  ).toBeDisabled()
+  await expect(page.getByRole('status')).toContainText('currently offline')
   await expect(
     page.getByLabel("What's on your mind?", { exact: true }),
   ).toHaveValue(text)

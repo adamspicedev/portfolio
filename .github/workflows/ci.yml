@@ -45,8 +45,8 @@ jobs:
         with:
           bun-version-file: .bun-version
       - run: bun install --frozen-lockfile
-      - name: Install Chromium and system dependencies
-        run: bun run playwright install --with-deps chromium
+      - name: Install browser engines and system dependencies
+        run: bun run playwright install --with-deps chromium webkit
       - run: bun run build
         env:
           VITE_PUBLIC_POSTHOG_PROJECT_TOKEN: ${{ vars.VITE_PUBLIC_POSTHOG_PROJECT_TOKEN }}

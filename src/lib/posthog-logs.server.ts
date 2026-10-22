@@ -44,14 +44,14 @@ export async function logPostHogServer({
 }: {
   body: string
   attributes: Record<string, string | number | boolean>
-  severity?: 'INFO' | 'ERROR'
+  severity?: 'INFO' | 'ERROR' | 'info' | 'error'
 }) {
   try {
     const logger = posthogServerLogger()
     if (!logger) return false
     logger.emit({
-      severityNumber: severity === 'ERROR' ? 17 : 9,
-      severityText: severity,
+      severityNumber: severity.toUpperCase() === 'ERROR' ? 17 : 9,
+      severityText: severity.toUpperCase(),
       body,
       attributes,
     })

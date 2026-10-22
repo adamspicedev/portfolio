@@ -1,3 +1,4 @@
+import { runTelemetry } from '../lib/client-telemetry'
 import { track, reportFailure } from '../lib/analytics'
 import { syncAdminIdentity } from '../lib/posthog-identity'
 import { pageSeo } from '../lib/seo'
@@ -90,7 +91,9 @@ function PostHogIdentity() {
   const { isLoaded, isSignedIn, user } = useUser()
   useEffect(() => {
     if (!isLoaded) return
-    syncAdminIdentity(posthog, isSignedIn && user ? user.id : null)
+    runTelemetry(() =>
+      syncAdminIdentity(posthog, isSignedIn && user ? user.id : null),
+    )
   }, [isLoaded, isSignedIn, posthog, user])
 
   return null

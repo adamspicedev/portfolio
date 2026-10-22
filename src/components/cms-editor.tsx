@@ -8,6 +8,7 @@ import { usePostHog } from 'posthog-js/react'
 import { editorSchema, type CmsStory } from '../lib/cms-schema'
 import { saveCmsStory } from '../lib/cms.functions'
 import { publicationDate, safeContentUrl } from '../lib/story-schema'
+import { CoverUpload } from './cover-upload'
 
 export function CmsEditor({
   story,
@@ -35,19 +36,24 @@ export function CmsEditor({
   const [form, setForm] = useState(initial)
   const [preview, setPreview] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
   const [message, setMessage] = useState('')
   const dirty = JSON.stringify(form) !== JSON.stringify(initial)
   useBlocker({
     shouldBlockFn: () =>
-      dirty && !window.confirm('Discard your unsaved changes?'),
-    enableBeforeUnload: dirty,
+      (dirty || uploading) && !window.confirm('Discard your unsaved changes?'),
+    enableBeforeUnload: dirty || uploading,
   })
   function close() {
-    if (!dirty || window.confirm('Discard your unsaved changes?')) onClose()
+    if (
+      (!dirty && !uploading) ||
+      window.confirm('Discard your unsaved changes?')
+    )
+      onClose()
   }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (saving) return
+    if (saving || uploading) return
     setMessage('')
     const parsed = editorSchema.safeParse({
       ...form,
@@ -203,6 +209,7 @@ export function CmsEditor({
             Cover image URL
             <input
               maxLength={2048}
+              disabled={uploading || saving}
               value={form.cover}
               placeholder="/images/stories/robots.webp or https://…"
               aria-label="Cover image URL"
@@ -215,6 +222,15 @@ export function CmsEditor({
               Use an existing image path or a hosted HTTPS image.
             </small>
           </label>
+          <CoverUpload
+            cover={form.cover}
+            alt={form.coverAlt}
+            disabled={saving}
+            onBusy={setUploading}
+            onUploaded={(cover) =>
+              setForm((current) => ({ ...current, cover }))
+            }
+          />
         </div>
         <label>
           Cover description (alt text)
@@ -337,7 +353,7 @@ export function CmsEditor({
           </p>
           <button
             type="submit"
-            disabled={saving}
+            disabled={saving || uploading}
             className="button button-primary"
           >
             {saving

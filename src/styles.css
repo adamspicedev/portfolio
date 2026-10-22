@@ -1539,6 +1539,25 @@ body:has(.hero) .site-header::before {
   display: grid;
   gap: 2rem;
 }
+.cms-cover-upload {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+}
+.cms-cover-preview {
+  width: 100%;
+  max-width: 32rem;
+  max-height: 22rem;
+  object-fit: contain;
+  border-radius: 0.75rem;
+}
+.cms-cover-upload input[type='file'] {
+  max-width: 100%;
+  min-width: 0;
+}
+.cms-cover-upload progress {
+  width: 100%;
+}
 .cms-fields {
   display: grid;
   gap: 1.25rem;
@@ -1752,5 +1771,87 @@ body:has(.hero) .site-header::before {
     white-space: normal;
     padding: 12px;
     font-size: 12px;
+  }
+}
+
+.contributions-snapshot {
+  margin: 0 0 1.5rem;
+  color: var(--color-muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.8;
+}
+.contribution-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+.contribution-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ded9ef;
+  border-radius: 1.25rem;
+  background: white;
+  padding: 1.75rem;
+}
+.contribution-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font: 0.75rem var(--font-mono);
+  color: var(--color-muted);
+}
+.contribution-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--color-cobalt);
+}
+.contribution-card h3 {
+  margin: 1.5rem 0 0.8rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.2;
+}
+.contribution-card > p {
+  color: var(--color-muted);
+  line-height: 1.7;
+  margin-bottom: 1.75rem;
+}
+.contribution-details {
+  margin-top: auto;
+}
+.contribution-details p {
+  font: 0.7rem var(--font-mono);
+  color: var(--color-muted);
+  margin-bottom: 0.85rem;
+}
+.contribution-details a {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: fit-content;
+  color: var(--color-cobalt);
+  font-weight: 600;
+  min-height: 2.75rem;
+}
+.contribution-details .contribution-docs {
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+.contribution-license {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.contribution-details a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+@media (max-width: 899px) {
+  .contribution-grid {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

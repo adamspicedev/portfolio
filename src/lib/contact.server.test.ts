@@ -1,4 +1,6 @@
 import type { Resend } from 'resend'
+import * as protection from './contact-protection.server'
+import * as telemetry from './posthog-logs.server'
 import {
   afterEach,
   beforeEach,
@@ -40,12 +42,14 @@ const originalEnvironment = new Map(
 beforeEach(() => {
   delete process.env.VITE_PUBLIC_POSTHOG_PROJECT_TOKEN
   delete process.env.VITE_PUBLIC_POSTHOG_HOST
+  spyOn(protection, 'authorizeContact').mockResolvedValue({ ok: true })
   process.env.RESEND_API_KEY = 'test-api-key'
   process.env.RESEND_FROM_EMAIL = 'Portfolio <hello@example.com>'
   send
     .mockReset()
     .mockResolvedValue({ data: { id: 'test-id' }, error: null, headers: null })
   constructor.mockClear()
+  spyOn(telemetry, 'logPostHogServer').mockResolvedValue(true)
   spyOn(console, 'error').mockImplementation(() => {})
 })
 afterEach(() => {
@@ -59,6 +63,7 @@ const message = (email: string) => ({
   email,
   message: 'A useful message from a visitor.',
   website: '',
+  turnstileToken: 'local-test-token',
 })
 
 describe('contact email delivery', () => {
@@ -70,6 +75,7 @@ describe('contact email delivery', () => {
       message: expect.stringContaining('currently offline'),
     })
     expect(send).not.toHaveBeenCalled()
+    expect(telemetry.logPostHogServer).not.toHaveBeenCalled()
     expect(constructor).not.toHaveBeenCalled()
   })
   it('silently discards honeypot submissions without sending mail', async () => {
@@ -96,6 +102,11 @@ describe('contact email delivery', () => {
       tags: [{ name: 'channel', value: 'contact_form' }],
       text: `From: ${input.email}\n\n${input.message}`,
     })
+    expect(telemetry.logPostHogServer).toHaveBeenCalledWith({
+      body: 'contact email accepted',
+      severity: 'info',
+      attributes: { channel: 'contact_form', email_id: 'test-id' },
+    })
   })
   it.each(['rejection', 'exception'])(
     'reports a provider %s as failure rather than a successful send',
@@ -120,16 +131,62 @@ describe('contact email delivery', () => {
       })
     },
   )
-  it('throttles repeated submissions case-insensitively before calling the provider', async () => {
-    for (let i = 0; i < 3; i++)
-      expect(await deliverContact(message('limited@example.com'))).toEqual({
-        ok: true,
-      })
-    expect(await deliverContact(message('LIMITED@example.com'))).toEqual({
-      ok: false,
-      reason: 'rate_limited',
-      message: expect.stringContaining('Too many messages'),
+  it('preserves delivered success when telemetry fails', async () => {
+    spyOn(telemetry, 'logPostHogServer').mockImplementation(() => {
+      throw new Error('Telemetry setup failed')
     })
-    expect(send).toHaveBeenCalledTimes(3)
+    expect(await deliverContact(message('telemetry@example.com'))).toEqual({
+      ok: true,
+    })
+    expect(send).toHaveBeenCalledTimes(1)
+  })
+  it('preserves acceptance when asynchronous telemetry rejects', async () => {
+    spyOn(telemetry, 'logPostHogServer').mockRejectedValue(new Error('SDK'))
+    expect(
+      await deliverContact(message('async-telemetry@example.com')),
+    ).toEqual({ ok: true })
+    expect(send).toHaveBeenCalledTimes(1)
+  })
+  it.each(['rejection', 'exception'])(
+    'logs a sanitized provider %s',
+    async (kind) => {
+      const privateDetails =
+        'secret token visitor@example.com private form message'
+      if (kind === 'rejection')
+        send.mockResolvedValue({
+          data: null,
+          error: {
+            name: privateDetails as 'validation_error',
+            message: privateDetails,
+            statusCode: 500,
+          },
+          headers: null,
+        })
+      else send.mockRejectedValue(new Error(privateDetails))
+      await deliverContact(message(`sanitized-${kind}@example.com`))
+      expect(telemetry.logPostHogServer).toHaveBeenCalledWith({
+        body: 'contact email delivery failed',
+        severity: 'error',
+        attributes: {
+          channel: 'contact_form',
+          failure:
+            kind === 'rejection' ? 'provider_rejected' : 'provider_unreachable',
+        },
+      })
+      expect(
+        JSON.stringify((console.error as ReturnType<typeof spyOn>).mock.calls),
+      ).not.toContain(privateDetails)
+    },
+  )
+  it('does not send when verification or shared throttling rejects a request', async () => {
+    spyOn(protection, 'authorizeContact').mockResolvedValue({
+      ok: false,
+      message: 'Sending is paused to prevent spam.',
+    })
+    expect(await deliverContact(message('limited@example.com'))).toEqual({
+      ok: false,
+      message: 'Sending is paused to prevent spam.',
+    })
+    expect(send).not.toHaveBeenCalled()
   })
 })

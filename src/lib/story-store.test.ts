@@ -11,6 +11,7 @@ import {
 } from './sqlite-stories.server'
 import type { EditorInput } from './cms-schema'
 import type { Story } from './story-schema'
+import { storySeo } from './seo'
 
 const input: EditorInput = {
   title: 'A real database story',
@@ -39,6 +40,33 @@ afterEach(async () => {
 })
 
 describe('SQLite publishing', () => {
+  it('persists uploaded cover URLs and descriptions across restart and uses them in social metadata', async () => {
+    const cover =
+      'https://example.public.blob.vercel-storage.com/story-covers/123.webp'
+    const coverAlt = 'A lavender test illustration'
+    const saved = await store.save(
+      { ...input, slug: 'uploaded-cover-draft', cover, coverAlt, draft: true },
+      'user_admin',
+    )
+    await store.close()
+    store = await StoryStore.connect(localDatabaseUrl(path), undefined, [seed])
+    const reloaded = (await store.all()).find((s) => s.id === saved.id)!
+    expect(reloaded.cover).toBe(cover)
+    expect(reloaded.coverAlt).toBe(coverAlt)
+    expect((await store.published()).some((s) => s.slug === saved.slug)).toBe(
+      false,
+    )
+    const head = storySeo({ ...reloaded, readingMinutes: 1 })
+    expect(head.meta.find((m) => m.property === 'og:image')?.content).toBe(
+      cover,
+    )
+    expect(head.meta.find((m) => m.name === 'twitter:image')?.content).toBe(
+      cover,
+    )
+    expect(head.meta.find((m) => m.property === 'og:image:alt')?.content).toBe(
+      coverAlt,
+    )
+  })
   it('seeds only once and preserves edits across a server restart', async () => {
     const first = (await store.all())[0]!
     await store.save({ ...first, title: 'An edited title' }, 'user_admin')

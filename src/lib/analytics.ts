@@ -1,8 +1,13 @@
+import {
+  reportHandledError,
+  runTelemetry,
+  type HandledOperation,
+} from './client-telemetry'
 type AnalyticsClient = {
   capture: (event: string, properties?: Record<string, string>) => unknown
   captureException: (
     error: Error,
-    properties?: Record<string, string>,
+    properties?: Record<string, unknown>,
   ) => unknown
 }
 
@@ -12,20 +17,14 @@ export function track(
   event: string,
   properties?: Record<string, string>,
 ) {
-  try {
+  runTelemetry(() => {
     client.capture(event, properties)
-  } catch {
-    /* Best effort. */
-  }
+  })
 }
 
-export function reportFailure(client: AnalyticsClient, operation: string) {
-  try {
-    // Server errors can contain submitted content. Report only a known operation.
-    client.captureException(new Error(`Portfolio ${operation} failed`), {
-      operation,
-    })
-  } catch {
-    /* Best effort. */
-  }
+export function reportFailure(
+  client: AnalyticsClient,
+  operation: HandledOperation,
+) {
+  reportHandledError(client, undefined, operation)
 }

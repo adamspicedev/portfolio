@@ -1,10 +1,12 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { usePostHog } from 'posthog-js/react'
 import type { FormEvent } from 'react'
 import { ArrowUpRight, LoaderCircle, Send } from 'lucide-react'
-import { usePostHog } from 'posthog-js/react'
 import { sendContact } from '../lib/contact.functions'
 import { track, reportFailure } from '../lib/analytics'
 import { contactSchema } from '../lib/contact-schema'
+import { Turnstile } from './turnstile'
+import type { TurnstileHandle } from './turnstile'
 
 type FormState =
   | { kind: 'idle' }
@@ -15,23 +17,37 @@ type FormState =
 export function Contact() {
   const posthog = usePostHog()
   const started = useRef(false)
-  const submitting = useRef(false)
   const validationReported = useRef(false)
   function start() {
     if (started.current) return
     started.current = true
     track(posthog, 'contact_started')
   }
+  const siteKey = import.meta.env.VITE_TURNSTILE_SITE_KEY?.trim() ?? ''
+  const [token, setToken] = useState('')
+  const currentToken = useRef('')
+  const [verificationError, setVerificationError] = useState(false)
+  const [verificationAttempt, setVerificationAttempt] = useState(0)
+  const widget = useRef<TurnstileHandle>(null)
+  const sending = useRef(false)
+  const mounted = useRef(true)
+  useEffect(() => {
+    mounted.current = true
+    return () => {
+      mounted.current = false
+    }
+  }, [])
   const [state, setState] = useState<FormState>({ kind: 'idle' })
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (submitting.current) return
+    if (sending.current || !siteKey || !currentToken.current) return
     const form = event.currentTarget
     const fields = new FormData(form)
     const result = contactSchema.safeParse({
       email: fields.get('email'),
       message: fields.get('message'),
       website: fields.get('website'),
+      turnstileToken: currentToken.current,
     })
     if (!fields.get('website')) {
       start()
@@ -47,10 +63,11 @@ export function Contact() {
       })
       return
     }
-    submitting.current = true
+    sending.current = true
     setState({ kind: 'sending' })
     try {
       const response = await sendContact({ data: result.data })
+      if (!mounted.current) return
       if (response.ok) {
         if (!result.data.website)
           track(posthog, 'contact_message_sent', { channel: 'contact_form' })
@@ -58,7 +75,9 @@ export function Contact() {
         form.reset()
         setState({ kind: 'success' })
       } else {
-        track(posthog, 'contact_failed', { reason: response.reason })
+        track(posthog, 'contact_failed', {
+          reason: response.reason ?? 'verification_or_rate_limit',
+        })
         setState({ kind: 'error', message: response.message })
       }
     } catch {
@@ -66,15 +85,18 @@ export function Contact() {
         track(posthog, 'contact_failed', { reason: 'request_failed' })
         reportFailure(posthog, 'contact_submit')
       }
-      setState({
-        kind: 'error',
-        message:
-          'Something went wrong sending your message. Email adam@spicey.dev directly.',
-      })
+      if (mounted.current)
+        setState({
+          kind: 'error',
+          message:
+            'Something went wrong sending your message. Try again or email adam@spicey.dev directly.',
+        })
     } finally {
-      submitting.current = false
+      sending.current = false
+      if (mounted.current) widget.current?.reset()
     }
   }
+
   return (
     <section id="contact" className="contact-section section-space">
       <div className="page-width grid gap-12 lg:grid-cols-2 lg:gap-24">
@@ -139,7 +161,7 @@ export function Contact() {
             track(posthog, 'contact_attempted')
             track(posthog, 'contact_failed', { reason: 'validation' })
           }}
-          className="contact-form"
+          className="contact-form ph-no-capture"
           aria-label="Send Adam a message"
         >
           <div className="form-heading">
@@ -191,10 +213,47 @@ export function Contact() {
                 autoComplete="off"
               />
             </div>
+            {siteKey ? (
+              <Turnstile
+                key={verificationAttempt}
+                ref={widget}
+                siteKey={siteKey}
+                onToken={(value) => {
+                  currentToken.current = value
+                  setToken(value)
+                  if (value) setVerificationError(false)
+                }}
+                onUnavailable={() => setVerificationError(true)}
+              />
+            ) : null}
+            <output aria-live="polite" className="block text-sm">
+              {!siteKey
+                ? 'The contact form is currently offline. Please email adam@spicey.dev directly.'
+                : verificationError
+                  ? 'Verification is unavailable. Please retry the verification or email adam@spicey.dev directly.'
+                  : !token
+                    ? 'Complete the human verification before sending.'
+                    : 'Verification complete. Ready to send.'}
+            </output>
+            {siteKey && verificationError && (
+              <button
+                type="button"
+                className="text-link"
+                disabled={state.kind === 'sending'}
+                onClick={() => {
+                  currentToken.current = ''
+                  setToken('')
+                  setVerificationError(false)
+                  setVerificationAttempt((value) => value + 1)
+                }}
+              >
+                Retry verification
+              </button>
+            )}
             <button
               className="button button-dark w-full justify-center"
               type="submit"
-              disabled={state.kind === 'sending'}
+              disabled={!siteKey || !token || state.kind === 'sending'}
             >
               {state.kind === 'sending' ? (
                 <>

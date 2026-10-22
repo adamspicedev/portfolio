@@ -14,8 +14,8 @@ Terminal
 npm install @posthog/react posthog-node
 ```
 
--   `@posthog/react` - React package for our [JS Web SDK](/docs/libraries/js.md) for client-side usage
--   `posthog-node` - PostHog [Node.js SDK](/docs/libraries/node.md) for server-side event capture
+- `@posthog/react` - React package for our [JS Web SDK](/docs/libraries/js.md) for client-side usage
+- `posthog-node` - PostHog [Node.js SDK](/docs/libraries/node.md) for server-side event capture
 
 ## Identifying users
 
@@ -154,14 +154,11 @@ let posthogClient: PostHog | null = null
 
 export function getPostHogClient() {
   if (!posthogClient) {
-    posthogClient = new PostHog(
-      '<ph_project_token>',
-      {
-        host: 'https://us.i.posthog.com',
-        flushAt: 1,
-        flushInterval: 0,
-      },
-    )
+    posthogClient = new PostHog('<ph_project_token>', {
+      host: 'https://us.i.posthog.com',
+      flushAt: 1,
+      flushInterval: 0,
+    })
   }
   return posthogClient
 }

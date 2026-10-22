@@ -1,45 +1,59 @@
+// Career history follows the approved CV, most recent first.
 export const experiencesData = [
   {
-    title: 'Money Sweetspot Ltd',
-    jobTitle: 'Senior Software Developer',
+    title: 'NumberWorks’nWords',
+    jobTitle: 'Senior Software Engineer',
     description:
-      "Maintained and enhanced Money Sweetspot's technology stack (Next.js, Vite, Express.js — all in TypeScript) within a Turborepo and deployed to AWS.",
-    date: '2024 - 2025',
+      'Develop the V3 education platform and Parent Portal using React and TypeScript, including parent-facing progress notifications, homework submissions and centre-management workflows.',
+    date: 'October 2025 – Present',
   },
   {
-    title: 'Tella Ltd',
-    jobTitle: 'Front End Developer',
-    description:
-      'Developed, as part of a team, a React based PaaS to enable mortgage brokers to use the Tella system for mortgage applications.',
-    date: '2022 - 2023',
-  },
-  {
-    title: 'AdviceLink Ltd',
+    title: 'Money Sweetspot',
     jobTitle: 'Senior Software Developer',
     description:
-      'Enhanced and maintained a full-stack, multi-tenant application for mortgage and insurance advisors using Scala and scalajs-react.',
-    date: '2023 - 2024',
+      'Maintained and improved a TypeScript stack using Next.js, React, Vite and Express.js, organised in a Turborepo and deployed to AWS. Built a customer wellness system and reporting tools.',
+    date: 'October 2024 – October 2025',
+  },
+  {
+    title: 'AdviceLink',
+    jobTitle: 'Senior Software Developer',
+    description:
+      'Delivered review automation and client and product tagging for mortgage and insurance advisers. Maintained and extended a multi-tenant application using Scala and scalajs-react.',
+    date: 'July 2023 – October 2024',
+  },
+  {
+    title: 'Tella',
+    jobTitle: 'Software Developer',
+    description:
+      'Designed and developed an online home-loan SaaS product and company website using React and Next.js, with responsive interfaces and reusable components.',
+    date: 'May 2022 – July 2023',
+  },
+  {
+    title: 'Foster Moore',
+    jobTitle: 'Software Developer',
+    description:
+      'Developed, configured and maintained government registry systems using Java Spring and internal UI tools, working across teams on delivery, testing and debugging.',
+    date: 'November 2021 – May 2022',
   },
   {
     title: 'Diploma in Software Development',
-    jobTitle: 'Whitecliffe College of Technology',
-    description:
-      'Completed a diploma in software development, while studying part-time',
-    date: '2020 - 2022',
+    jobTitle: 'Whitecliffe – Technology & Innovation',
+    description: 'Completed a Diploma in Software Development, NZQA Level 6.',
+    date: 'January 2019 – July 2022',
   },
   {
-    title: 'AE.LIVE',
-    jobTitle: 'Broadcast Supervisor/Junior Software Developer',
+    title: 'Alston Elliot',
+    jobTitle: 'Junior Software Developer and Broadcast Supervisor',
     description:
-      'Adeptly balanced responsibilities in both graphics broadcast supervision and full-stack software development using nodeJS and React.',
-    date: '2019 - 2021',
+      'Combined full-stack development with broadcast graphics supervision, building web applications, maintaining databases and supporting legacy systems.',
+    date: 'December 2015 – November 2021',
   },
   {
-    title: 'Kiwi International Digital Systems',
+    title: 'KIDS graphics Ltd',
     jobTitle: 'Operations Manager',
     description:
-      'Played a pivotal role in ensuring seamless business operations, encompassing equipment management, client graphics development, and team support.',
-    date: '2009 - 2015',
+      'Managed daily operations, equipment and team support; developed client graphics using proprietary software and Python, and trained broadcast staff.',
+    date: 'July 2012 – December 2015',
   },
 ]
 
