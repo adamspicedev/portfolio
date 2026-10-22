@@ -14,23 +14,32 @@ const send = mock<Resend['emails']['send']>(async () => ({
   error: null,
   headers: null,
 }))
+const { Resend: RealResend } = await import('resend')
 const constructor = mock<(key: string) => void>(() => {})
 mock.module('resend', () => ({
-  Resend: class {
-    emails = { send }
+  Resend: class extends RealResend {
     constructor(key: string) {
+      super(key)
+      this.emails.send = send
       constructor(key)
     }
   },
 }))
 // Import after the module mock so the SDK can never send a real email.
 const { deliverContact } = await import('./contact.server')
-const environmentKeys = ['RESEND_API_KEY', 'RESEND_FROM_EMAIL']
+const environmentKeys = [
+  'RESEND_API_KEY',
+  'RESEND_FROM_EMAIL',
+  'VITE_PUBLIC_POSTHOG_PROJECT_TOKEN',
+  'VITE_PUBLIC_POSTHOG_HOST',
+]
 const originalEnvironment = new Map(
   environmentKeys.map((key) => [key, process.env[key]]),
 )
 
 beforeEach(() => {
+  delete process.env.VITE_PUBLIC_POSTHOG_PROJECT_TOKEN
+  delete process.env.VITE_PUBLIC_POSTHOG_HOST
   process.env.RESEND_API_KEY = 'test-api-key'
   process.env.RESEND_FROM_EMAIL = 'Portfolio <hello@example.com>'
   send
@@ -57,6 +66,7 @@ describe('contact email delivery', () => {
     process.env.RESEND_API_KEY = ''
     expect(await deliverContact(message('offline@example.com'))).toEqual({
       ok: false,
+      reason: 'offline',
       message: expect.stringContaining('currently offline'),
     })
     expect(send).not.toHaveBeenCalled()
@@ -83,6 +93,7 @@ describe('contact email delivery', () => {
       to: 'adam@spicey.dev',
       replyTo: input.email,
       subject: 'Message from portfolio',
+      tags: [{ name: 'channel', value: 'contact_form' }],
       text: `From: ${input.email}\n\n${input.message}`,
     })
   })
@@ -102,6 +113,8 @@ describe('contact email delivery', () => {
       else send.mockRejectedValue(new Error('Private provider details'))
       expect(await deliverContact(message(`${kind}@example.com`))).toEqual({
         ok: false,
+        reason:
+          kind === 'rejection' ? 'provider_rejected' : 'provider_unavailable',
         message:
           'Your message could not be sent. Try again, or email adam@spicey.dev directly.',
       })
@@ -114,6 +127,7 @@ describe('contact email delivery', () => {
       })
     expect(await deliverContact(message('LIMITED@example.com'))).toEqual({
       ok: false,
+      reason: 'rate_limited',
       message: expect.stringContaining('Too many messages'),
     })
     expect(send).toHaveBeenCalledTimes(3)

@@ -1,7 +1,8 @@
+import { track } from '../lib/analytics'
 import { getHeadlines } from '../lib/headlines.functions'
 import { NewsTicker } from '../components/news-ticker'
 import { useHomeMotion } from '../components/home-motion'
-import { pageSeo, homeTitle, homeDescription } from '../lib/seo'
+import { pageSeo, homeSeo } from '../lib/seo'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { usePostHog } from 'posthog-js/react'
 import {
@@ -36,7 +37,7 @@ export const Route = createFileRoute('/')({
           path: '/',
           index: false,
         })
-      : pageSeo({ title: homeTitle, description: homeDescription, path: '/' }),
+      : homeSeo(),
   component: Home,
 })
 
@@ -86,7 +87,7 @@ function Home() {
               href="/files/AdamSpiceResume.pdf"
               download
               className="button button-plain"
-              onClick={() => posthog.capture('resume_downloaded')}
+              onClick={() => track(posthog, 'resume_downloaded')}
             >
               Grab my CV <ArrowDownToLine size={16} />
             </a>
@@ -131,8 +132,10 @@ function Home() {
                 rel="noreferrer"
                 aria-label={`Open ${project.title} (opens in a new tab)`}
                 onClick={() =>
-                  posthog.capture('project_opened', {
+                  track(posthog, 'project_opened', {
                     project_category: project.category,
+                    project_id: new URL(project.link).hostname,
+                    placement: 'image',
                   })
                 }
               >
@@ -167,8 +170,10 @@ function Home() {
                   rel="noreferrer"
                   className="flex items-center justify-between gap-4"
                   onClick={() =>
-                    posthog.capture('project_opened', {
+                    track(posthog, 'project_opened', {
                       project_category: project.category,
+                      project_id: new URL(project.link).hostname,
+                      placement: 'title',
                     })
                   }
                 >
@@ -328,7 +333,7 @@ function Home() {
             className={`grid gap-6 ${stories.length > 1 ? 'md:grid-cols-2 lg:grid-cols-3' : 'story-feature-grid'}`}
           >
             {stories.slice(0, 6).map((story) => (
-              <StoryCard key={story.slug} story={story} />
+              <StoryCard key={story.slug} story={story} placement="home" />
             ))}
             {stories.length === 1 && (
               <div className="stories-aside">

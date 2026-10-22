@@ -1,16 +1,25 @@
+import { track } from '../lib/analytics'
 import { Link } from '@tanstack/react-router'
 import { ArrowUpRight, Terminal } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
 import { formatStoryDate, type StorySummary } from '../lib/story-schema'
 
-export function StoryCard({ story }: { story: StorySummary }) {
+export function StoryCard({
+  story,
+  placement,
+}: {
+  story: StorySummary
+  placement: 'home' | 'blog'
+}) {
   const posthog = usePostHog()
   return (
     <Link
       to="/blog/$slug"
       params={{ slug: story.slug }}
       className="story-card group"
-      onClick={() => posthog.capture('story_opened')}
+      onClick={() =>
+        track(posthog, 'story_opened', { story_slug: story.slug, placement })
+      }
     >
       <div className="story-art">
         {story.cover ? (

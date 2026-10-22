@@ -2,6 +2,16 @@ import { readdir } from 'node:fs/promises'
 import { toJSON } from 'seroval'
 import { expect, test } from '@playwright/test'
 
+test('delivery webhook fails closed when its signing secret is missing', async ({
+  request,
+}) => {
+  const response = await request.post('/api/webhooks/resend', {
+    data: { type: 'email.delivered', data: { email_id: 'forged' } },
+  })
+  expect(response.status()).toBe(503)
+  expect(await response.text()).toBe('Webhook unavailable')
+})
+
 test('homepage renders on the server and links to the real résumé', async ({
   page,
   request,
@@ -313,6 +323,25 @@ test('crawler HTML includes canonical, sharing metadata and article schema; site
 }) => {
   const response = await request.get('/blog/the-cloud-has-a-power-cable')
   const html = await response.text()
+  const structuredData = (markup: string) =>
+    [
+      ...markup.matchAll(
+        /<script\b[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g,
+      ),
+    ].map((match) => JSON.parse(match[1]!))
+  const home = await request.get('/')
+  const profile = structuredData(await home.text()).find(
+    (data) => data['@type'] === 'ProfilePage',
+  )
+  expect(profile?.mainEntity).toMatchObject({
+    '@type': 'Person',
+    '@id': 'https://spicey.dev/#person',
+    name: 'Adam Spice',
+  })
+  const article = structuredData(html).find(
+    (data) => data['@type'] === 'BlogPosting',
+  )
+  expect(article?.author['@id']).toBe(profile.mainEntity['@id'])
   expect(html).toContain(
     'rel="canonical" href="https://spicey.dev/blog/the-cloud-has-a-power-cable"',
   )

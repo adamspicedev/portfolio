@@ -1,3 +1,4 @@
+import { track, reportFailure } from '../lib/analytics'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link, useBlocker } from '@tanstack/react-router'
@@ -65,7 +66,7 @@ export function CmsEditor({
     try {
       const result = await saveCmsStory({ data: parsed.data })
       if (result.ok) {
-        posthog.capture('cms_story_saved', {
+        track(posthog, 'cms_story_saved', {
           publication_status: result.story.draft
             ? 'draft'
             : result.story.date > publicationDate()
@@ -73,8 +74,13 @@ export function CmsEditor({
               : 'published',
         })
         onSaved(result.story)
-      } else setMessage(result.message)
+      } else {
+        track(posthog, 'cms_save_failed', { reason: 'rejected' })
+        setMessage(result.message)
+      }
     } catch {
+      track(posthog, 'cms_save_failed', { reason: 'request_failed' })
+      reportFailure(posthog, 'cms_save')
       setMessage(
         'Unable to save. Check your connection and sign-in, then try again. Your edits are still here.',
       )

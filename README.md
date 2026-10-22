@@ -159,3 +159,43 @@ After deployment, submit `https://spicey.dev/sitemap.xml` in Google Search Conso
 Set **Cover description (alt text)** in Story studio after viewing the artwork. It is used on the article, story cards, editor preview and Open Graph/Twitter image descriptions. Existing stories remain compatible with an empty description; Markdown seed stories may also set `coverAlt`. Home, Stories and articles without a cover use `public/images/social-preview.jpg`, a 1200×630 card based on Adam's existing portrait. Public metadata is rendered on the server. Admin and unavailable pages use generic previews and remain noindex.
 
 The cover-description migration adds `cover_alt TEXT NOT NULL DEFAULT ''` to the stories table on first database connection. It preserves all existing columns and content. Previous application versions can still read and update their existing columns; leave the additional column in place during rollback. Existing deployed stories must be updated through Story studio because Markdown only seeds an empty database.
+
+### PostHog verification and source maps
+
+Set `VITE_PUBLIC_POSTHOG_PROJECT_TOKEN` and `VITE_PUBLIC_POSTHOG_HOST` in Vercel's production/preview build environments. These values are public and embedded at build time; changing them requires rebuilding. Docker Compose forwards them as build arguments and runtime settings.
+
+Source-map uploads use the official PostHog Rollup plugin on the exact build that produces the deployed assets. Configure `POSTHOG_API_KEY` (personal key with Error Tracking write access), `POSTHOG_PROJECT_ID`, and `POSTHOG_HOST` in the deployment build environment. The plugin tags the release with the Vercel/GitHub commit and deletes maps after upload. With no upload credentials, ordinary builds remain available but upload is disabled. GitHub Actions uses the matching repository variables and `POSTHOG_API_KEY` secret for trusted push/manual runs; pull requests never receive that upload credential. CI uploads do not replace uploads from the actual Vercel build.
+
+Verify the release in PostHog Error Tracking's symbol sets. Contact success emits `contact_message_sent` from the browser and `contact email accepted` from the server, with `channel=contact_form`; no message body or visitor email is logged. Acceptance means Resend accepted the request, not that delivery completed. Server delivery flushes its log batch before returning and logging errors do not change email delivery success. Confirm the browser event in Product Analytics and the acceptance record in PostHog Logs after a real successful submission. Unit tests alone do not establish hosted ingestion.
+
+The administrator identity marker persists with PostHog, so revisiting `/admin` does not identify the same user again. Switching accounts resets before identifying the next Clerk ID, and sign-out clears it. Validate this with real Clerk sessions before claiming the hosted identity flow verified.
+
+### Portfolio outcomes and delivery tracking
+
+Dashboard: https://us.posthog.com/project/663367/dashboard/2247392
+
+The dashboard excludes internal/test users and restricts events to `spicey.dev` and `www.spicey.dev`, excluding `/admin`. Reporting uses Pacific/Auckland. Admin identity sets `$internal_or_test_user=true`, matching the existing internal cohort. Browser events from other hostnames are discarded, including local and preview traffic. Existing anonymous admin activity cannot always be reclassified retroactively.
+
+Events:
+
+- `contact_started`: first field edit per form completion cycle (or validation/submission without prior edits).
+- `contact_attempted`: a submission attempt, including one stopped by native browser validation (once per attempt).
+- `contact_failed`: native/application validation, offline, rate limit, provider rejection/unavailability, or request failure, with a bounded `reason`.
+- `contact_message_sent`: server accepted a non-honeypot submission; not delivery confirmation.
+- `contact_email_clicked`: direct mailto link clicked, not proof of a sent email.
+- `story_opened`: card click with `story_slug` and `placement` (`home`/`blog`). Direct visits remain pageviews.
+- `project_opened`: click with destination hostname as `project_id`, category and `placement` (`image`/`title`).
+- `cms_save_failed` / `cms_archive_failed`: rejected or failed requests, without draft contents. Unexpected request failures also emit sanitized exceptions.
+
+The contact funnel is ordered within one hour and permits intervening events. Newly instrumented events and properties have no historical backfill. Resume events measure link clicks, not completed downloads.
+
+Web Vitals capture is enabled explicitly. Replay samples 10% of production sessions, masks inputs/contact text, and blocks `/admin` via the project URL blocklist. Keep these remote settings in place when changing SDK configuration. Verify SPA navigation, contact outcomes, and real `$web_vitals` records after deploying; configuration and a successful build alone are not ingestion evidence.
+
+#### Resend delivery webhook
+
+1. Deploy this code, then configure `https://www.spicey.dev/api/webhooks/resend` in Resend (use the final hostname to avoid redirecting POST requests).
+2. Subscribe to `email.delivered`, `email.bounced`, `email.failed`, and `email.complained`.
+3. Store the webhook signing secret as server-only `RESEND_WEBHOOK_SECRET` in the deployment environment and redeploy/restart. Compose forwards this variable. Do not use a `VITE_` prefix.
+4. Send a real contact message after deployment and confirm matching `email_id` values in acceptance and delivery logs. The endpoint verifies the original signed body using the Resend SDK and only forwards events tagged `channel=contact_form` by this application.
+
+Delivery logs include only channel, email ID and webhook ID. Count distinct `webhook_id` values when aggregating because retries can repeat a log. Missing configuration or failed logging returns 503 so Resend can retry; invalid signatures return 400. Earlier emails without the channel tag are ignored. Delivery means the recipient mail server accepted the email; it does not establish that the recipient read it.

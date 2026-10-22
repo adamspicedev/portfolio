@@ -57,25 +57,8 @@ function RootDocument({ children }: { children: ReactNode }) {
   const apiKey = import.meta.env.VITE_PUBLIC_POSTHOG_PROJECT_TOKEN
   const apiHost = import.meta.env.VITE_PUBLIC_POSTHOG_HOST
 
-  if (!apiKey) {
-    if (import.meta.env.DEV) {
-      throw new Error(
-        'VITE_PUBLIC_POSTHOG_PROJECT_TOKEN variable required by PostHog is missing or un-configured, this causes events to be silently missed. This error stops appearing once VITE_PUBLIC_POSTHOG_PROJECT_TOKEN is configured',
-      )
-    }
-
+  if (!apiKey || !apiHost || apiKey.startsWith('<') || apiHost.startsWith('<'))
     return <DocumentContent>{children}</DocumentContent>
-  }
-
-  if (!apiHost) {
-    if (import.meta.env.DEV) {
-      throw new Error(
-        'VITE_PUBLIC_POSTHOG_HOST variable required by PostHog is missing or un-configured, this causes events to be silently missed. This error stops appearing once VITE_PUBLIC_POSTHOG_HOST is configured',
-      )
-    }
-
-    return <DocumentContent>{children}</DocumentContent>
-  }
 
   return (
     <PostHogProvider
@@ -83,6 +66,21 @@ function RootDocument({ children }: { children: ReactNode }) {
       options={{
         api_host: apiHost,
         capture_exceptions: true,
+        capture_pageview: 'history_change',
+        capture_performance: { web_vitals: true },
+        session_recording: {
+          maskAllInputs: true,
+          maskTextSelector: '.cms-page, .contact-form',
+        },
+        before_send: (event) => {
+          if (!event || typeof window === 'undefined') return null
+          if (
+            !['spicey.dev', 'www.spicey.dev'].includes(window.location.hostname)
+          )
+            return null
+          event.properties.environment = 'production'
+          return event
+        },
         defaults: '2025-05-24',
         debug: import.meta.env.DEV,
         logs: {

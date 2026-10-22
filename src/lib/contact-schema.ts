@@ -10,7 +10,17 @@ export const contactSchema = z.object({
   website: z.string().max(500).default(''),
 })
 export type ContactInput = z.infer<typeof contactSchema>
-export type ContactResult = { ok: true } | { ok: false; message: string }
+export type ContactResult =
+  | { ok: true }
+  | {
+      ok: false
+      reason:
+        | 'offline'
+        | 'rate_limited'
+        | 'provider_rejected'
+        | 'provider_unavailable'
+      message: string
+    }
 
 // A small per-process throttle. A hosting-level rate limit is needed across instances.
 export function createContactLimiter(now: () => number = Date.now) {

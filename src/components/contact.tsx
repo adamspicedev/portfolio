@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import type { FormEvent } from 'react'
 import { ArrowUpRight, LoaderCircle, Send } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
 import { sendContact } from '../lib/contact.functions'
+import { track, reportFailure } from '../lib/analytics'
 import { contactSchema } from '../lib/contact-schema'
 
 type FormState =
@@ -13,10 +14,18 @@ type FormState =
 
 export function Contact() {
   const posthog = usePostHog()
+  const started = useRef(false)
+  const submitting = useRef(false)
+  const validationReported = useRef(false)
+  function start() {
+    if (started.current) return
+    started.current = true
+    track(posthog, 'contact_started')
+  }
   const [state, setState] = useState<FormState>({ kind: 'idle' })
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (state.kind === 'sending') return
+    if (submitting.current) return
     const form = event.currentTarget
     const fields = new FormData(form)
     const result = contactSchema.safeParse({
@@ -24,7 +33,13 @@ export function Contact() {
       message: fields.get('message'),
       website: fields.get('website'),
     })
+    if (!fields.get('website')) {
+      start()
+      track(posthog, 'contact_attempted')
+    }
     if (!result.success) {
+      if (!fields.get('website'))
+        track(posthog, 'contact_failed', { reason: 'validation' })
       setState({
         kind: 'error',
         message:
@@ -32,23 +47,32 @@ export function Contact() {
       })
       return
     }
+    submitting.current = true
     setState({ kind: 'sending' })
     try {
       const response = await sendContact({ data: result.data })
       if (response.ok) {
-        posthog.capture('contact_message_sent')
-        posthog.logger.info('contact message sent', {
-          channel: 'contact_form',
-        })
+        if (!result.data.website)
+          track(posthog, 'contact_message_sent', { channel: 'contact_form' })
+        started.current = false
         form.reset()
         setState({ kind: 'success' })
-      } else setState({ kind: 'error', message: response.message })
+      } else {
+        track(posthog, 'contact_failed', { reason: response.reason })
+        setState({ kind: 'error', message: response.message })
+      }
     } catch {
+      if (!result.data.website) {
+        track(posthog, 'contact_failed', { reason: 'request_failed' })
+        reportFailure(posthog, 'contact_submit')
+      }
       setState({
         kind: 'error',
         message:
           'Something went wrong sending your message. Email adam@spicey.dev directly.',
       })
+    } finally {
+      submitting.current = false
     }
   }
   return (
@@ -68,6 +92,7 @@ export function Contact() {
           <a
             className="contact-email mt-9 inline-flex items-center gap-3"
             href="mailto:adam@spicey.dev"
+            onClick={() => track(posthog, 'contact_email_clicked')}
           >
             adam@spicey.dev <ArrowUpRight size={25} />
           </a>
@@ -92,6 +117,28 @@ export function Contact() {
         </div>
         <form
           onSubmit={submit}
+          onChange={(event) => {
+            if (
+              (event.target instanceof HTMLInputElement &&
+                event.target.name !== 'website') ||
+              event.target instanceof HTMLTextAreaElement
+            )
+              start()
+          }}
+          onInvalidCapture={(event) => {
+            if (
+              validationReported.current ||
+              new FormData(event.currentTarget).get('website')
+            )
+              return
+            validationReported.current = true
+            queueMicrotask(() => {
+              validationReported.current = false
+            })
+            start()
+            track(posthog, 'contact_attempted')
+            track(posthog, 'contact_failed', { reason: 'validation' })
+          }}
           className="contact-form"
           aria-label="Send Adam a message"
         >

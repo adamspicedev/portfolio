@@ -17,9 +17,9 @@ export const Route = createFileRoute('/blog/')({
           index: false,
         })
       : pageSeo({
-          title: 'Stories · Adam Spice',
+          title: 'Development, Technology & Personal Stories · Adam Spice',
           description:
-            'Notes on development, things I have learned, and the stories behind the projects.',
+            'Explore Adam Spice’s stories about software development, technology, and a lifelong curiosity for computers, with lessons from building things for the web.',
           path: '/blog',
         }),
   component: Stories,
@@ -83,7 +83,7 @@ function Stories() {
       </p>
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {filtered.map((story) => (
-          <StoryCard key={story.slug} story={story} />
+          <StoryCard key={story.slug} story={story} placement="blog" />
         ))}
       </div>
       {filtered.length === 0 && (

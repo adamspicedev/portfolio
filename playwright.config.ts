@@ -23,6 +23,7 @@ export default defineConfig({
       PORT: '4173',
       HOST: '127.0.0.1',
       RESEND_API_KEY: '',
+      RESEND_WEBHOOK_SECRET: '',
       WRITE_IT_UP_URL: '',
       CLERK_SECRET_KEY: '',
       VITE_CLERK_PUBLISHABLE_KEY: '',

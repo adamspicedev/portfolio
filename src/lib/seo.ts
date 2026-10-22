@@ -5,7 +5,7 @@ export const socialImage = '/images/social-preview.jpg'
 export const socialImageAlt =
   'Adam Spice, full-stack developer, beside the spicey wordmark on a lavender background'
 
-export const homeTitle = 'Adam Spice · Developer, curious human'
+export const homeTitle = 'Adam Spice · Full-stack React & TypeScript Developer'
 export const homeDescription =
   'Adam Spice is a full-stack developer who enjoys building apps with React and TypeScript. Explore his projects, stories, and the things he is making.'
 
@@ -59,6 +59,34 @@ export function jsonLd(value: unknown) {
     .replace(/>/g, '\\u003e')
     .replace(/&/g, '\\u0026')
 }
+
+export function homeSeo() {
+  return {
+    ...pageSeo({ title: homeTitle, description: homeDescription, path: '/' }),
+    scripts: [
+      {
+        type: 'application/ld+json',
+        children: jsonLd({
+          '@context': 'https://schema.org',
+          '@type': 'ProfilePage',
+          '@id': `${siteUrl}/#profile`,
+          url: `${siteUrl}/`,
+          name: homeTitle,
+          description: homeDescription,
+          mainEntity: {
+            '@type': 'Person',
+            '@id': `${siteUrl}/#person`,
+            name: 'Adam Spice',
+            url: `${siteUrl}/`,
+            image: `${siteUrl}/images/avatar.png`,
+            jobTitle: 'Full-stack developer',
+          },
+        }),
+      },
+    ],
+  }
+}
+
 export function storySeo(story: Story) {
   const description = story.seoDescription || story.description
   const url = `${siteUrl}/blog/${story.slug}`
@@ -84,7 +112,12 @@ export function storySeo(story: Story) {
           datePublished: story.date,
           ...(story.updatedAt ? { dateModified: story.updatedAt } : {}),
           image: [new URL(story.cover || socialImage, siteUrl).href],
-          author: { '@type': 'Person', name: 'Adam Spice', url: siteUrl },
+          author: {
+            '@type': 'Person',
+            '@id': `${siteUrl}/#person`,
+            name: 'Adam Spice',
+            url: `${siteUrl}/`,
+          },
         }),
       },
     ],

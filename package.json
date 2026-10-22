@@ -50,6 +50,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.64.0",
+    "@posthog/rollup-plugin": "^1.6.1",
     "@tanstack/router-cli": "^1.132.0",
     "@types/bun": "^1.4.2",
     "@types/node": "^22.10.2",
@@ -68,6 +69,7 @@
   },
   "packageManager": "bun@1.4.2",
   "trustedDependencies": [
+    "@posthog/cli",
     "esbuild",
     "lightningcss"
   ]

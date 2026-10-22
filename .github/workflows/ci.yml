@@ -48,6 +48,12 @@ jobs:
       - name: Install Chromium and system dependencies
         run: bun run playwright install --with-deps chromium
       - run: bun run build
+        env:
+          VITE_PUBLIC_POSTHOG_PROJECT_TOKEN: ${{ vars.VITE_PUBLIC_POSTHOG_PROJECT_TOKEN }}
+          VITE_PUBLIC_POSTHOG_HOST: ${{ vars.VITE_PUBLIC_POSTHOG_HOST }}
+          POSTHOG_API_KEY: ${{ github.event_name != 'pull_request' && secrets.POSTHOG_API_KEY || '' }}
+          POSTHOG_PROJECT_ID: ${{ vars.POSTHOG_PROJECT_ID }}
+          POSTHOG_HOST: ${{ vars.POSTHOG_HOST }}
       - run: bun run test:e2e
       - name: Upload browser failure details
         if: failure()

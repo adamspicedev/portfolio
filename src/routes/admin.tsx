@@ -1,3 +1,5 @@
+import { track, reportFailure } from '../lib/analytics'
+import { syncAdminIdentity } from '../lib/posthog-identity'
 import { pageSeo } from '../lib/seo'
 import { createFileRoute } from '@tanstack/react-router'
 import {
@@ -7,7 +9,7 @@ import {
   useUser,
 } from '@clerk/tanstack-react-start'
 import { usePostHog } from 'posthog-js/react'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Plus, Archive, RotateCcw, FilePenLine } from 'lucide-react'
 import { getAdminDashboard, archiveCmsStory } from '../lib/cms.functions'
 import { CmsEditor } from '../components/cms-editor'
@@ -86,24 +88,9 @@ function AdminPage() {
 function PostHogIdentity() {
   const posthog = usePostHog()
   const { isLoaded, isSignedIn, user } = useUser()
-  const identifiedUserId = useRef<string | null>(null)
-
   useEffect(() => {
     if (!isLoaded) return
-
-    if (!isSignedIn || !user) {
-      if (identifiedUserId.current) {
-        posthog.reset()
-        identifiedUserId.current = null
-      }
-      return
-    }
-
-    if (identifiedUserId.current === user.id) return
-
-    if (identifiedUserId.current) posthog.reset()
-    posthog.identify(user.id)
-    identifiedUserId.current = user.id
+    syncAdminIdentity(posthog, isSignedIn && user ? user.id : null)
   }, [isLoaded, isSignedIn, posthog, user])
 
   return null
@@ -142,7 +129,7 @@ function CmsDashboard({ initialStories }: { initialStories: CmsStory[] }) {
         },
       })
       if (result.ok) {
-        posthog.capture('cms_story_archive_updated', {
+        track(posthog, 'cms_story_archive_updated', {
           action: result.story.archived ? 'archived' : 'restored',
         })
         replace(result.story)
@@ -151,8 +138,13 @@ function CmsDashboard({ initialStories }: { initialStories: CmsStory[] }) {
             ? 'Story archived.'
             : 'Story restored. Its draft and publication date settings are unchanged.',
         )
-      } else setMessage(result.message)
+      } else {
+        track(posthog, 'cms_archive_failed', { reason: 'rejected' })
+        setMessage(result.message)
+      }
     } catch {
+      track(posthog, 'cms_archive_failed', { reason: 'request_failed' })
+      reportFailure(posthog, 'cms_archive')
       setMessage(
         'Unable to update the story. Check your connection and sign-in, then try again.',
       )
@@ -187,7 +179,7 @@ function CmsDashboard({ initialStories }: { initialStories: CmsStory[] }) {
           type="button"
           className="button button-primary"
           onClick={() => {
-            posthog.capture('cms_story_editor_opened', { mode: 'create' })
+            track(posthog, 'cms_story_editor_opened', { mode: 'create' })
             setEditing('new')
           }}
         >
@@ -239,7 +231,7 @@ function CmsDashboard({ initialStories }: { initialStories: CmsStory[] }) {
                   type="button"
                   className="button button-outline"
                   onClick={() => {
-                    posthog.capture('cms_story_editor_opened', { mode: 'edit' })
+                    track(posthog, 'cms_story_editor_opened', { mode: 'edit' })
                     setEditing(story)
                   }}
                 >
