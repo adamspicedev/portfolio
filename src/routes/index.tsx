@@ -18,16 +18,18 @@ import { Computer } from '../components/computer'
 import { OpenSourceContributions } from '../components/open-source-contributions'
 import { Contact } from '../components/contact'
 import { StoryCard } from '../components/story-card'
-import { experiencesData, projectsData, skillsData } from '../lib/portfolio'
+import { experiencesData, skillsData } from '../lib/portfolio'
+import { getProjects } from '../lib/projects.functions'
 import { getStories } from '../lib/stories.functions'
 
 export const Route = createFileRoute('/')({
   loader: async () => {
-    const [stories, headlines] = await Promise.all([
+    const [stories, headlines, projects] = await Promise.all([
       getStories(),
       getHeadlines(),
+      getProjects(),
     ])
-    return { stories, headlines }
+    return { stories, headlines, projects }
   },
   head: ({ loaderData }) =>
     !loaderData
@@ -45,7 +47,7 @@ export const Route = createFileRoute('/')({
 function Home() {
   useHomeMotion()
   const posthog = usePostHog()
-  const { stories, headlines } = Route.useLoaderData()
+  const { stories, headlines, projects } = Route.useLoaderData()
   return (
     <main id="main-content">
       <section className="hero page-width">
@@ -124,8 +126,8 @@ function Home() {
           </p>
         </div>
         <div className="grid gap-7 md:grid-cols-2">
-          {projectsData.map((project) => (
-            <article className="project-card" key={project.title}>
+          {projects.map((project) => (
+            <article className="project-card" key={project.id}>
               <a
                 className={`project-art project-art-${project.color}`}
                 href={project.link}
@@ -154,7 +156,7 @@ function Home() {
                   </div>
                   <img
                     src={project.image}
-                    alt={`${project.title} application screenshot`}
+                    alt={project.imageAlt}
                     width={1000}
                     height={650}
                     loading="lazy"

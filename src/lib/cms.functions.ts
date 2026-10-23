@@ -9,9 +9,14 @@ export const getAdminDashboard = createServerFn({ method: 'GET' }).handler(
     const identity = await adminIdentity()
     const publishableKey = process.env.VITE_CLERK_PUBLISHABLE_KEY || ''
     if (identity.status !== 'admin')
-      return { ...identity, publishableKey, stories: [] }
+      return { ...identity, publishableKey, stories: [], projects: [] }
     const store = await storyStore()
-    return { ...identity, publishableKey, stories: await store.all() }
+    return {
+      ...identity,
+      publishableKey,
+      stories: await store.all(),
+      projects: await store.projects.all(),
+    }
   },
 )
 export const saveCmsStory = createServerFn({ method: 'POST' })

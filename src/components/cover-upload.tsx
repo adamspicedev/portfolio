@@ -4,12 +4,14 @@ import { useEffect, useRef, useState } from 'react'
 import { safeContentUrl } from '../lib/story-schema'
 
 export function CoverUpload({
+  contentLabel = 'story',
   cover,
   alt,
   disabled,
   onUploaded,
   onBusy,
 }: {
+  contentLabel?: 'story' | 'project'
   cover: string
   alt: string
   disabled: boolean
@@ -80,7 +82,7 @@ export function CoverUpload({
           ) {
             onUploaded(result.url)
             setMessage(
-              'Cover uploaded. Add a description and save the story to use it.',
+              `Cover uploaded. Add a description and save the ${contentLabel} to use it.`,
             )
           } else
             setError(
@@ -121,7 +123,8 @@ export function CoverUpload({
       </label>
       <p className="text-sm text-muted">
         JPEG, PNG or WebP · up to 3 MB and 25 megapixels. Uploaded images are
-        public to anyone with their URL, even before the story is published.
+        public to anyone with their URL, even before the {contentLabel} is
+        published.
       </p>
       {busy && (
         <>

@@ -1,3 +1,4 @@
+import { ProjectStore } from './sqlite-projects.server'
 import { createClient, type Client, type Transaction } from '@libsql/client'
 import { mkdirSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
@@ -45,7 +46,10 @@ export class StoryConflict extends Error {}
 export class DuplicateSlug extends Error {}
 
 export class StoryStore {
-  private constructor(private readonly db: Client) {}
+  readonly projects: ProjectStore
+  private constructor(private readonly db: Client) {
+    this.projects = new ProjectStore(db)
+  }
 
   static async connect(url: string, authToken?: string, seeds: Story[] = []) {
     const db = createClient({
@@ -93,6 +97,8 @@ export class StoryStore {
         await tx.execute(
           "ALTER TABLE stories ADD COLUMN seo_description TEXT NOT NULL DEFAULT ''",
         )
+
+      await this.projects.initialize(tx)
 
       const seeded = await tx.execute(
         "SELECT value FROM cms_meta WHERE key = 'seeded'",

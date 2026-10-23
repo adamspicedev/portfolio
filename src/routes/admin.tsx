@@ -13,6 +13,8 @@ import { usePostHog } from 'posthog-js/react'
 import { useEffect, useState } from 'react'
 import { Plus, Archive, RotateCcw, FilePenLine } from 'lucide-react'
 import { getAdminDashboard, archiveCmsStory } from '../lib/cms.functions'
+import { ProjectDashboard } from '../components/project-dashboard'
+import type { CmsProject } from '../lib/project-schema'
 import { CmsEditor } from '../components/cms-editor'
 import type { CmsStory } from '../lib/cms-schema'
 import { publicationDate } from '../lib/story-schema'
@@ -21,8 +23,9 @@ export const Route = createFileRoute('/admin')({
   loader: () => getAdminDashboard(),
   head: () =>
     pageSeo({
-      title: 'Story studio · Adam Spice',
-      description: 'Sign in to manage stories on Adam Spice’s website.',
+      title: 'Publishing studio · Adam Spice',
+      description:
+        'Sign in to manage stories and projects on Adam Spice’s website.',
       path: '/admin',
       index: false,
     }),
@@ -33,7 +36,7 @@ function AdminPage() {
   if (data.status === 'setup')
     return (
       <main id="main-content" className="page-width cms-page">
-        <p className="eyebrow">Story studio</p>
+        <p className="eyebrow">Publishing studio</p>
         <h1 className="section-title">Your publishing desk.</h1>
         <div className="cms-notice mt-8">
           <h2 className="text-xl font-semibold">
@@ -57,13 +60,15 @@ function AdminPage() {
       <PostHogIdentity />
       <main id="main-content" className="page-width cms-page">
         <div className="cms-toolbar">
-          <p className="eyebrow">Story studio</p>
+          <p className="eyebrow">Publishing studio</p>
           {data.status !== 'signed-out' && <UserButton />}
         </div>
         {data.status === 'signed-out' ? (
           <div className="cms-auth">
             <h1 className="section-title">Back to the keyboard.</h1>
-            <p className="my-6 text-muted">Sign in to manage stories.</p>
+            <p className="my-6 text-muted">
+              Sign in to manage stories and projects.
+            </p>
             <SignIn routing="hash" forceRedirectUrl="/admin" />
           </div>
         ) : data.status === 'forbidden' ? (
@@ -79,7 +84,10 @@ function AdminPage() {
             </p>
           </div>
         ) : (
-          <CmsDashboard initialStories={data.stories} />
+          <CmsDashboard
+            initialStories={data.stories}
+            initialProjects={data.projects}
+          />
         )}
       </main>
     </ClerkProvider>
@@ -99,7 +107,25 @@ function PostHogIdentity() {
   return null
 }
 
-function CmsDashboard({ initialStories }: { initialStories: CmsStory[] }) {
+function CmsDashboard({
+  initialStories,
+  initialProjects,
+}: {
+  initialStories: CmsStory[]
+  initialProjects: CmsProject[]
+}) {
+  const [section, setSection] = useState<'stories' | 'projects'>('stories')
+  const [projects, setProjects] = useState(initialProjects)
+  function replaceProject(project: CmsProject) {
+    setProjects((current) =>
+      [project, ...current.filter((item) => item.id !== project.id)].sort(
+        (a, b) =>
+          a.position - b.position ||
+          a.title.localeCompare(b.title) ||
+          a.id.localeCompare(b.id),
+      ),
+    )
+  }
   const posthog = usePostHog()
   const [stories, setStories] = useState(initialStories)
   const [editing, setEditing] = useState<CmsStory | 'new' | null>(null)
@@ -155,6 +181,14 @@ function CmsDashboard({ initialStories }: { initialStories: CmsStory[] }) {
       setPending(null)
     }
   }
+  if (section === 'projects')
+    return (
+      <ProjectDashboard
+        projects={projects}
+        onChange={replaceProject}
+        onBack={() => setSection('stories')}
+      />
+    )
   if (editing)
     return (
       <CmsEditor
@@ -170,6 +204,16 @@ function CmsDashboard({ initialStories }: { initialStories: CmsStory[] }) {
   const visible = stories.filter((story) => story.archived === showArchived)
   return (
     <>
+      <div className="cms-toolbar">
+        <span className="font-mono text-sm">Stories</span>
+        <button
+          className="text-link"
+          disabled={pending !== null}
+          onClick={() => setSection('projects')}
+        >
+          Manage projects →
+        </button>
+      </div>
       <div className="cms-dashboard-heading">
         <div>
           <h1 className="section-title">Words, ready to go.</h1>

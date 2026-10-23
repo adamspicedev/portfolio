@@ -65,7 +65,11 @@ Archiving removes a story from the public site and reserves its slug. Restore it
 
 The six existing Markdown stories seed a new, empty database on its first use. After initialization, the database is authoritative. Editing or adding files in `content/stories/` does not change an existing database. The `bun run story "Title"` helper remains useful for preparing seed content for a new installation.
 
-Covers support existing local image paths and hosted HTTPS URLs. This version does not upload files. Raw HTML in Markdown is not executed.
+Covers support existing local image paths, hosted HTTPS URLs, and image uploads when blob storage is configured (see [image uploads](docs/story-image-uploads.md)). Raw HTML in Markdown is not executed.
+
+Choose **Manage projects** in `/admin` to create or edit homepage projects. You can change the title, description, category, destination URL, tags, image and alt text, card colour, and display order (lower numbers appear first). Save as a draft to keep a project hidden, or uncheck **Keep as draft** and save to publish. Archive and restore work like stories, and stale saves are rejected.
+
+The existing Movie-Mate and StoreIt cards are imported once into the same SQLite database on first connection after this update, including for existing installations. Subsequent edits are stored in the database and appear on the homepage without a rebuild. Database backups include projects; changing `projectsData` in the source only affects new imports.
 
 ## Configure Clerk
 

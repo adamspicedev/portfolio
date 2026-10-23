@@ -24,6 +24,12 @@ export default defineConfig({
   webServer: [
     {
       command:
+        'bunx vite e2e/fixtures/projects --config e2e/fixtures/projects/vite.config.ts --port 4177',
+      url: 'http://127.0.0.1:4177',
+      reuseExistingServer: false,
+    },
+    {
+      command:
         'bunx vite e2e/fixtures/contact --config e2e/fixtures/contact/vite.config.ts --port 4176',
       url: 'http://127.0.0.1:4176',
       reuseExistingServer: false,
@@ -43,6 +49,8 @@ export default defineConfig({
         VITE_CLERK_PUBLISHABLE_KEY: '',
         CMS_ADMIN_USER_IDS: '',
         DATABASE_PATH: '.output/test-stories.sqlite',
+        TURSO_DATABASE_URL: '',
+        TURSO_AUTH_TOKEN: '',
       },
     },
     {

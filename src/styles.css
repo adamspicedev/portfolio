@@ -1573,6 +1573,7 @@ body:has(.hero) .site-header::before {
   font-size: 0.9rem;
 }
 .cms-editor input:not([type='checkbox']),
+.cms-editor select,
 .cms-editor textarea {
   width: 100%;
   padding: 0.8rem 1rem;
@@ -1623,6 +1624,7 @@ body:has(.hero) .site-header::before {
   accent-color: var(--color-cobalt);
 }
 .cms-editor input:focus-visible,
+.cms-editor select:focus-visible,
 .cms-editor textarea:focus-visible {
   outline: 2px solid var(--color-cobalt);
   outline-offset: 3px;
