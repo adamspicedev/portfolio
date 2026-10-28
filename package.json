@@ -20,6 +20,7 @@
     "lint": "oxlint --max-warnings 0 .",
     "lint:fix": "oxlint --fix --max-warnings 0 .",
     "test:e2e": "playwright test",
+    "test:vercel": "bun --no-env-file scripts/check-vercel-build.ts",
     "db:backup": "bun scripts/backup-database.ts"
   },
   "dependencies": {
