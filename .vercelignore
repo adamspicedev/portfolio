@@ -1,0 +1,12 @@
+.output/
+.tanstack/
+.nitro/
+dist/
+coverage/
+playwright-report/
+test-results/
+data/
+backups/
+*.sqlite
+*.sqlite-wal
+*.sqlite-shm

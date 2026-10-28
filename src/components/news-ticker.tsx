@@ -1,7 +1,31 @@
+import { useEffect, useState } from 'react'
 import { Asterisk } from 'lucide-react'
 import type { Headline } from '../lib/headlines.server'
 
-export function NewsTicker({ headlines }: { headlines: Headline[] }) {
+export function NewsTicker() {
+  const [headlines, setHeadlines] = useState<Headline[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const controller = new AbortController()
+    async function load() {
+      try {
+        const response = await fetch('/api/headlines', {
+          signal: controller.signal,
+          credentials: 'omit',
+        })
+        if (!response.ok) throw new Error('Headlines unavailable')
+        const items: Headline[] = await response.json()
+        if (!controller.signal.aborted) setHeadlines(items)
+      } catch {
+        // The rest of the portfolio remains usable if headlines are unavailable.
+      } finally {
+        if (!controller.signal.aborted) setLoading(false)
+      }
+    }
+    void load()
+    return () => controller.abort()
+  }, [])
   return (
     <aside
       className="skills-ribbon news-ticker"
@@ -46,7 +70,9 @@ export function NewsTicker({ headlines }: { headlines: Headline[] }) {
         </div>
       ) : (
         <p className="ticker-fallback font-mono">
-          Headlines are taking a breather. Visit Hacker News for the latest.
+          {loading
+            ? 'Loading the latest headlines…'
+            : 'Headlines are taking a breather. Visit Hacker News for the latest.'}
         </p>
       )}
     </aside>

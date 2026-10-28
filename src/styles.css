@@ -408,21 +408,6 @@ button:disabled {
   background: var(--color-orange);
   border-block: 1px solid #19193815;
 }
-.ribbon-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  min-height: 58px;
-  font-family: var(--font-mono);
-  font-size: 14px;
-  letter-spacing: 0.025em;
-}
-.ribbon-inner svg {
-  flex-shrink: 0;
-  width: 19px;
-  height: 19px;
-}
 .project-card {
   min-width: 0;
 }
@@ -1060,17 +1045,6 @@ button:disabled {
   .scroll-cue {
     bottom: 22px;
   }
-  .ribbon-inner {
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 15px;
-    padding-block: 16px;
-    font-size: 13px;
-  }
-  .ribbon-inner span:nth-of-type(5),
-  .ribbon-inner svg:last-child {
-    display: none;
-  }
   .section-space {
     padding-block: 75px;
   }
@@ -1229,19 +1203,6 @@ button:disabled {
 
   .scroll-cue .font-mono {
     font-size: 9px;
-  }
-  .ribbon-inner {
-    gap: 12px;
-    min-height: 54px;
-    font-size: 12px;
-  }
-  .ribbon-inner span:nth-of-type(4),
-  .ribbon-inner svg:nth-of-type(4) {
-    display: none;
-  }
-  .ribbon-inner svg {
-    width: 14px;
-    height: 14px;
   }
   .section-space {
     padding-block: 65px;
@@ -1682,11 +1643,6 @@ body:has(.hero) .site-header::before {
 @keyframes ribbon-star-turn {
   to {
     transform: rotate(360deg);
-  }
-}
-@media (prefers-reduced-motion: no-preference) {
-  .ribbon-inner svg {
-    animation: ribbon-star-turn 4s linear infinite;
   }
 }
 

@@ -10,7 +10,6 @@
     "public/**",
     "bun.lock",
     "src/routeTree.gen.ts",
-    ".cta.json",
     ".output/**",
     ".tanstack/**",
     "playwright-report/**",

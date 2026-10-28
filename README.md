@@ -2,15 +2,6 @@
 
 A playful portfolio built with TanStack Start, React, Tailwind CSS 4 and Three.js. The retro computer is inspired by Adam's Dragon 32 story.
 
-The app was scaffolded with the official installer:
-
-```sh
-npx @tanstack/cli@latest create spicey-portfolio \
-  --package-manager npm --deployment nitro --no-git --no-intent --no-examples -y
-```
-
-The generated Start/Vite setup was migrated into this existing repository, then converted to Bun. The Next.js implementation and its dependencies have been replaced; existing images, social links and résumé are retained.
-
 ## Run locally
 
 Use **Bun 1.4.2 or newer**. The project and CI pin Bun 1.4.2 in `.bun-version`.
@@ -31,11 +22,24 @@ bun run build
 bun run start
 ```
 
-`bun run start` serves the production Bun build from `.output/server/index.mjs`. Set `PORT` to change the port. Deploy the generated `.output` directory with a persistent SQLite data directory to a host that supports a Bun server; this app includes server functions and isn't a static-only site. The old Next.js hosting configuration must be updated before deployment.
+`bun run start` serves the production Bun build from `.output/server/index.mjs`. Set `PORT` to change the port. The app includes server functions and requires a server deployment; see [deployment options](#deploy-on-bun-or-vercel).
+
+## React runtime
+
+[TanStack Redact](https://tanstack.com/redact/latest/docs/start) handles server
+rendering and browser hydration through the Vite plugin. Keep `react` and
+`react-dom` installed and continue using their normal imports. The plugin runs
+after the Start and React plugins, and `ssr.noExternal` bundles server dependencies
+so their React imports also resolve to Redact.
+
+The default full preset preserves the features used by Start and Clerk, including
+hydration, context, Suspense, lazy components, portals and class error boundaries.
+Rendering is synchronous. The contact, project and upload browser fixtures use the
+same runtime; run the production build and browser suite when changing it.
 
 ## CI and tests
 
-GitHub Actions runs on pull requests, pushes to `main`, and manual dispatches. It uses Bun from `.bun-version` and `bun install --frozen-lockfile` with the committed `bun.lock`. The jobs check formatting, lint, TypeScript, unit tests, the production build and Chromium browser tests. Failed browser tests upload their HTML report, screenshots and traces. No deployment or mail credentials are needed.
+GitHub Actions runs on pull requests, pushes to `main`, and manual dispatches. It uses Bun from `.bun-version` and `bun install --frozen-lockfile` with the committed `bun.lock`. The jobs check formatting, lint, TypeScript, unit tests, the production build and Chromium/mobile WebKit browser tests. Failed browser tests upload their HTML report, screenshots and traces. No deployment or mail credentials are needed.
 
 Linting uses [Oxlint](https://oxc.rs/docs/guide/usage/linter/quickstart), with TypeScript, React hooks and accessibility rules. Formatting uses [Oxfmt](https://oxc.rs/docs/guide/usage/formatter/quickstart.html). Generated routes, build outputs, reports and existing public assets are excluded from formatting.
 
@@ -48,7 +52,7 @@ bun run typecheck
 bun test
 
 # Run browser tests against the production build.
-bun run playwright install chromium
+bun run playwright install chromium webkit
 bun run build
 bun run test:e2e
 ```
@@ -88,19 +92,20 @@ Without Clerk keys, the public site still works and `/admin` shows setup instruc
 
 ## Existing blog service
 
-The old blog fetched rich-text articles from `WRITE_IT_UP_URL`. If you still use that service, set the same server environment variable. The site merges those stories with CMS database stories and converts the supported rich-text blocks to Markdown. A database story takes precedence over a remote article with the same slug, including when it is a draft or archived.
+Set `WRITE_IT_UP_URL` to include articles from the legacy blog service. The site merges those stories with CMS database stories and converts the supported rich-text blocks to Markdown. A database story takes precedence over a remote article with the same slug, including when it is a draft or archived.
 
-Old `/story-slug` links redirect to `/blog/story-slug`. If the service is unavailable, local stories remain available. Remote stories use a one-minute in-process cache. Remote availability and the original articles need checking against your actual service; it isn't configured in this checkout. The adapter supports paragraphs, headings, links, emphasis, lists, quotes, code blocks, dividers and images. Custom editor blocks need an explicit mapping in `src/lib/legacy-stories.server.ts`.
+Old `/story-slug` links redirect to `/blog/story-slug`. If the service is unavailable, local stories remain available. Remote stories use a one-minute in-process cache. The adapter supports paragraphs, headings, links, emphasis, lists, quotes, code blocks, dividers and images. Custom editor blocks need an explicit mapping in `src/lib/legacy-stories.server.ts`.
 
 ## Contact form
 
-Copy `.env.example` to `.env` for local development and configure these **server-only** variables:
+Copy `.env.example` to `.env` for local development. Production contact delivery requires these **server-only** variables:
 
 - `RESEND_API_KEY`: your Resend API key.
 - `RESEND_FROM_EMAIL`: a sender on a verified sending domain. The onboarding sender can only be used within Resend's account restrictions.
-- `WRITE_IT_UP_URL`: optional old blog service.
+- `TURNSTILE_SECRET_KEY`: the secret for the contact form's Cloudflare Turnstile widget.
+- `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN`: shared storage for contact rate limits.
 
-The recipient remains `adam@spicey.dev`. Without an API key, the form directs visitors to email Adam directly. Sending uses a Start server function with server-side validation, a honeypot and a limit of three attempts per sender per ten minutes. The limiter is in memory and resets on restart; configure rate limiting at your host for protection across instances. Keep these variables out of `VITE_` variables and source control.
+Set the widget's public site key as `VITE_TURNSTILE_SITE_KEY` at build time. The recipient remains `adam@spicey.dev`. Sending requires verified Turnstile tokens, a trusted Vercel client IP and shared email/IP/global rate limits. Local or unconfigured builds provide a direct-email fallback. See [contact protection](docs/contact-anti-spam.md) for setup, limits and verification. Keep all secret values server-only and out of source control.
 
 ## Change the portfolio
 
@@ -115,7 +120,7 @@ The scene loads only on the client as it approaches the viewport. It caps pixel 
 
 ## Deploy on Bun or Vercel
 
-By default, the CMS uses a local SQLite database. On a Bun server, that file needs a persistent filesystem. Vercel deployments use Turso by setting `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` instead. Keep the current live site until the replacement deployment and its CMS have been verified.
+By default, the CMS uses a local SQLite database. On a Bun server, that file needs a persistent filesystem. Vercel deployments use Turso by setting `TURSO_DATABASE_URL` and `TURSO_AUTH_TOKEN` instead.
 
 `Dockerfile` builds the app and runs it as the unprivileged `bun` user. `compose.yml` mounts a named volume at `/app/data` and binds port 3000 to the server's loopback address. Place an HTTPS reverse proxy in front of it and run one app instance against the volume. Configure Clerk and mail variables in `.env` on that server, then:
 
@@ -168,7 +173,7 @@ The cover-description migration adds `cover_alt TEXT NOT NULL DEFAULT ''` to the
 
 Set `VITE_PUBLIC_POSTHOG_PROJECT_TOKEN` and `VITE_PUBLIC_POSTHOG_HOST` in Vercel's production/preview build environments. These values are public and embedded at build time; changing them requires rebuilding. Docker Compose forwards them as build arguments and runtime settings.
 
-Source-map uploads use the official PostHog Rollup plugin on the exact build that produces the deployed assets. Configure `POSTHOG_API_KEY` (personal key with Error Tracking write access), `POSTHOG_PROJECT_ID`, and `POSTHOG_HOST` in the deployment build environment. The plugin tags the release with the Vercel/GitHub commit and deletes maps after upload. With no upload credentials, ordinary builds remain available but upload is disabled. GitHub Actions uses the matching repository variables and `POSTHOG_API_KEY` secret for trusted push/manual runs; pull requests never receive that upload credential. CI uploads do not replace uploads from the actual Vercel build.
+Source maps are generated and uploaded only for the Vercel Production client build. Configure server-only `POSTHOG_API_KEY` there; project, host and release settings live in `build/posthog-sourcemaps.ts`. Missing credentials, upload failures or leftover public maps abort that build. Local, Preview and GitHub Actions builds skip uploads. See [source-map configuration](docs/posthog-source-maps.md).
 
 Verify the release in PostHog Error Tracking's symbol sets. Contact success emits `contact_message_sent` from the browser and `contact email accepted` from the server, with `channel=contact_form`; no message body or visitor email is logged. Acceptance means Resend accepted the request, not that delivery completed. Server delivery flushes its log batch before returning and logging errors do not change email delivery success. Confirm the browser event in Product Analytics and the acceptance record in PostHog Logs after a real successful submission. Unit tests alone do not establish hosted ingestion.
 
@@ -203,3 +208,18 @@ Web Vitals capture is enabled explicitly. Replay samples 10% of production sessi
 4. Send a real contact message after deployment and confirm matching `email_id` values in acceptance and delivery logs. The endpoint verifies the original signed body using the Resend SDK and only forwards events tagged `channel=contact_form` by this application.
 
 Delivery logs include only channel, email ID and webhook ID. Count distinct `webhook_id` values when aggregating because retries can repeat a log. Missing configuration or failed logging returns 503 so Resend can retry; invalid signatures return 400. Earlier emails without the channel tag are ignored. Delivery means the recipient mail server accepted the email; it does not establish that the recipient read it.
+
+### Initial-load performance
+
+Vercel functions run in Sydney (`syd1`) alongside the production Turso database.
+Keep the function and database regions aligned if either hosting location changes.
+
+The homepage server-renders projects and stories without waiting for Hacker News.
+The ticker fetches `/api/headlines` after hydration, with a loading message and a
+link to Hacker News when unavailable. Successful headline responses permit one
+minute of browser caching and five minutes of CDN caching, with ten minutes of
+stale-while-revalidate; empty results are not cached by HTTP intermediaries.
+The upstream reader also retains its existing fifteen-minute in-process cache.
+Cloudflare does not cache JSON by default; Vercel can apply this endpoint's CDN
+policy without a Cloudflare rule. Full HTML responses retain their existing
+revalidation policy because Clerk attaches authentication state.

@@ -14,6 +14,7 @@ import { Route as SlugRouteImport } from './routes/$slug'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as RobotsDottxtRouteImport } from './routes/robots[.]txt'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as ApiHeadlinesRouteImport } from './routes/api.headlines'
 import { Route as ApiStoryImagesRouteImport } from './routes/api.story-images'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
@@ -44,6 +45,11 @@ const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiHeadlinesRoute = ApiHeadlinesRouteImport.update({
+  id: '/api/headlines',
+  path: '/api/headlines',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiStoryImagesRoute = ApiStoryImagesRouteImport.update({
   id: '/api/story-images',
   path: '/api/story-images',
@@ -71,6 +77,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api/headlines': typeof ApiHeadlinesRoute
   '/api/story-images': typeof ApiStoryImagesRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/': typeof BlogIndexRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api/headlines': typeof ApiHeadlinesRoute
   '/api/story-images': typeof ApiStoryImagesRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog': typeof BlogIndexRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/robots.txt': typeof RobotsDottxtRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api/headlines': typeof ApiHeadlinesRoute
   '/api/story-images': typeof ApiStoryImagesRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/blog/': typeof BlogIndexRoute
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/api/headlines'
     | '/api/story-images'
     | '/blog/$slug'
     | '/blog/'
@@ -118,6 +128,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/api/headlines'
     | '/api/story-images'
     | '/blog/$slug'
     | '/blog'
@@ -129,6 +140,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/robots.txt'
     | '/sitemap.xml'
+    | '/api/headlines'
     | '/api/story-images'
     | '/blog/$slug'
     | '/blog/'
@@ -141,6 +153,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   RobotsDottxtRoute: typeof RobotsDottxtRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiHeadlinesRoute: typeof ApiHeadlinesRoute
   ApiStoryImagesRoute: typeof ApiStoryImagesRoute
   BlogSlugRoute: typeof BlogSlugRoute
   BlogIndexRoute: typeof BlogIndexRoute
@@ -184,6 +197,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/headlines': {
+      id: '/api/headlines'
+      path: '/api/headlines'
+      fullPath: '/api/headlines'
+      preLoaderRoute: typeof ApiHeadlinesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/story-images': {
       id: '/api/story-images'
       path: '/api/story-images'
@@ -221,6 +241,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   RobotsDottxtRoute: RobotsDottxtRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiHeadlinesRoute: ApiHeadlinesRoute,
   ApiStoryImagesRoute: ApiStoryImagesRoute,
   BlogSlugRoute: BlogSlugRoute,
   BlogIndexRoute: BlogIndexRoute,

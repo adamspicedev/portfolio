@@ -1,10 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { redact } from '@tanstack/redact/vite'
 import tailwindcss from '@tailwindcss/vite'
 import { resolve } from 'node:path'
 export default defineConfig({
   publicDir: '../../../public',
-  plugins: [tailwindcss(), react()],
+  plugins: [tailwindcss(), react(), redact()],
   resolve: {
     alias: [
       {
