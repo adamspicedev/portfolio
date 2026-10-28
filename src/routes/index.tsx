@@ -1,5 +1,4 @@
 import { track } from '../lib/analytics'
-import { getHeadlines } from '../lib/headlines.functions'
 import { NewsTicker } from '../components/news-ticker'
 import { useHomeMotion } from '../components/home-motion'
 import { pageSeo, homeSeo } from '../lib/seo'
@@ -24,12 +23,8 @@ import { getStories } from '../lib/stories.functions'
 
 export const Route = createFileRoute('/')({
   loader: async () => {
-    const [stories, headlines, projects] = await Promise.all([
-      getStories(),
-      getHeadlines(),
-      getProjects(),
-    ])
-    return { stories, headlines, projects }
+    const [stories, projects] = await Promise.all([getStories(), getProjects()])
+    return { stories, projects }
   },
   head: ({ loaderData }) =>
     !loaderData
@@ -47,7 +42,7 @@ export const Route = createFileRoute('/')({
 function Home() {
   useHomeMotion()
   const posthog = usePostHog()
-  const { stories, headlines, projects } = Route.useLoaderData()
+  const { stories, projects } = Route.useLoaderData()
   return (
     <main id="main-content">
       <section className="hero page-width">
@@ -108,7 +103,7 @@ function Home() {
           <span className="font-mono text-[10px]">There's more down here</span>
         </a>
       </section>
-      <NewsTicker headlines={headlines} />
+      <NewsTicker />
       <section id="projects" className="page-width section-space">
         <div className="section-heading">
           <div>

@@ -1,8 +1,5 @@
 # Contact form anti-spam
 
-Prepared on `contact-anti-spam`. Initial preparation used no live email, live Siteverify call, load test or
-production database migration. Publication and schema preparation require approval.
-
 ## Adam's setup
 
 Follow Cloudflare dashboard → Turnstile → Add widget:

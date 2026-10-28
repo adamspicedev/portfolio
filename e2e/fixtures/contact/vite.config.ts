@@ -1,9 +1,10 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { redact } from '@tanstack/redact/vite'
 import { resolve } from 'node:path'
 export default defineConfig({
   publicDir: '../../../public',
-  plugins: [react()],
+  plugins: [react(), redact()],
   define: {
     'import.meta.env.VITE_TURNSTILE_SITE_KEY':
       JSON.stringify('fixture-public-key'),
