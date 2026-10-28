@@ -10,8 +10,9 @@ permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  # Keep production runs serialized, including the remote Vercel build.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   checks:
@@ -52,6 +53,8 @@ jobs:
           VITE_PUBLIC_POSTHOG_PROJECT_TOKEN: ${{ vars.VITE_PUBLIC_POSTHOG_PROJECT_TOKEN }}
           VITE_PUBLIC_POSTHOG_HOST: ${{ vars.VITE_PUBLIC_POSTHOG_HOST }}
       - run: bun run test:e2e
+      - name: Verify standalone Vercel function
+        run: bun run test:vercel
       - name: Upload browser failure details
         if: failure()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
@@ -62,3 +65,39 @@ jobs:
             test-results/
           retention-days: 7
           if-no-files-found: ignore
+
+  deploy:
+    name: Deploy production to Vercel
+    needs: [checks, browser]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: Production
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2
+        with:
+          bun-version-file: .bun-version
+      - name: Skip superseded commits
+        id: revision
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          latest_sha="$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')"
+          if [ "$latest_sha" = "$GITHUB_SHA" ]; then
+            echo 'current=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'Skipping deployment: main has a newer commit.'
+          fi
+      - name: Build and deploy the checked commit on Vercel
+        if: steps.revision.outputs.current == 'true'
+        env:
+          VERCEL_ORG_ID: team_9778Y7rRSzBwpdNmfTfeULkZ
+          VERCEL_PROJECT_ID: prj_f11vVKg1XcyafBEF2CbgzEAnjJ8A
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          : "${VERCEL_TOKEN:?Set VERCEL_TOKEN in GitHub Actions secrets}"
+          bunx vercel@65.5.0 deploy --prod --yes

@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite'
-import { posthogSourceMaps } from './build/posthog-sourcemaps'
+import { posthogSourceMaps } from './build/posthog-sourcemaps.ts'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
@@ -8,8 +8,23 @@ import { redact } from '@tanstack/redact/vite'
 
 export default defineConfig({
   resolve: { tsconfigPaths: true },
-  // Bundle SSR dependencies so their React imports also resolve to Redact.
-  ssr: { noExternal: true },
+  ssr: {
+    // Bundle React consumers so server rendering uses the same Redact runtime.
+    noExternal: true,
+    // Keep server SDK loaders intact for Vite dev and Nitro's native-file tracing.
+    external: [
+      '@libsql/client',
+      '@opentelemetry/api-logs',
+      '@opentelemetry/exporter-logs-otlp-http',
+      '@opentelemetry/resources',
+      '@opentelemetry/sdk-logs',
+      '@opentelemetry/sdk-node',
+      '@vercel/blob',
+      'resend',
+      'sharp',
+      'yaml',
+    ],
+  },
   plugins: [
     nitro({
       preset: process.env.VERCEL === '1' ? 'vercel' : 'bun',

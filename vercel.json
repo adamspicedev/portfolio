@@ -1,5 +1,8 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "bunVersion": "1.x",
+  "git": {
+    "deploymentEnabled": false
+  },
   "regions": ["syd1"]
 }

@@ -29,8 +29,10 @@ bun run start
 [TanStack Redact](https://tanstack.com/redact/latest/docs/start) handles server
 rendering and browser hydration through the Vite plugin. Keep `react` and
 `react-dom` installed and continue using their normal imports. The plugin runs
-after the Start and React plugins, and `ssr.noExternal` bundles server dependencies
-so their React imports also resolve to Redact.
+after the Start and React plugins, and `ssr.noExternal` bundles React consumers
+so their imports also resolve to Redact. Server SDKs are explicitly external:
+Vite must preserve their CommonJS loaders, and Nitro must trace native libSQL and
+Sharp files into the deployed function.
 
 The default full preset preserves the features used by Start and Clerk, including
 hydration, context, Suspense, lazy components, portals and class error boundaries.
@@ -39,7 +41,23 @@ same runtime; run the production build and browser suite when changing it.
 
 ## CI and tests
 
-GitHub Actions runs on pull requests, pushes to `main`, and manual dispatches. It uses Bun from `.bun-version` and `bun install --frozen-lockfile` with the committed `bun.lock`. The jobs check formatting, lint, TypeScript, unit tests, the production build and Chromium/mobile WebKit browser tests. Failed browser tests upload their HTML report, screenshots and traces. No deployment or mail credentials are needed.
+GitHub Actions runs on pull requests, pushes to `main`, and manual dispatches. It uses Bun from `.bun-version` and `bun install --frozen-lockfile` with the committed `bun.lock`. The jobs check formatting, lint, TypeScript, unit tests, the production build, Chromium/mobile WebKit browser tests and the standalone Vercel function. Failed browser tests upload their HTML report, screenshots and traces. The checks need no deployment or mail credentials.
+
+After both CI jobs pass on a push to `main`, GitHub Actions deploys that exact
+commit to Vercel Production. Production runs are serialized and superseded
+commits are skipped before deployment. Pull requests and manual CI runs only run
+checks. `vercel.json` disables Vercel's automatic Git deployments, including PR
+previews, so they cannot bypass CI. Manual Vercel CLI/dashboard deployments remain
+available for recovery.
+
+Set `VERCEL_TOKEN` as a GitHub Actions secret at repository level or in the
+**Production** environment, using a Vercel token scoped to
+`adamspiceydevs-projects`. Restrict the Production environment's deployment
+branches to `main`. The workflow pins Vercel CLI 65.5.0 and the portfolio
+team/project IDs. It sends the checked source to Vercel for the production build;
+application credentials and source-map uploads stay in Vercel. No production
+environment files are pulled into GitHub Actions. Configure the token before
+merging the workflow change; a missing token fails the deployment job.
 
 Linting uses [Oxlint](https://oxc.rs/docs/guide/usage/linter/quickstart), with TypeScript, React hooks and accessibility rules. Formatting uses [Oxfmt](https://oxc.rs/docs/guide/usage/formatter/quickstart.html). Generated routes, build outputs, reports and existing public assets are excluded from formatting.
 
@@ -55,11 +73,20 @@ bun test
 bun run playwright install chromium webkit
 bun run build
 bun run test:e2e
+
+# Build and invoke the Vercel function outside the repository's node_modules.
+bun run test:vercel
 ```
 
 Bun’s native test runner covers SQLite persistence, backups, revision conflicts, administrator authorization, story metadata, publishing rules, the actual story CLI, legacy article conversion, contact validation, throttling and mail delivery failures. The CLI tests run in temporary directories and never edit portfolio content. Resend is mocked in delivery tests so no real email is sent.
 
 Playwright starts an isolated production server on port 4173 with mail and the legacy service disabled. It checks server-rendered content, résumé delivery, search, filters, article navigation and metadata, redirects, 404s, contact failure feedback, keyboard controls, mobile layout, reduced motion and WebGL context loss. Screenshots also verify that the 3D rotation changes the rendered image. The HTML report is in `playwright-report/`; inspect traces with `bun run playwright show-trace <trace.zip>`.
+
+The Vercel check builds the Preview preset and copies only the generated function
+to a temporary directory. It renders the homepage and admin setup with a temporary
+SQLite database and Bun's package auto-install disabled. This catches dependencies
+missing from the deployment artifact that repository-local tests can mask. It
+uses no service credentials, uploads or production database.
 
 ## Manage stories
 
