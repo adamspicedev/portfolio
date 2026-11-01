@@ -1,0 +1,7 @@
+{
+  "url": "https://www.linkedin.com/feed/update/urn:li:activity:7521666281003995136/",
+  "author": "Adam Spice",
+  "text": "If an AI model runs on your laptop, does the whole coding session stay there?\n\nGitHub’s new local-model routing preview for Copilot Fusion shows why the distinction matters. My latest article looks at local inference, cloud routing and tool permissions — and what to check before treating a workflow as offline.\n\nhttps://www.spicey.dev/blog/local-ai-still-needs-a-network-map",
+  "successConfirmed": true,
+  "articlePreviewTarget": "https://spicey.dev/blog/local-ai-still-needs-a-network-map"
+}

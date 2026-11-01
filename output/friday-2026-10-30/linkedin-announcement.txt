@@ -1,0 +1,5 @@
+If an AI model runs on your laptop, does the whole coding session stay there?
+
+GitHub’s new local-model routing preview for Copilot Fusion shows why the distinction matters. My latest article looks at local inference, cloud routing and tool permissions — and what to check before treating a workflow as offline.
+
+https://www.spicey.dev/blog/local-ai-still-needs-a-network-map

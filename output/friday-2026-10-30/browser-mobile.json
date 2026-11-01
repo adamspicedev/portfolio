@@ -1,0 +1,24 @@
+{
+  "cover": [
+    {
+      "alt": "A cream laptop with a blue chip symbol connects by orange cables to a cloud and a tray holding a blue wrench, on a lavender background.",
+      "height": 800,
+      "src": "https://www.spicey.dev/images/stories/local-ai-network-map-20261030.webp",
+      "width": 1200
+    },
+    {
+      "alt": "",
+      "height": 512,
+      "src": "https://www.spicey.dev/images/avatar.png",
+      "width": 512
+    }
+  ],
+  "headings": [
+    "Local AI still needs a network map",
+    "Three decisions hiding inside one chat",
+    "Check the particular product",
+    "Try a whole task, not just a prompt"
+  ],
+  "overflow": false,
+  "width": 375
+}
