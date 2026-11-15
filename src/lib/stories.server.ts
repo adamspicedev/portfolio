@@ -15,7 +15,7 @@ export async function listStories() {
 export async function findStory(slug: string) {
   const store = await storyStore()
   const story = await store.bySlug(slug)
-  if (story) return (await store.published()).find((item) => item.slug === slug)
+  if (story) return (await store.published(undefined, [story]))[0]
   const remote = await getLegacyStory(slug)
   return remote ? publishedStories([remote])[0] : undefined
 }

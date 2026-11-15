@@ -248,5 +248,24 @@ minute of browser caching and five minutes of CDN caching, with ten minutes of
 stale-while-revalidate; empty results are not cached by HTTP intermediaries.
 The upstream reader also retains its existing fifteen-minute in-process cache.
 Cloudflare does not cache JSON by default; Vercel can apply this endpoint's CDN
-policy without a Cloudflare rule. Full HTML responses retain their existing
-revalidation policy because Clerk attaches authentication state.
+policy without a Cloudflare rule.
+
+Production builds run `scripts/prepare-database.ts` before deployment succeeds.
+It applies the existing additive CMS migrations and one-time seed imports, then
+verifies stories and projects can be read. Production request handlers open the
+prepared database without running schema checks or write transactions on cold
+starts. Local and preview environments retain automatic database setup.
+
+Public HTML at `/`, `/blog` and `/blog/<slug>` bypasses Clerk and contains only
+published data, including when a signed-in browser visits it. Vercel caches
+successful HTML for 30 seconds; browsers revalidate and Cloudflare retains its
+default HTML bypass behaviour. CMS edits, archives and scheduled publication can
+take up to 30 seconds to reach cached HTML. There is no stale-while-revalidate
+extension. Admin and server-function requests retain authentication and cannot
+enter this cache. Query variants, Authorization requests, errors and responses
+that set cookies or vary by cookies are not eligible either.
+
+Article reads check publication using the selected CMS record, avoiding a second
+query for the whole story collection. Avatar images use 96 px and 500 px WebP
+variants (about 1.4 KB and 13 KB); the original PNG remains available for external
+links. Article covers request high priority.
