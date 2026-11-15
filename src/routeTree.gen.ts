@@ -18,6 +18,7 @@ import { Route as ApiHeadlinesRouteImport } from './routes/api.headlines'
 import { Route as ApiStoryImagesRouteImport } from './routes/api.story-images'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as ProjectsProjectIdRouteImport } from './routes/projects.$projectId'
 import { Route as ApiWebhooksResendRouteImport } from './routes/api.webhooks.resend'
 
 const IndexRoute = IndexRouteImport.update({
@@ -65,6 +66,11 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/blog/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProjectsProjectIdRoute = ProjectsProjectIdRouteImport.update({
+  id: '/projects/$projectId',
+  path: '/projects/$projectId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiWebhooksResendRoute = ApiWebhooksResendRouteImport.update({
   id: '/api/webhooks/resend',
   path: '/api/webhooks/resend',
@@ -80,6 +86,7 @@ export interface FileRoutesByFullPath {
   '/api/headlines': typeof ApiHeadlinesRoute
   '/api/story-images': typeof ApiStoryImagesRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/blog/': typeof BlogIndexRoute
   '/api/webhooks/resend': typeof ApiWebhooksResendRoute
 }
@@ -92,6 +99,7 @@ export interface FileRoutesByTo {
   '/api/headlines': typeof ApiHeadlinesRoute
   '/api/story-images': typeof ApiStoryImagesRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/blog': typeof BlogIndexRoute
   '/api/webhooks/resend': typeof ApiWebhooksResendRoute
 }
@@ -105,6 +113,7 @@ export interface FileRoutesById {
   '/api/headlines': typeof ApiHeadlinesRoute
   '/api/story-images': typeof ApiStoryImagesRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/projects/$projectId': typeof ProjectsProjectIdRoute
   '/blog/': typeof BlogIndexRoute
   '/api/webhooks/resend': typeof ApiWebhooksResendRoute
 }
@@ -119,6 +128,7 @@ export interface FileRouteTypes {
     | '/api/headlines'
     | '/api/story-images'
     | '/blog/$slug'
+    | '/projects/$projectId'
     | '/blog/'
     | '/api/webhooks/resend'
   fileRoutesByTo: FileRoutesByTo
@@ -131,6 +141,7 @@ export interface FileRouteTypes {
     | '/api/headlines'
     | '/api/story-images'
     | '/blog/$slug'
+    | '/projects/$projectId'
     | '/blog'
     | '/api/webhooks/resend'
   id:
@@ -143,6 +154,7 @@ export interface FileRouteTypes {
     | '/api/headlines'
     | '/api/story-images'
     | '/blog/$slug'
+    | '/projects/$projectId'
     | '/blog/'
     | '/api/webhooks/resend'
   fileRoutesById: FileRoutesById
@@ -156,6 +168,7 @@ export interface RootRouteChildren {
   ApiHeadlinesRoute: typeof ApiHeadlinesRoute
   ApiStoryImagesRoute: typeof ApiStoryImagesRoute
   BlogSlugRoute: typeof BlogSlugRoute
+  ProjectsProjectIdRoute: typeof ProjectsProjectIdRoute
   BlogIndexRoute: typeof BlogIndexRoute
   ApiWebhooksResendRoute: typeof ApiWebhooksResendRoute
 }
@@ -225,6 +238,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/projects/$projectId': {
+      id: '/projects/$projectId'
+      path: '/projects/$projectId'
+      fullPath: '/projects/$projectId'
+      preLoaderRoute: typeof ProjectsProjectIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/webhooks/resend': {
       id: '/api/webhooks/resend'
       path: '/api/webhooks/resend'
@@ -244,6 +264,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiHeadlinesRoute: ApiHeadlinesRoute,
   ApiStoryImagesRoute: ApiStoryImagesRoute,
   BlogSlugRoute: BlogSlugRoute,
+  ProjectsProjectIdRoute: ProjectsProjectIdRoute,
   BlogIndexRoute: BlogIndexRoute,
   ApiWebhooksResendRoute: ApiWebhooksResendRoute,
 }

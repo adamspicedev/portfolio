@@ -51,7 +51,7 @@ export class ProjectStore {
               ...project,
               position,
               draft: false,
-              imageAlt: `${project.title} application screenshot`,
+              imageAlt: project.imageAlt,
             }),
             'seed',
           )
@@ -59,6 +59,44 @@ export class ProjectStore {
       }
       await tx.execute(
         "INSERT INTO cms_meta (key, value) VALUES ('projects_seeded', '1')",
+      )
+    }
+    // Upgrade existing portfolios once; keep the old entries available in the CMS archive.
+    const showcase = await tx.execute(
+      "SELECT value FROM cms_meta WHERE key = 'rowberry_showcase_v1'",
+    )
+    if (!showcase.rows.length) {
+      const existing = await tx.execute('SELECT * FROM projects')
+      const projects = existing.rows.map(decode)
+      for (const project of projects) {
+        const hostname = new URL(project.link).hostname
+        if (
+          ['movie-app.spicey.dev', 'storeit.spicey.dev'].includes(hostname) &&
+          !project.archived
+        ) {
+          await tx.execute({
+            sql: 'UPDATE projects SET archived=1,revision=revision+1,updated_at=?,updated_by=? WHERE id=?',
+            args: [new Date().toISOString(), 'rowberry-showcase', project.id],
+          })
+        }
+      }
+      if (
+        !projects.some(
+          (project) => new URL(project.link).hostname === 'rowberry.spicey.dev',
+        )
+      ) {
+        await this.insert(
+          tx,
+          projectSchema.parse({
+            ...projectsData[0],
+            position: 0,
+            draft: false,
+          }),
+          'rowberry-showcase',
+        )
+      }
+      await tx.execute(
+        "INSERT INTO cms_meta (key,value) VALUES ('rowberry_showcase_v1','1')",
       )
     }
   }

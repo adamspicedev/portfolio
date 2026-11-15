@@ -117,20 +117,19 @@ function Home() {
           <p className="section-note">
             From a first idea to the last little detail.
             <br />
-            Here are a couple of projects I've enjoyed building.
+            Here’s what I’ve been building.
           </p>
         </div>
         <div className="grid gap-7 md:grid-cols-2">
           {projects.map((project) => (
             <article className="project-card" key={project.id}>
-              <a
+              <Link
                 className={`project-art project-art-${project.color}`}
-                href={project.link}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={`Open ${project.title} (opens in a new tab)`}
+                to="/projects/$projectId"
+                params={{ projectId: project.id }}
+                aria-label={`Read the ${project.title} case study`}
                 onClick={() =>
-                  track(posthog, 'project_opened', {
+                  track(posthog, 'project_case_study_opened', {
                     project_category: project.category,
                     project_id: new URL(project.link).hostname,
                     placement: 'image',
@@ -160,15 +159,14 @@ function Home() {
                 <span className="project-open">
                   <ArrowUpRight size={23} />
                 </span>
-              </a>
+              </Link>
               <div className="project-details">
-                <a
-                  href={project.link}
-                  target="_blank"
-                  rel="noreferrer"
+                <Link
+                  to="/projects/$projectId"
+                  params={{ projectId: project.id }}
                   className="flex items-center justify-between gap-4"
                   onClick={() =>
-                    track(posthog, 'project_opened', {
+                    track(posthog, 'project_case_study_opened', {
                       project_category: project.category,
                       project_id: new URL(project.link).hostname,
                       placement: 'title',
@@ -179,10 +177,33 @@ function Home() {
                     {project.title}
                   </h3>
                   <ArrowUpRight size={19} />
-                </a>
+                </Link>
                 <p className="mt-3 max-w-md leading-relaxed text-muted">
                   {project.description}
                 </p>
+                <div className="mt-5 flex flex-wrap gap-5">
+                  <Link
+                    to="/projects/$projectId"
+                    params={{ projectId: project.id }}
+                    className="text-link font-medium"
+                  >
+                    Read case study →
+                  </Link>
+                  <a
+                    href={project.link}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-link"
+                    onClick={() =>
+                      track(posthog, 'project_opened', {
+                        project_id: new URL(project.link).hostname,
+                        placement: 'live_link',
+                      })
+                    }
+                  >
+                    Visit project website ↗
+                  </a>
+                </div>
                 <div className="mt-5 flex flex-wrap gap-2">
                   {project.tags.map((tag) => (
                     <span className="tag" key={tag}>

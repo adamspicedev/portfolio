@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { useBlocker } from '@tanstack/react-router'
 import { projectSchema, type CmsProject } from '../lib/project-schema'
 import { saveCmsProject } from '../lib/projects.functions'
+import { projectCaseStudy } from '../lib/project-case-study'
 import { CoverUpload } from './cover-upload'
 
 export function ProjectEditor({
@@ -24,6 +25,9 @@ export function ProjectEditor({
     color: project?.color ?? 'cobalt',
     position: project?.position ?? 0,
     draft: project?.draft ?? true,
+    caseStudy: project
+      ? projectCaseStudy(project).caseStudy
+      : { problem: '', contribution: '', decisions: '', results: '' },
   }
   const [form, setForm] = useState(initial)
   const [saving, setSaving] = useState(false)
@@ -212,6 +216,30 @@ export function ProjectEditor({
               sorted by title.
             </small>
           </label>
+          <h3 className="text-xl font-semibold">Case study</h3>
+          {(
+            [
+              ['problem', 'The problem'],
+              ['contribution', 'My contribution'],
+              ['decisions', 'Key decisions'],
+              ['results', 'Results'],
+            ] as const
+          ).map(([key, label]) => (
+            <label key={key}>
+              {label}
+              <textarea
+                rows={5}
+                maxLength={5000}
+                value={form.caseStudy[key]}
+                onChange={(event) =>
+                  setForm({
+                    ...form,
+                    caseStudy: { ...form.caseStudy, [key]: event.target.value },
+                  })
+                }
+              />
+            </label>
+          ))}
           <div className="cms-save-bar">
             <label className="cms-checkbox">
               <input

@@ -1,3 +1,5 @@
+import { z } from 'zod'
+import { projectCaseStudy } from './project-case-study'
 import { createServerFn } from '@tanstack/react-start'
 import { projectSchema } from './project-schema'
 import { archiveSchema } from './cms-schema'
@@ -31,6 +33,14 @@ async function runProjectOperation<T>(action: () => Promise<T>) {
 export const getProjects = createServerFn({ method: 'GET' }).handler(async () =>
   (await storyStore()).projects.published(),
 )
+export const getProject = createServerFn({ method: 'GET' })
+  .validator((input: unknown) => z.string().uuid().parse(input))
+  .handler(async ({ data }) => {
+    const project = (await (await storyStore()).projects.published()).find(
+      (project) => project.id === data,
+    )
+    return project ? projectCaseStudy(project) : null
+  })
 export const saveCmsProject = createServerFn({ method: 'POST' })
   .validator((input: unknown) => projectSchema.parse(input))
   .handler(async ({ data }) => {

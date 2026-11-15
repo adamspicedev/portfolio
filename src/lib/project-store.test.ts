@@ -33,15 +33,13 @@ afterEach(async () => {
 
 it('imports existing projects once and preserves edits and archives across restart', async () => {
   const seeds = await store.projects.published()
-  expect(seeds.map((project) => project.title)).toEqual([
-    'Movie-Mate',
-    'StoreIt',
-  ])
+  expect(seeds.map((project) => project.title)).toEqual(['Rowberry'])
+  const second = await store.projects.save({ ...input, draft: false }, 'admin')
   const changed = await store.projects.save(
     { ...seeds[0], title: 'Updated title' },
     'admin',
   )
-  await store.projects.archive(seeds[1].id, seeds[1].revision, true, 'admin')
+  await store.projects.archive(second.id, second.revision, true, 'admin')
   await store.close()
   store = await StoryStore.connect(url)
   expect(await store.projects.all()).toHaveLength(2)
@@ -161,4 +159,83 @@ it('rejects unsafe project links, images, invalid colours and incomplete revisio
   expect(
     projectSchema.safeParse({ ...input, id: crypto.randomUUID() }).success,
   ).toBe(false)
+})
+
+it('keeps legacy projects readable and preserves case studies through CMS edits and restarts', async () => {
+  const { projectCaseStudy } = await import('./project-case-study')
+  const movie = (await store.projects.published())[0]
+  expect(projectCaseStudy(movie).caseStudy.problem).toContain('PostgreSQL')
+  const caseStudy = {
+    problem: 'A specific problem',
+    contribution: 'My own contribution',
+    decisions: 'A deliberate trade-off',
+    results: 'An observed outcome',
+  }
+  const saved = await store.projects.save({ ...movie, caseStudy }, 'admin')
+  await store.close()
+  store = await StoryStore.connect(url)
+  const reloaded = (await store.projects.published()).find(
+    (p) => p.id === saved.id,
+  )!
+  expect(projectCaseStudy(reloaded).caseStudy).toEqual(caseStudy)
+  expect(
+    projectSchema.safeParse({
+      ...input,
+      caseStudy: { ...caseStudy, results: 'x'.repeat(5001) },
+    }).success,
+  ).toBe(false)
+})
+
+it('replaces the old showcase once without deleting CMS content or overwriting Rowberry edits', async () => {
+  const { createClient } = await import('@libsql/client')
+  const db = createClient({ url })
+  const rowberry = (await store.projects.published())[0]
+  const edited = await store.projects.save(
+    { ...rowberry, description: 'Keep my Rowberry description.' },
+    'admin',
+  )
+  const movie = await store.projects.save(
+    {
+      ...input,
+      title: 'Movie-Mate',
+      link: 'https://movie-app.spicey.dev',
+      draft: false,
+    },
+    'admin',
+  )
+  const storeit = await store.projects.save(
+    {
+      ...input,
+      title: 'StoreIt',
+      link: 'https://storeit.spicey.dev',
+      draft: false,
+    },
+    'admin',
+  )
+  const custom = await store.projects.save(
+    { ...input, title: 'Another project', draft: false },
+    'admin',
+  )
+  await db.execute("DELETE FROM cms_meta WHERE key='rowberry_showcase_v1'")
+  await store.close()
+  store = await StoryStore.connect(url)
+  const all = await store.projects.all()
+  expect(all).toHaveLength(4)
+  expect(all.find((p) => p.id === movie.id)?.archived).toBe(true)
+  expect(all.find((p) => p.id === storeit.id)?.archived).toBe(true)
+  expect(all.find((p) => p.id === edited.id)?.description).toBe(
+    'Keep my Rowberry description.',
+  )
+  expect((await store.projects.published()).map((p) => p.id)).toContain(
+    custom.id,
+  )
+  // Once applied, subsequent CMS decisions remain authoritative.
+  const archived = all.find((p) => p.id === movie.id)!
+  await store.projects.archive(archived.id, archived.revision, false, 'admin')
+  await store.close()
+  store = await StoryStore.connect(url)
+  expect((await store.projects.published()).map((p) => p.id)).toContain(
+    movie.id,
+  )
+  db.close()
 })
