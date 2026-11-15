@@ -48,7 +48,7 @@ function Home() {
       <section className="hero page-width">
         <div className="hero-copy">
           <div className="hero-intro">
-            <img src="/images/avatar.png" width="38" height="38" alt="" />
+            <img src="/images/avatar-96.webp" width="38" height="38" alt="" />
             <span className="font-mono text-xs">Hey, I'm Adam Spice.</span>
             <span className="intro-wave" aria-hidden="true">
               ✳
@@ -205,7 +205,9 @@ function Home() {
                 <span>↗</span>
               </div>
               <img
-                src="/images/avatar.png"
+                src="/images/avatar-500.webp"
+                srcSet="/images/avatar-96.webp 96w, /images/avatar-500.webp 500w"
+                sizes="(max-width: 760px) 80vw, 500px"
                 alt="Adam Spice"
                 width={500}
                 height={500}

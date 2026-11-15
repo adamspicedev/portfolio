@@ -1,6 +1,7 @@
 import { cp, mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
+import { prepareCmsDatabase } from './prepare-database'
 
 const root = resolve(import.meta.dir, '..')
 const temporary = await mkdtemp(join(tmpdir(), 'portfolio-vercel-check-'))
@@ -72,11 +73,66 @@ for (const [path, content] of [
   const response = await handler.fetch(new Request('http://localhost' + path))
   assert.equal(response.status, 200, path + ' must render successfully')
   assert.ok((await response.text()).includes(content), path + ' must render its content')
+  if (path === '/') {
+    assert.equal(response.headers.get('Vercel-CDN-Cache-Control'), 'public, s-maxage=30')
+    assert.equal(response.headers.has('set-cookie'), false)
+  } else {
+    assert.equal(response.headers.get('Vercel-CDN-Cache-Control'), 'no-store')
+  }
 }
+for (const path of ['/blog', '/blog/it-started-with-a-dragon-32']) {
+  const response = await handler.fetch(new Request('http://localhost' + path, {headers:{cookie:'__session=do-not-serialize'}}))
+  assert.equal(response.status, 200)
+  assert.equal(response.headers.get('Vercel-CDN-Cache-Control'), 'public, s-maxage=30')
+  assert.equal(response.headers.has('set-cookie'), false)
+  const body = await response.text()
+  assert.ok(!body.includes('do-not-serialize'))
+  assert.ok(!body.includes('clerkInitialState'))
+}
+const queryResponse = await handler.fetch(new Request('http://localhost/blog?preview=true'))
+assert.equal(queryResponse.headers.get('Vercel-CDN-Cache-Control'), 'no-store')
 console.log('Standalone Vercel artifact renders the homepage and admin setup.')
 `,
   )
-  await run(['--no-install', '--no-env-file', 'probe.mjs'], temporary)
+  const databaseUrl = `file:${environment.DATABASE_PATH}`
+  await prepareCmsDatabase(databaseUrl)
+  await run(['--no-install', '--no-env-file', 'probe.mjs'], temporary, {
+    ...environment,
+    VERCEL: '1',
+    VERCEL_ENV: 'production',
+    TURSO_DATABASE_URL: databaseUrl,
+    TURSO_AUTH_TOKEN: 'local-test-only',
+  })
+  await writeFile(
+    join(temporary, 'public-auth-probe.mjs'),
+    `
+import assert from 'node:assert/strict'
+import handler from './index.mjs'
+for (const path of ['/', '/blog', '/blog/it-started-with-a-dragon-32']) {
+  const response = await handler.fetch(new Request('http://localhost' + path, {headers:{cookie:'__session=private-test-marker'}}))
+  assert.equal(response.status, 200)
+  assert.equal(response.headers.get('Vercel-CDN-Cache-Control'), 'public, s-maxage=30')
+  assert.equal(response.headers.has('set-cookie'), false)
+  const body = await response.text()
+  assert.ok(!body.includes('private-test-marker'))
+  assert.ok(!body.includes('clerkInitialState'))
+}
+console.log('Configured Clerk is bypassed for public HTML without serializing session state.')
+`,
+  )
+  await run(
+    ['--no-install', '--no-env-file', 'public-auth-probe.mjs'],
+    temporary,
+    {
+      ...environment,
+      VERCEL: '1',
+      VERCEL_ENV: 'production',
+      TURSO_DATABASE_URL: databaseUrl,
+      TURSO_AUTH_TOKEN: 'local-test-only',
+      VITE_CLERK_PUBLISHABLE_KEY: 'pk_test_dGVzdC5jbGVyay5hY2NvdW50cy5kZXYk',
+      CLERK_SECRET_KEY: 'sk_test_not_a_real_key',
+    },
+  )
 } finally {
   await rm(temporary, { recursive: true, force: true })
 }

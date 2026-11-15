@@ -63,6 +63,8 @@ function Story() {
             src={story.cover}
             alt={story.coverAlt ?? ''}
             className="article-cover"
+            fetchPriority="high"
+            decoding="async"
           />
         )}
         <article className="article-prose">
@@ -94,7 +96,13 @@ function Story() {
           </ReactMarkdown>
         </article>
         <div className="article-signoff">
-          <img src="/images/avatar.png" alt="" width={50} height={50} />
+          <img
+            src="/images/avatar-96.webp"
+            alt=""
+            width={50}
+            height={50}
+            loading="lazy"
+          />
           <div>
             <p className="font-semibold">Adam Spice</p>
             <p className="text-sm text-muted">Developer. Curious human.</p>

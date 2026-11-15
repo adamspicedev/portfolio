@@ -1,0 +1,175 @@
+{
+  "canonical": [
+    "https://spicey.dev/blog/local-ai-still-needs-a-network-map"
+  ],
+  "headings": [
+    {
+      "tag": "H1",
+      "text": "Local AI still needs a network map"
+    },
+    {
+      "tag": "H2",
+      "text": "Three decisions hiding inside one chat"
+    },
+    {
+      "tag": "H2",
+      "text": "Check the particular product"
+    },
+    {
+      "tag": "H2",
+      "text": "Try a whole task, not just a prompt"
+    }
+  ],
+  "horizontalOverflow": false,
+  "images": [
+    {
+      "alt": "A cream laptop with a blue chip symbol connects by orange cables to a cloud and a tray holding a blue wrench, on a lavender background.",
+      "height": 800,
+      "src": "https://www.spicey.dev/images/stories/local-ai-network-map-20261030.webp",
+      "width": 1200
+    },
+    {
+      "alt": "",
+      "height": 512,
+      "src": "https://www.spicey.dev/images/avatar.png",
+      "width": 512
+    }
+  ],
+  "jsonLd": [
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "author": {
+        "@id": "https://spicey.dev/#person",
+        "@type": "Person",
+        "name": "Adam Spice",
+        "url": "https://spicey.dev/"
+      },
+      "dateModified": "2026-10-29T20:10:59.629Z",
+      "datePublished": "2026-10-30",
+      "description": "Copilot Fusion adds local-model routing. Understand cloud routing, offline mode and tool permissions before deciding what stays on your device.",
+      "headline": "Local AI still needs a network map",
+      "image": [
+        "https://spicey.dev/images/stories/local-ai-network-map-20261030.webp"
+      ],
+      "mainEntityOfPage": "https://spicey.dev/blog/local-ai-still-needs-a-network-map",
+      "url": "https://spicey.dev/blog/local-ai-still-needs-a-network-map"
+    }
+  ],
+  "mainText": "All stories\n30 Oct 2026\n·\n3 min read\nLocal AI still needs a network map\n\nCopilot Fusion can now route work to local models. The useful questions are where decisions happen, what tools can access and how a complete task behaves.\n\nAI\nDevelopment\nEngineering\n\nAn AI model running on your laptop sounds like a straightforward change of address. The work happens here, rather than in somebody else's data centre. A coding assistant makes that picture more interesting: the model is only one part of the system.\n\nOn 28 October, GitHub introduced an experimental preview of local-model routing in Copilot Fusion. It can choose between supported models on your device and models in the cloud. The detail worth reading twice is that the routing decision still happens in the cloud.\n\nThat makes this a useful moment to ask what “local” actually describes.\n\nThree decisions hiding inside one chat\n\nStart with inference: where the model generates its answer. Then consider routing: which model receives the work. Finally, look at tools: what can run commands, read files or contact other services.\n\nGitHub's Fusion documentation describes a system that selects models and execution patterns at runtime. Choosing Fusion is therefore different from choosing one fixed model. Local selection currently belongs to Fusion Standard, and the local feature remains a preview.\n\nThe tools have another boundary. Microsoft's 7 October technical explanation notes that moving inference onto a device does not reduce the access inherited by an agent's shell commands. Sandboxing applies separate controls to that execution.\n\nA model running beside your source code does not, by itself, tell you which files the assistant can edit or where its commands can connect. Those are questions for the surrounding application and its permissions.\n\nCheck the particular product\n\nThe rollout also differs by application. GitHub's release notes say the managed download experience is Windows-only. Copilot CLI can route to supported, manually configured local models on Windows, macOS and Linux. The Copilot app's intelligent local routing currently supports managed Windows ML models only.\n\nBeing able to add a model does not automatically make it eligible for Fusion routing. A provider appearing in a menu is not a complete description of how a session will use it.\n\nOffline operation is a separate configuration. GitHub's CLI guidance documents COPILOT_OFFLINE=true to prevent the CLI contacting GitHub's servers. The model provider must also be local or inside the isolated environment. That is a different setup from leaving Fusion to make cloud-based routing decisions.\n\nTry a whole task, not just a prompt\n\nThere is a practical performance question too. Microsoft's memory breakdown explains that model weights share the budget with the operating system, other applications, the inference runtime and the cache that grows with context. Getting a model loaded is only the starting point.\n\nFor a useful evaluation, choose a small, representative change in a disposable working copy. Let the assistant inspect files, make the change and run the usual checks. Record the models used, the time taken and the corrections needed. Repeat with the normal editor and development services running.\n\nKeep the configuration honest as well. The CLI model requirements call for streaming and tool calling, with token limits matched to the model's real capacity. Increasing a setting does not create a larger context window.\n\nAs with evaluating AI code review, the useful result is a change you can inspect and trust, alongside a clear account of how it was produced.\n\nLocal models give developers another place to run work. Choosing well means asking which parts stay on the machine, which parts leave it, and what each part is allowed to do.\n\nCover: original AI-generated editorial illustration.\n\nAdam Spice\n\nDeveloper. Curious human.\n\nMore stories",
+  "meta": [
+    {
+      "key": "og:site_name",
+      "value": "Adam Spice"
+    },
+    {
+      "key": "description",
+      "value": "Copilot Fusion adds local-model routing. Understand cloud routing, offline mode and tool permissions before deciding what stays on your device."
+    },
+    {
+      "key": "robots",
+      "value": "index, follow"
+    },
+    {
+      "key": "og:title",
+      "value": "Local AI and Copilot Fusion: know what stays on your device · Adam Spice"
+    },
+    {
+      "key": "og:description",
+      "value": "Copilot Fusion adds local-model routing. Understand cloud routing, offline mode and tool permissions before deciding what stays on your device."
+    },
+    {
+      "key": "og:type",
+      "value": "article"
+    },
+    {
+      "key": "og:url",
+      "value": "https://spicey.dev/blog/local-ai-still-needs-a-network-map"
+    },
+    {
+      "key": "og:image",
+      "value": "https://spicey.dev/images/stories/local-ai-network-map-20261030.webp"
+    },
+    {
+      "key": "og:image:alt",
+      "value": "A cream laptop with a blue chip symbol connects by orange cables to a cloud and a tray holding a blue wrench, on a lavender background."
+    },
+    {
+      "key": "twitter:card",
+      "value": "summary_large_image"
+    },
+    {
+      "key": "twitter:title",
+      "value": "Local AI and Copilot Fusion: know what stays on your device · Adam Spice"
+    },
+    {
+      "key": "twitter:description",
+      "value": "Copilot Fusion adds local-model routing. Understand cloud routing, offline mode and tool permissions before deciding what stays on your device."
+    },
+    {
+      "key": "twitter:image",
+      "value": "https://spicey.dev/images/stories/local-ai-network-map-20261030.webp"
+    },
+    {
+      "key": "twitter:image:alt",
+      "value": "A cream laptop with a blue chip symbol connects by orange cables to a cloud and a tray holding a blue wrench, on a lavender background."
+    }
+  ],
+  "references": [
+    {
+      "href": "https://www.spicey.dev/blog",
+      "text": "All stories"
+    },
+    {
+      "href": "https://github.blog/changelog/2026-10-28-github-copilot-fusion-now-supports-selection-of-local-models/",
+      "text": "experimental preview of local-model routing in Copilot Fusion"
+    },
+    {
+      "href": "https://docs.github.com/en/copilot/concepts/models/copilot-fusion",
+      "text": "GitHub's Fusion documentation"
+    },
+    {
+      "href": "https://commandline.microsoft.com/local-models-sandboxed-tools-github-windows/",
+      "text": "7 October technical explanation"
+    },
+    {
+      "href": "https://github.blog/changelog/2026-10-28-github-copilot-fusion-now-supports-selection-of-local-models/",
+      "text": "release notes"
+    },
+    {
+      "href": "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-llm-models#running-in-offline-mode",
+      "text": "CLI guidance"
+    },
+    {
+      "href": "https://commandline.microsoft.com/local-models-sandboxed-tools-github-windows/",
+      "text": "memory breakdown"
+    },
+    {
+      "href": "https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-llm-models#model-requirements",
+      "text": "CLI model requirements"
+    },
+    {
+      "href": "https://www.spicey.dev/blog/ai-code-review-needs-a-better-scorecard",
+      "text": "evaluating AI code review"
+    },
+    {
+      "href": "https://www.spicey.dev/#contact",
+      "text": ""
+    },
+    {
+      "href": "https://www.spicey.dev/blog",
+      "text": "More stories"
+    }
+  ],
+  "title": "Local AI and Copilot Fusion: know what stays on your device · Adam Spice",
+  "verificationNotes": {
+    "documentHttpStatus": 200,
+    "coverHttpStatus": 200,
+    "coverMime": "image/webp",
+    "coverInitiallyCached404": true,
+    "coverRevalidatedThenNormalReloadPassed": true,
+    "canonicalRedirectsTo": "https://www.spicey.dev/blog/local-ai-still-needs-a-network-map",
+    "robotsAllowsBlog": true,
+    "sitemapIncludesCanonical": true
+  }
+}

@@ -51,17 +51,22 @@ export class StoryStore {
     this.projects = new ProjectStore(db)
   }
 
-  static async connect(url: string, authToken?: string, seeds: Story[] = []) {
+  /** Connect to a schema prepared by the production build, without runtime DDL. */
+  static open(url: string, authToken?: string) {
     const db = createClient({
       url,
       ...(authToken ? { authToken } : {}),
     })
-    const store = new StoryStore(db)
+    return new StoryStore(db)
+  }
+
+  static async connect(url: string, authToken?: string, seeds: Story[] = []) {
+    const store = StoryStore.open(url, authToken)
     try {
       await store.initialize(seeds)
       return store
     } catch (error) {
-      await db.close()
+      store.close()
       throw error
     }
   }

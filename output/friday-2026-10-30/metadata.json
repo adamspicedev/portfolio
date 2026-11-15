@@ -1,0 +1,16 @@
+{
+  "title": "Local AI still needs a network map",
+  "slug": "local-ai-still-needs-a-network-map",
+  "description": "Copilot Fusion can now route work to local models. The useful questions are where decisions happen, what tools can access and how a complete task behaves.",
+  "date": "2026-10-30",
+  "tags": ["AI", "Development", "Engineering"],
+  "cover": "/images/stories/local-ai-network-map-20261030.webp",
+  "coverAlt": "A cream laptop with a blue chip symbol connects by orange cables to a cloud and a tray holding a blue wrench, on a lavender background.",
+  "seoTitle": "Local AI and Copilot Fusion: know what stays on your device",
+  "seoDescription": "Copilot Fusion adds local-model routing. Understand cloud routing, offline mode and tool permissions before deciding what stays on your device.",
+  "canonical": "https://spicey.dev/blog/local-ai-still-needs-a-network-map",
+  "sourceCheckedAt": "2026-10-30 Pacific/Auckland",
+  "originalCover": "generated_images/exec-6881002e-f0ad-4192-a5e2-386c03074427.png",
+  "coverMethod": "Built-in image_gen; resized and encoded with Sharp to 1200x800 WebP",
+  "coverPrompt": "Original conceptual clay 3D editorial illustration: cream laptop with cobalt chip symbol, cream cloud on blue pedestal, orange branching cable connecting laptop, cloud and cream tray holding blue wrench. Lavender seamless background, soft shadows, landscape 3:2. No people, words, logos, watermark or padlocks."
+}

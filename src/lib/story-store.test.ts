@@ -200,3 +200,38 @@ describe('SQLite publishing', () => {
     expect(await store.all()).toHaveLength(2)
   })
 })
+
+describe('prepared database connections', () => {
+  it('opens a prepared database without starting a schema write transaction', async () => {
+    const { createClient } = await import('@libsql/client')
+    const lock = createClient({ url: localDatabaseUrl(path) })
+    const transaction = await lock.transaction('write')
+    let reader: StoryStore | undefined
+    try {
+      reader = StoryStore.open(localDatabaseUrl(path))
+      expect((await reader.bySlug(seed.slug))?.title).toBe(seed.title)
+    } finally {
+      reader?.close()
+      await transaction.rollback()
+      lock.close()
+    }
+  })
+
+  it('does not silently initialise an unprepared runtime database', async () => {
+    const unpreparedPath = join(directory, 'unprepared.sqlite')
+    const reader = StoryStore.open(localDatabaseUrl(unpreparedPath))
+    try {
+      await expect(reader.all()).rejects.toThrow()
+      const db = new Database(unpreparedPath)
+      try {
+        expect(
+          db.query("SELECT name FROM sqlite_master WHERE type='table'").all(),
+        ).toEqual([])
+      } finally {
+        db.close()
+      }
+    } finally {
+      reader.close()
+    }
+  })
+})

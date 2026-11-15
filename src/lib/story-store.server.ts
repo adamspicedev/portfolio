@@ -14,7 +14,15 @@ export function storyStore(): Promise<StoryStore> {
       throw new Error('TURSO_AUTH_TOKEN must be configured with Turso.')
 
     store = tursoUrl
-      ? StoryStore.connect(tursoUrl, process.env.TURSO_AUTH_TOKEN, seedStories)
+      ? process.env.VERCEL_ENV === 'production'
+        ? Promise.resolve(
+            StoryStore.open(tursoUrl, process.env.TURSO_AUTH_TOKEN),
+          )
+        : StoryStore.connect(
+            tursoUrl,
+            process.env.TURSO_AUTH_TOKEN,
+            seedStories,
+          )
       : StoryStore.connect(
           localDatabaseUrl(
             process.env.DATABASE_PATH || './data/portfolio.sqlite',
