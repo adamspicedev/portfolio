@@ -80,30 +80,20 @@ export const projectsData = [
   },
 ]
 
-export const skillsData = [
-  'AWS',
-  'Appwrite',
-  'Vite',
-  'Turborepo',
-  'CI/CD',
-  'HTML',
-  'CSS',
-  'JavaScript',
-  'TypeScript',
-  'React',
-  'Next.js',
-  'Node.js',
-  'Git',
-  'Tailwind',
-  'Prisma',
-  'Drizzle',
-  'MongoDB',
-  'Redux',
-  'MySQL',
-  'GraphQL',
-  'Apollo',
-  'Express',
-  'PostgreSQL',
-  'Framer Motion',
-  'Turbopack',
+export const skillGroups = [
+  {
+    title: 'Frontend',
+    core: ['React', 'TypeScript', 'Next.js'],
+    supporting: ['JavaScript', 'HTML & CSS', 'Tailwind', 'Vite'],
+  },
+  {
+    title: 'Backend',
+    core: ['Scala', 'Node.js', 'PostgreSQL'],
+    supporting: ['Express', 'MySQL', 'GraphQL', 'Prisma', 'Drizzle'],
+  },
+  {
+    title: 'Infrastructure',
+    core: ['AWS', 'CI/CD'],
+    supporting: ['Git', 'Turborepo', 'Appwrite'],
+  },
 ]

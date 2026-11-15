@@ -555,6 +555,18 @@ button:disabled {
 .toolkit-section {
   padding-bottom: 20px;
 }
+.toolbox-note {
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+.toolbox-groups {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+}
+.toolbox-group h3 {
+  margin-bottom: 16px;
+}
 .toolbox-grid {
   display: flex;
   flex-wrap: wrap;
@@ -570,11 +582,16 @@ button:disabled {
     background 0.2s,
     transform 0.2s;
 }
-.toolbox-item:nth-child(4n + 1) {
+.toolbox-item-core {
   background: #eee9ff;
+  border-color: var(--color-cobalt);
+  color: var(--color-cobalt);
+  font-weight: 600;
 }
-.toolbox-item:nth-child(7n + 2) {
-  background: #ffd7e850;
+@media (max-width: 900px) {
+  .toolbox-groups {
+    grid-template-columns: 1fr;
+  }
 }
 .toolbox-item:hover {
   transform: translateY(-3px) rotate(-2deg);
