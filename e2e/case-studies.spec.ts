@@ -5,11 +5,9 @@ test('project cards lead to case studies with screenshots and live links', async
   request,
 }) => {
   await page.goto('/#projects')
-  const cards = page
-    .locator('#projects .project-card')
-    .filter({
-      has: page.getByRole('heading', { name: 'Rowberry', exact: true }),
-    })
+  const cards = page.locator('#projects .project-card').filter({
+    has: page.getByRole('heading', { name: 'Rowberry', exact: true }),
+  })
   const count = await cards.count()
   expect(count).toBeGreaterThan(0)
   for (let i = 0; i < count; i++) {
