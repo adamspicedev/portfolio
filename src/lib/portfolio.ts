@@ -59,24 +59,16 @@ export const experiencesData = [
 
 export const projectsData = [
   {
-    title: 'Movie-Mate',
+    title: 'Rowberry',
     description:
-      'Find your next favourite film. A movie discovery app with trending picks, search, and infinite scrolling.',
-    tags: ['React', 'Vite', 'Appwrite', 'TanStack Query'],
-    image: '/images/movie-mate.png',
-    link: 'https://movie-app.spicey.dev',
+      'A local desktop workspace for PostgreSQL. Browse tables, write SQL and work with JSON, with your connections and workspace stored on your machine.',
+    tags: ['Electron', 'React', 'TypeScript', 'PostgreSQL', 'Monaco Editor'],
+    image: '/images/rowberry-workspace.webp',
+    imageAlt:
+      'Rowberry SQL workspace with saved connections, table navigation, a SQL editor and JSON query results.',
+    link: 'https://rowberry.spicey.dev',
     color: 'cobalt',
-    category: 'Movie discovery',
-  },
-  {
-    title: 'StoreIt',
-    description:
-      'A home for your files. Cloud storage and file management built with Next.js 15 and Appwrite.',
-    tags: ['Next.js', 'TypeScript', 'Appwrite', 'Tailwind'],
-    image: '/images/storeit.png',
-    link: 'https://storeit.spicey.dev',
-    color: 'pink',
-    category: 'Cloud storage',
+    category: 'Open-source database tools',
   },
 ]
 

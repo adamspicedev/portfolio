@@ -27,6 +27,14 @@ export const projectSchema = z
           /^https:\/\//i.test(url),
         'Use a local image path or HTTPS URL',
       ),
+    caseStudy: z
+      .object({
+        problem: z.string().trim().max(5000).default(''),
+        contribution: z.string().trim().max(5000).default(''),
+        decisions: z.string().trim().max(5000).default(''),
+        results: z.string().trim().max(5000).default(''),
+      })
+      .default({ problem: '', contribution: '', decisions: '', results: '' }),
     imageAlt: z.string().trim().max(500).default(''),
     tags: z
       .array(z.string().trim().min(1).max(40))

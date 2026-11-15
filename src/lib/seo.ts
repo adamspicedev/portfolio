@@ -136,10 +136,17 @@ export function xmlEscape(value: string) {
       })[character] ?? character,
   )
 }
-export function sitemapXml(stories: { slug: string; updatedAt?: string }[]) {
+export function sitemapXml(
+  stories: { slug: string; updatedAt?: string }[],
+  projects: { id: string; updatedAt?: string }[] = [],
+) {
   const entries = [
     { path: '/' },
     { path: '/blog' },
+    ...projects.map((project) => ({
+      path: `/projects/${project.id}`,
+      updatedAt: project.updatedAt,
+    })),
     ...stories.map((story) => ({
       path: `/blog/${story.slug}`,
       updatedAt: story.updatedAt,
