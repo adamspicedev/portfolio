@@ -72,10 +72,10 @@ function Home() {
             <span className="hero-period">.</span>
           </h1>
           <p className="hero-description">
-            Full-stack developer. Curious human.
-            <br />A soft spot for React, a love of making things,
-            <br className="hidden xl:block" /> and just enough spice to keep it
-            interesting.
+            Auckland-based senior software developer building full-stack
+            products with React, TypeScript and Scala.
+            <br />
+            Curious human. A maker at heart.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a href="#projects" className="button button-primary">
