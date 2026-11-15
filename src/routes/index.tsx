@@ -17,7 +17,7 @@ import { Computer } from '../components/computer'
 import { OpenSourceContributions } from '../components/open-source-contributions'
 import { Contact } from '../components/contact'
 import { StoryCard } from '../components/story-card'
-import { experiencesData, skillsData } from '../lib/portfolio'
+import { experiencesData, skillGroups } from '../lib/portfolio'
 import { getProjects } from '../lib/projects.functions'
 import { getStories } from '../lib/stories.functions'
 
@@ -269,11 +269,29 @@ function Home() {
             className="text-cobalt hidden sm:block"
           />
         </div>
-        <div className="toolbox-grid">
-          {[...new Set(skillsData)].map((skill) => (
-            <span key={skill} className="toolbox-item">
-              {skill}
-            </span>
+        <p className="toolbox-note text-muted">
+          Core technologies highlighted, with the supporting tools I work with.
+        </p>
+        <div className="toolbox-groups">
+          {skillGroups.map((group) => (
+            <div className="toolbox-group" key={group.title}>
+              <h3 className="text-xl font-semibold tracking-tight">
+                {group.title}
+              </h3>
+              <ul className="toolbox-grid" aria-label={`${group.title} skills`}>
+                {group.core.map((skill) => (
+                  <li key={skill} className="toolbox-item toolbox-item-core">
+                    {skill}
+                    <span className="sr-only"> (core technology)</span>
+                  </li>
+                ))}
+                {group.supporting.map((skill) => (
+                  <li key={skill} className="toolbox-item">
+                    {skill}
+                  </li>
+                ))}
+              </ul>
+            </div>
           ))}
         </div>
       </section>
