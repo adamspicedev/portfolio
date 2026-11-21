@@ -43,5 +43,7 @@
       "type": "image/png"
     }
   ],
-  "short_name": "spicey"
+  "short_name": "spicey",
+  "theme_color": "#2b2d31",
+  "background_color": "#222428"
 }

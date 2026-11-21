@@ -194,8 +194,8 @@ export function ProjectEditor({
                 setForm({ ...form, color: e.target.value as 'cobalt' | 'pink' })
               }
             >
-              <option value="cobalt">Cobalt</option>
-              <option value="pink">Pink</option>
+              <option value="cobalt">Cool graphite</option>
+              <option value="pink">Warm graphite</option>
             </select>
           </label>
           <label>

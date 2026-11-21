@@ -19,7 +19,7 @@ export const Route = createRootRoute({
       }).meta,
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { name: 'theme-color', content: '#eee9ff' },
+      { name: 'theme-color', content: '#2b2d31' },
       { property: 'og:site_name', content: 'Adam Spice' },
     ],
     links: [

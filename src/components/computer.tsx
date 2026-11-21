@@ -9,29 +9,29 @@ function ComputerIllustration() {
       className="computer-illustration"
       aria-hidden="true"
     >
-      <ellipse cx="287" cy="425" rx="199" ry="24" fill="#cdc5ed" />
+      <ellipse cx="287" cy="425" rx="199" ry="24" fill="#191a1e" />
       <path
         d="m141 105 222-25 76 57v220l-225 32-73-53Z"
-        fill="#cdc4ed"
-        stroke="#191938"
+        fill="#b1b3b8"
+        stroke="#191b1f"
         strokeWidth="3"
       />
       <path
         d="m141 105 222-25 76 57-225 31Z"
-        fill="#faf8ff"
-        stroke="#191938"
+        fill="#e5e6e7"
+        stroke="#191b1f"
         strokeWidth="3"
       />
       <path
         d="m141 105 73 63v221l-73-53Z"
-        fill="#a89bce"
-        stroke="#191938"
+        fill="#81858d"
+        stroke="#191b1f"
         strokeWidth="3"
       />
-      <path d="m230 184 191-26v166l-191 28Z" fill="#faf8ff" />
-      <path d="m244 195 162-23v124l-162 23Z" fill="#2835e7" />
+      <path d="m230 184 191-26v166l-191 28Z" fill="#e5e6e7" />
+      <path d="m244 195 162-23v124l-162 23Z" fill="#2b2d31" />
       <g
-        fill="#f5efff"
+        fill="#d9dadc"
         fontFamily="monospace"
         fontWeight="bold"
         fontSize="25"
@@ -46,12 +46,12 @@ function ComputerIllustration() {
       </g>
       <path
         d="m157 393 228-28 52 39-238 35-69-29Z"
-        fill="#dad4f6"
-        stroke="#191938"
+        fill="#c3c5c9"
+        stroke="#191b1f"
         strokeWidth="3"
       />
-      <path d="m162 391 216-25 39 29-218 30Z" fill="#faf8ff" />
-      <g stroke="#a89bce" strokeWidth="4">
+      <path d="m162 391 216-25 39 29-218 30Z" fill="#e5e6e7" />
+      <g stroke="#81858d" strokeWidth="4">
         <path d="m163 398 225-27M175 407l225-27M200 385l27 31M229 381l27 31M258 377l27 31M287 373l27 31M316 369l27 31M345 365l27 31" />
       </g>
       <ellipse
@@ -59,8 +59,8 @@ function ComputerIllustration() {
         cy="400"
         rx="23"
         ry="15"
-        fill="#ff784f"
-        stroke="#191938"
+        fill="#ffc93c"
+        stroke="#191b1f"
         strokeWidth="3"
       />
     </svg>
@@ -132,7 +132,7 @@ export function Computer() {
         a little old-school. a little new-school.
       </span>
       <figure
-        aria-label="A lavender 3D desktop computer with a blue Hello World screen"
+        aria-label="A silver retro desktop computer with a dark Hello World screen"
         className="computer-stage"
       >
         {!ready && <ComputerIllustration />}

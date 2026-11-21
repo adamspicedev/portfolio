@@ -500,6 +500,7 @@ test('browser and touch icons use the shared site mark', async ({
     expect((await request.get(path)).status()).toBe(200)
   const manifest = await (await request.get('/manifest.json')).json()
   expect(manifest.name).toBe('Adam Spice')
+  expect(manifest.theme_color).toBe('#2b2d31')
 })
 
 test('homepage entrances respect reduced motion and keep content visible', async ({
@@ -532,7 +533,7 @@ test('homepage entrances respect reduced motion and keep content visible', async
     .toEqual({ opacity: '1', animations: 0 })
 })
 
-test('orange ticker attributes Hacker News and has no pause button', async ({
+test('headlines ticker attributes Hacker News and has no pause button', async ({
   page,
 }) => {
   await page.goto('/')

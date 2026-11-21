@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 
 /** One-time entrances; content stays visible if JavaScript or motion is unavailable. */
 export function useHomeMotion() {
@@ -54,4 +54,55 @@ export function useHomeMotion() {
       animations.forEach((animation) => animation.cancel())
     }
   }, [])
+}
+
+/** Small, independent offsets for the hero artwork, never the copy or page scroll. */
+export function useHomeParallax() {
+  const heroRef = useRef<HTMLElement>(null)
+
+  useEffect(() => {
+    const hero = heroRef.current
+    if (!hero) return
+    const preference = window.matchMedia(
+      '(prefers-reduced-motion: no-preference) and (min-width: 801px) and (pointer: fine)',
+    )
+    let frame = 0
+    let current = -1
+
+    function render() {
+      frame = 0
+      const offset = Math.round(Math.min(640, Math.max(0, window.scrollY)))
+      if (offset === current) return
+      current = offset
+      hero?.style.setProperty('--home-parallax', String(offset))
+    }
+
+    function queue() {
+      if (!frame && (current < 640 || window.scrollY < 640))
+        frame = window.requestAnimationFrame(render)
+    }
+
+    function stop() {
+      window.removeEventListener('scroll', queue)
+      if (frame) window.cancelAnimationFrame(frame)
+      frame = 0
+      current = -1
+      hero?.style.removeProperty('--home-parallax')
+    }
+
+    function sync() {
+      stop()
+      if (!preference.matches) return
+      window.addEventListener('scroll', queue, { passive: true })
+      queue()
+    }
+
+    sync()
+    preference.addEventListener('change', sync)
+    return () => {
+      stop()
+      preference.removeEventListener('change', sync)
+    }
+  }, [])
+  return heroRef
 }

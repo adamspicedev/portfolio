@@ -273,7 +273,7 @@ export function Contact() {
                 </p>
               )}
               {state.kind === 'error' && (
-                <p className="text-sm text-red-800" role="alert">
+                <p className="text-sm" role="alert">
                   {state.message}
                 </p>
               )}

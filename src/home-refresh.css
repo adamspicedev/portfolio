@@ -1,0 +1,315 @@
+.home-page {
+  --home-graphite: var(--color-graphite);
+  --home-silver: var(--color-silver);
+  --home-yellow: var(--color-signal);
+  --home-hairline: #d9dadc30;
+  --home-quiet: #aeb0b4;
+}
+
+.home-page .hero {
+  position: relative;
+  min-height: 0;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(24px, 5vw, 75px);
+  align-items: center;
+  padding-block: clamp(56px, 7vw, 103px) 86px;
+}
+
+.home-page .hero-copy {
+  padding: 0;
+}
+
+.home-page .hero-index {
+  color: var(--home-quiet);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  letter-spacing: 0.15em;
+  font-size: 9px;
+  margin-bottom: clamp(24px, 5vw, 55px);
+}
+
+.home-page .hero-index-rule {
+  width: 25px;
+  height: 1px;
+  background: var(--home-yellow);
+}
+
+.home-page .hero-intro {
+  margin-bottom: 19px;
+}
+
+.home-page .hero-intro img {
+  border: 1px solid var(--home-hairline);
+  width: 31px;
+  height: 31px;
+  filter: grayscale(100%);
+}
+
+.home-page .hero-intro span {
+  color: var(--home-quiet);
+}
+
+.home-page .hero h1 {
+  font-size: clamp(51px, 6.05vw, 92px);
+  font-weight: 700;
+  letter-spacing: -0.083em;
+  line-height: 0.99;
+  color: var(--home-silver);
+}
+
+.home-page .hero-web {
+  color: var(--home-graphite);
+  background: var(--home-yellow);
+  padding-inline: 0.105em 0.17em;
+  border-radius: 0.09em;
+  letter-spacing: -0.075em;
+}
+
+.home-page .hero-period {
+  color: inherit;
+}
+
+.home-page .hero-description {
+  max-width: 31rem;
+  color: var(--home-quiet);
+  margin-top: 24px;
+  line-height: 1.65;
+}
+
+.home-page .hero-actions {
+  margin-top: 25px;
+}
+
+.home-page .hero .hero-cv {
+  color: var(--home-silver);
+  border-color: var(--home-hairline);
+}
+
+.home-page .hero .hero-cv:hover {
+  color: var(--home-graphite);
+  background: var(--home-silver);
+  border-color: var(--home-silver);
+}
+
+.home-page .hero-footnote {
+  color: var(--home-quiet);
+  margin-top: 26px;
+}
+
+.home-page .status-dot {
+  background: var(--home-yellow);
+  box-shadow: 0 0 9px #ffc93c70;
+}
+
+.home-page .scroll-cue {
+  bottom: 25px;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  color: var(--home-quiet);
+}
+
+.home-page .scroll-cue svg {
+  color: var(--home-yellow);
+}
+
+.home-page .hero-visual {
+  position: relative;
+  display: grid;
+  isolation: isolate;
+  overflow: hidden;
+  align-self: stretch;
+  align-items: center;
+  min-width: 0;
+  min-height: 430px;
+  padding: clamp(14px, 2.2vw, 32px);
+  border-radius: 24px;
+  border: 1px solid var(--home-hairline);
+  background:
+    radial-gradient(ellipse at 66% 40%, #d9dadc2c 0%, transparent 65%),
+    linear-gradient(135deg, #383b41, #222429 88%);
+}
+
+.home-page .hero-visual-grid {
+  position: absolute;
+  z-index: -2;
+  inset: -120px -12px;
+  pointer-events: none;
+  background-image:
+    linear-gradient(#d9dadc10 1px, transparent 1px),
+    linear-gradient(90deg, #d9dadc10 1px, transparent 1px);
+  background-size: 33px 33px;
+  mask-image: linear-gradient(
+    transparent 10%,
+    #000 37%,
+    #000 65%,
+    transparent 93%
+  );
+  transform: translate3d(0, calc(var(--home-parallax, 0) * 0.18px), 0);
+}
+
+.home-page .hero-visual-ring {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  inset: 15% 12%;
+  border: 1px solid #d9dadc25;
+  border-radius: 50%;
+  transform: translate3d(0, calc(var(--home-parallax, 0) * 0.11px), 0);
+}
+
+.home-page .hero-visual-ring::after {
+  content: '';
+  display: block;
+  position: absolute;
+  inset: 8%;
+  border: 1px dashed #d9dadc24;
+  border-radius: 50%;
+}
+
+.home-page .hero-visual-frame {
+  position: absolute;
+  z-index: 2;
+  top: 20px;
+  inset-inline: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font: 9px var(--font-mono);
+  color: var(--home-quiet);
+  letter-spacing: 0.13em;
+  pointer-events: none;
+}
+
+.home-page .hero-visual-mark {
+  color: var(--home-silver);
+  letter-spacing: -0.04em;
+  font-size: 16px;
+}
+
+.home-page .hero-visual-mark span {
+  color: var(--home-yellow);
+}
+
+.home-page .hero-visual-object {
+  min-width: 0;
+  transform: translate3d(0, calc(var(--home-parallax, 0) * -0.045px), 0);
+}
+
+.home-page .hero-visual .computer-playground {
+  width: 100%;
+  height: clamp(350px, 37vw, 470px);
+  max-width: none;
+  margin: 0;
+}
+
+.home-page .hero-visual .scene-orbit {
+  display: none;
+}
+
+.home-page .hero-visual .scene-label {
+  top: auto;
+  bottom: 38px;
+  left: 0;
+  transform: none;
+  color: var(--home-quiet);
+}
+
+.home-page .hero-visual .scene-controls {
+  inset-inline: 0;
+  bottom: -5px;
+}
+
+.home-page .hero-visual .scene-hint {
+  color: var(--home-quiet);
+}
+
+.home-page .hero-visual .scene-button {
+  background: var(--home-graphite);
+  border-color: var(--home-hairline);
+  color: var(--home-silver);
+}
+
+.home-page .hero-visual .scene-button:hover {
+  background: var(--home-yellow);
+  color: var(--home-graphite);
+}
+
+.home-page .hero-visual .scene-sticker {
+  right: 0;
+  top: 34px;
+  padding: 9px 13px;
+  border-radius: 8px;
+  color: var(--home-graphite);
+  background: var(--home-yellow);
+  transform: rotate(6deg);
+  font-size: 18px;
+}
+
+.home-page .section-title .font-serif {
+  font-family: var(--font-sans);
+  color: var(--home-yellow);
+  font-style: normal;
+}
+
+@media (max-width: 800px) {
+  .home-page .hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 26px;
+    padding-block: 36px 73px;
+  }
+
+  .home-page .hero h1 {
+    font-size: clamp(47px, 10.3vw, 75px);
+  }
+
+  .home-page .hero-visual {
+    min-height: 340px;
+  }
+
+  .home-page .hero-visual .computer-playground {
+    height: clamp(290px, 54vw, 430px);
+  }
+
+  .home-page .hero-visual .scene-controls {
+    bottom: -4px;
+  }
+}
+
+@media (max-width: 420px) {
+  .home-page .hero {
+    gap: 22px;
+    padding-top: 25px;
+  }
+
+  .home-page .hero h1 {
+    font-size: clamp(41px, 11.45vw, 48px);
+  }
+
+  .home-page .hero-visual {
+    min-height: 308px;
+    border-radius: 17px;
+  }
+
+  .home-page .hero-visual .computer-playground {
+    height: 276px;
+  }
+
+  .home-page .hero-visual .scene-label {
+    bottom: 31px;
+  }
+
+  .home-page .hero-visual .scene-sticker {
+    top: 28px;
+    font-size: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce), (max-width: 800px), (pointer: coarse) {
+  .home-page .hero-visual-grid,
+  .home-page .hero-visual-ring,
+  .home-page .hero-visual-object {
+    transform: none;
+  }
+}
