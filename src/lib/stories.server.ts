@@ -1,6 +1,7 @@
 import { publishedStories, summarizeStory } from './story-schema'
 import { getLegacyStories, getLegacyStory } from './legacy-stories.server'
 import { storyStore } from './story-store.server'
+import { withGraphiteCover } from './graphite-story-covers'
 
 export async function listStories() {
   const store = await storyStore()
@@ -10,12 +11,16 @@ export async function listStories() {
   return publishedStories([
     ...localStories,
     ...remote.filter((story) => !localSlugs.has(story.slug)),
-  ]).map(summarizeStory)
+  ]).map((story) => summarizeStory(withGraphiteCover(story)))
 }
 export async function findStory(slug: string) {
   const store = await storyStore()
   const story = await store.bySlug(slug)
-  if (story) return (await store.published(undefined, [story]))[0]
+  if (story) {
+    const selected = (await store.published(undefined, [story]))[0]
+    return selected ? withGraphiteCover(selected) : undefined
+  }
   const remote = await getLegacyStory(slug)
-  return remote ? publishedStories([remote])[0] : undefined
+  const selected = remote ? publishedStories([remote])[0] : undefined
+  return selected ? withGraphiteCover(selected) : undefined
 }

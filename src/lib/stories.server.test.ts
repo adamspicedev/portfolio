@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { StoryStore } from './sqlite-stories.server'
 // Vite expands import.meta.glob; Bun's test runner does not.
 mock.module('./seed-stories.server', () => ({ seedStories: [] }))
-const { findStory } = await import('./stories.server')
+const { findStory, listStories } = await import('./stories.server')
 const { storyStore } = await import('./story-store.server')
 
 const directory = mkdtempSync(join(tmpdir(), 'portfolio-story-read-'))
@@ -83,4 +83,34 @@ test('direct reads keep drafts, scheduled stories and archived local slugs priva
     if (archived) await store.archive(saved.id, saved.revision, true, 'test')
     expect(await findStory(slug)).toBeUndefined()
   }
+})
+
+test('public reads map legacy covers without changing the stored CMS cover', async () => {
+  const oldCover = 'https://www.spicey.dev/images/stories/power.webp?source=cms'
+  const saved = await store.save(
+    {
+      title: 'Legacy artwork',
+      slug: 'legacy-artwork',
+      description: 'A story with legacy artwork.',
+      date: '2020-01-01',
+      tags: [],
+      body: 'Visible body.',
+      cover: oldCover,
+      coverAlt: 'Original art.',
+      draft: false,
+    },
+    'test',
+  )
+  const publicCover = {
+    cover: '/images/stories/graphite/power.webp',
+    coverAlt: 'A data centre connects to wind turbines and a large power plug.',
+  }
+  expect(await findStory(saved.slug)).toMatchObject(publicCover)
+  expect(
+    (await listStories()).find(({ slug }) => slug === saved.slug),
+  ).toMatchObject(publicCover)
+  expect(await store.bySlug(saved.slug)).toMatchObject({
+    cover: oldCover,
+    coverAlt: 'Original art.',
+  })
 })
