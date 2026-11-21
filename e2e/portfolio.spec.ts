@@ -276,7 +276,10 @@ test('new technology stories render their covers and source links', async ({
       title ?? '',
     )
     const cover = page.locator('.article-cover')
-    await expect(cover).toHaveAttribute('src', `/images/stories/${image}.webp`)
+    await expect(cover).toHaveAttribute(
+      'src',
+      `/images/stories/graphite/${image}.webp`,
+    )
     await expect
       .poll(() =>
         cover.evaluate(
@@ -290,7 +293,7 @@ test('new technology stories render their covers and source links', async ({
     await expect(
       page.locator('.article-prose a[href^="https://"]').first(),
     ).toBeVisible()
-    const asset = await request.get(`/images/stories/${image}.webp`)
+    const asset = await request.get(`/images/stories/graphite/${image}.webp`)
     expect(asset.ok()).toBe(true)
     expect(asset.headers()['content-type']).toContain('image/webp')
   }
@@ -417,7 +420,7 @@ test('crawler HTML includes canonical, sharing metadata and article schema; site
     'rel="canonical" href="https://spicey.dev/blog/the-cloud-has-a-power-cable"',
   )
   expect(html).toContain(
-    'property="og:image" content="https://spicey.dev/images/stories/power.webp"',
+    'property="og:image" content="https://spicey.dev/images/stories/graphite/power.webp"',
   )
   expect(html).toContain('name="twitter:card" content="summary_large_image"')
   expect(html).toContain('application/ld+json')
@@ -454,10 +457,10 @@ test('public and private routes expose safe server-rendered social previews', as
   const dragon = await request.get('/blog/it-started-with-a-dragon-32')
   expect(dragon.status()).toBe(200)
   expect(await dragon.text()).toContain(
-    'property="og:image" content="https://spicey.dev/images/stories/dragon32.webp"',
+    'property="og:image" content="https://spicey.dev/images/stories/graphite/dragon32.webp"',
   )
   expect(await dragon.text()).toContain(
-    'property="og:image:alt" content="A cream Dragon 32 computer',
+    'property="og:image:alt" content="A Dragon 32 computer',
   )
   for (const path of ['/admin', '/blog/missing-story', '/missing-page']) {
     const html = await (await request.get(path)).text()
@@ -471,13 +474,13 @@ test('public and private routes expose safe server-rendered social previews', as
     await request.get('/blog/the-cloud-has-a-power-cable')
   ).text()
   expect(article).toContain(
-    'alt="A blue data centre connects to wind turbines and a large orange power plug."',
+    'alt="A data centre connects to wind turbines and a large power plug."',
   )
   expect(article).toContain(
-    'property="og:image:alt" content="A blue data centre connects',
+    'property="og:image:alt" content="A data centre connects',
   )
   expect(await (await request.get('/blog')).text()).toContain(
-    'alt="A blue data centre connects',
+    'alt="A data centre connects',
   )
   expect((await request.get('/images/social-preview.jpg')).status()).toBe(200)
 })
