@@ -26,8 +26,8 @@ export function mountComputer(
   const camera = new THREE.OrthographicCamera(-3.4, 3.4, 3.4, -3.4, 0.1, 100)
   camera.position.set(5.8, 4.5, 8)
   camera.lookAt(0, 1.1, 0.6)
-  scene.add(new THREE.HemisphereLight('#ffffff', '#7773b3', 2.6))
-  const light = new THREE.DirectionalLight('#ffffff', 4)
+  scene.add(new THREE.HemisphereLight('#ffffff', '#777a82', 1.45))
+  const light = new THREE.DirectionalLight('#ffffff', 2.1)
   light.position.set(-3, 7, 5)
   light.castShadow = true
   light.shadow.mapSize.set(1024, 1024)
@@ -37,7 +37,7 @@ export function mountComputer(
   light.shadow.camera.bottom = -5
   light.shadow.normalBias = 0.035
   scene.add(light)
-  const rim = new THREE.DirectionalLight('#bbaaff', 2.5)
+  const rim = new THREE.DirectionalLight('#ffe7ad', 1.15)
   rim.position.set(5, 3, -4)
   scene.add(rim)
   const { group, texture } = createComputer()
@@ -56,9 +56,9 @@ export function mountComputer(
       128,
       128,
     )
-    gradient.addColorStop(0, 'rgba(108, 86, 161, 0.24)')
-    gradient.addColorStop(0.5, 'rgba(108, 86, 161, 0.12)')
-    gradient.addColorStop(1, 'rgba(108, 86, 161, 0)')
+    gradient.addColorStop(0, 'rgba(10, 11, 14, 0.39)')
+    gradient.addColorStop(0.5, 'rgba(10, 11, 14, 0.22)')
+    gradient.addColorStop(1, 'rgba(10, 11, 14, 0)')
     shadowContext.fillStyle = gradient
     shadowContext.fillRect(0, 0, 256, 256)
   }

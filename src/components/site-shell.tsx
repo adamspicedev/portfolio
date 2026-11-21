@@ -73,7 +73,7 @@ export function Footer() {
     <footer className="page-width site-footer">
       <Link to="/" className="wordmark text-xl">
         spicey
-        <Asterisk size={20} />
+        <Asterisk size={20} className="text-signal" aria-hidden="true" />
       </Link>
       <div className="flex items-center gap-5 font-mono text-xs">
         <p>Made with curiosity & a little spice.</p>

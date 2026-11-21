@@ -1,6 +1,7 @@
 import { track } from '../lib/analytics'
 import { NewsTicker } from '../components/news-ticker'
-import { useHomeMotion } from '../components/home-motion'
+import { useHomeMotion, useHomeParallax } from '../components/home-motion'
+import '../home-refresh.css'
 import { pageSeo, homeSeo } from '../lib/seo'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { usePostHog } from 'posthog-js/react'
@@ -41,35 +42,29 @@ export const Route = createFileRoute('/')({
 
 function Home() {
   useHomeMotion()
+  const heroRef = useHomeParallax()
   const posthog = usePostHog()
   const { stories, projects } = Route.useLoaderData()
   return (
-    <main id="main-content">
-      <section className="hero page-width">
+    <main id="main-content" className="home-page">
+      <section className="hero page-width" ref={heroRef}>
         <div className="hero-copy">
+          <div className="hero-index font-mono" aria-hidden="true">
+            <span>01 / INTRO</span>
+            <span className="hero-index-rule" />
+            <span>PORTFOLIO</span>
+          </div>
           <div className="hero-intro">
             <img src="/images/avatar-96.webp" width="38" height="38" alt="" />
             <span className="font-mono text-xs">Hey, I'm Adam Spice.</span>
-            <span className="intro-wave" aria-hidden="true">
-              ✳
-            </span>
           </div>
           <h1>
             I build things
             <br />
             for the{' '}
             <span className="hero-web">
-              web
-              <svg viewBox="0 0 290 20" fill="none" aria-hidden="true">
-                <path
-                  d="M4 12C65 2 162 2 285 9M27 18c82-9 175-10 245-5"
-                  stroke="currentColor"
-                  strokeWidth="5"
-                  strokeLinecap="round"
-                />
-              </svg>
+              web<span className="hero-period">.</span>
             </span>
-            <span className="hero-period">.</span>
           </h1>
           <p className="hero-description">
             Auckland-based senior software developer building full-stack
@@ -77,14 +72,14 @@ function Home() {
             <br />
             Curious human. A maker at heart.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="hero-actions flex flex-wrap gap-3">
             <a href="#projects" className="button button-primary">
               Explore my work <ArrowUpRight size={18} />
             </a>
             <a
               href="/files/AdamSpiceResume.pdf"
               download
-              className="button button-plain"
+              className="button button-outline hero-cv"
               onClick={() => track(posthog, 'resume_downloaded')}
             >
               Grab my CV <ArrowDownToLine size={16} />
@@ -97,7 +92,19 @@ function Home() {
             </span>
           </div>
         </div>
-        <Computer />
+        <div className="hero-visual">
+          <div className="hero-visual-grid" aria-hidden="true" />
+          <div className="hero-visual-ring" aria-hidden="true" />
+          <div className="hero-visual-frame" aria-hidden="true">
+            <span>FIG. 01 / WORKSTATION</span>
+            <span className="hero-visual-mark">
+              A<span>.</span>S
+            </span>
+          </div>
+          <div className="hero-visual-object">
+            <Computer />
+          </div>
+        </div>
         <a className="scroll-cue" href="#projects">
           <ArrowDown size={15} />
           <span className="font-mono text-[10px]">There's more down here</span>
@@ -107,7 +114,7 @@ function Home() {
       <section id="projects" className="page-width section-space">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">Some things I've made</p>
+            <p className="eyebrow">02 / Some things I've made</p>
             <h2 className="section-title">
               A little work.
               <br />A lot of{' '}
@@ -248,7 +255,7 @@ function Home() {
             </div>
           </div>
           <div>
-            <p className="eyebrow">Behind the keyboard</p>
+            <p className="eyebrow">03 / Behind the keyboard</p>
             <h2 className="section-title">
               A lifelong
               <br />
@@ -281,7 +288,7 @@ function Home() {
       <section id="skills" className="page-width toolkit-section section-space">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">Tools of the trade</p>
+            <p className="eyebrow">04 / Tools of the trade</p>
             <h2 className="section-title">My digital toolbox.</h2>
           </div>
           <Braces
@@ -321,7 +328,7 @@ function Home() {
         className="experience-section page-width section-space"
       >
         <div className="experience-intro">
-          <p className="eyebrow">The road so far</p>
+          <p className="eyebrow">05 / The road so far</p>
           <h2 className="section-title">
             Many hats.
             <br />
@@ -356,7 +363,7 @@ function Home() {
         <div className="page-width">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">Notes from the keyboard</p>
+              <p className="eyebrow">06 / Notes from the keyboard</p>
               <h2 className="section-title">
                 A few <span className="font-serif italic">stories.</span>
               </h2>
