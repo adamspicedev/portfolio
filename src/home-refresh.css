@@ -145,7 +145,11 @@
     #000 65%,
     transparent 93%
   );
-  transform: translate3d(0, calc(var(--home-parallax, 0) * 0.18px), 0);
+  transform: translate3d(
+    0,
+    min(116px, calc(var(--home-parallax, 0) * 0.18px)),
+    0
+  );
 }
 
 .home-page .hero-visual-ring {
@@ -155,7 +159,11 @@
   inset: 15% 12%;
   border: 1px solid #d9dadc25;
   border-radius: 50%;
-  transform: translate3d(0, calc(var(--home-parallax, 0) * 0.11px), 0);
+  transform: translate3d(
+    0,
+    min(71px, calc(var(--home-parallax, 0) * 0.11px)),
+    0
+  );
 }
 
 .home-page .hero-visual-ring::after {
@@ -194,7 +202,11 @@
 
 .home-page .hero-visual-object {
   min-width: 0;
-  transform: translate3d(0, calc(var(--home-parallax, 0) * -0.045px), 0);
+  transform: translate3d(
+    0,
+    max(-29px, calc(var(--home-parallax, 0) * -0.045px)),
+    0
+  );
 }
 
 .home-page .hero-visual .computer-playground {
@@ -306,7 +318,20 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce), (max-width: 800px), (pointer: coarse) {
+/* Keep the touch controls steady: only the decorative layers drift on phones. */
+@media (max-width: 800px), (pointer: coarse) {
+  .home-page .hero-visual-grid {
+    transform: translate3d(0, calc(var(--home-parallax, 0) * 0.06px), 0);
+  }
+  .home-page .hero-visual-ring {
+    transform: translate3d(0, calc(var(--home-parallax, 0) * 0.035px), 0);
+  }
+  .home-page .hero-visual-object {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
   .home-page .hero-visual-grid,
   .home-page .hero-visual-ring,
   .home-page .hero-visual-object {

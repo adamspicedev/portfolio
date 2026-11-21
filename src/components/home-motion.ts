@@ -64,21 +64,24 @@ export function useHomeParallax() {
     const hero = heroRef.current
     if (!hero) return
     const preference = window.matchMedia(
-      '(prefers-reduced-motion: no-preference) and (min-width: 801px) and (pointer: fine)',
+      '(prefers-reduced-motion: no-preference)',
     )
+    const maxOffset = 960
     let frame = 0
     let current = -1
 
     function render() {
       frame = 0
-      const offset = Math.round(Math.min(640, Math.max(0, window.scrollY)))
+      const offset = Math.round(
+        Math.min(maxOffset, Math.max(0, window.scrollY)),
+      )
       if (offset === current) return
       current = offset
       hero?.style.setProperty('--home-parallax', String(offset))
     }
 
     function queue() {
-      if (!frame && (current < 640 || window.scrollY < 640))
+      if (!frame && (current < maxOffset || window.scrollY < maxOffset))
         frame = window.requestAnimationFrame(render)
     }
 

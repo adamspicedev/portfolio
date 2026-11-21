@@ -37,11 +37,17 @@ test('hero grid and computer move at different rates and honour reduced motion',
     })
 })
 
-test('hero renders without parallax on a narrow viewport', async ({ page }) => {
+test('narrow viewports move only the decorative layers', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   await page.goto('/')
   await page.evaluate(() => window.scrollTo({ top: 200, behavior: 'instant' }))
-  await expect.poll(() => page.evaluate(() => scrollY)).toBe(200)
-  expect(await page.evaluate(readDepth)).toEqual({ grid: 0, computer: 0 })
+  await expect
+    .poll(() => page.evaluate(readDepth))
+    .toEqual({ grid: 12, computer: 0 })
+
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await expect
+    .poll(() => page.evaluate(readDepth))
+    .toEqual({ grid: 0, computer: 0 })
 })
