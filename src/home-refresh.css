@@ -83,7 +83,6 @@
 
 .home-page .hero .hero-cv {
   color: var(--home-silver);
-  border-color: var(--home-hairline);
 }
 
 .home-page .hero .hero-cv:hover {
@@ -239,7 +238,7 @@
 
 .home-page .hero-visual .scene-button {
   background: var(--home-graphite);
-  border-color: var(--home-hairline);
+  border-color: var(--color-line-control);
   color: var(--home-silver);
 }
 

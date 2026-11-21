@@ -17,7 +17,11 @@ export default defineConfig({
     { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
     {
       name: 'webkit-mobile',
-      testMatch: ['edge-hydration.spec.ts', 'contact-antispam.spec.ts'],
+      testMatch: [
+        'edge-hydration.spec.ts',
+        'contact-antispam.spec.ts',
+        'home-parallax.spec.ts',
+      ],
       use: { ...devices['iPhone 13'], launchOptions: {} },
     },
   ],

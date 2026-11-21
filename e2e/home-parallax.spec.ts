@@ -4,7 +4,8 @@ const readDepth = () => {
   const offset = (selector: string) => {
     const layer = document.querySelector(selector)
     if (!layer) throw new Error(`Missing parallax layer: ${selector}`)
-    return new DOMMatrix(getComputedStyle(layer).transform).m42
+    const transform = getComputedStyle(layer).transform
+    return transform === 'none' ? 0 : new DOMMatrix(transform).m42
   }
   return {
     grid: offset('.hero-visual-grid'),
@@ -14,7 +15,9 @@ const readDepth = () => {
 
 test('hero grid and computer move at different rates and honour reduced motion', async ({
   page,
+  isMobile,
 }) => {
+  test.skip(isMobile, 'Desktop moves the computer as well as its background')
   await page.setViewportSize({ width: 1440, height: 900 })
   await page.emulateMedia({ reducedMotion: 'no-preference' })
   await page.goto('/')
