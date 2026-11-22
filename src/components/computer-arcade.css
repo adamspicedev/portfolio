@@ -1,0 +1,89 @@
+.arcade-content {
+  display: grid;
+  gap: 0.65rem;
+  font: 0.8rem var(--font-mono);
+}
+
+.arcade-terminal {
+  block-size: clamp(8rem, 28dvh, 17rem);
+  overflow: auto;
+  padding: 0.8rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-line-control);
+  background: #17181a;
+  color: var(--color-silver);
+  font: inherit;
+}
+
+.arcade-status,
+.arcade-score {
+  color: var(--color-signal);
+}
+
+.arcade-score {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.arcade-road {
+  display: block;
+  inline-size: 100%;
+  block-size: clamp(8rem, 32dvh, 17rem);
+  border: 2px solid var(--color-signal);
+  border-radius: 0.6rem;
+  overflow: hidden;
+  background: #17181a;
+}
+
+.arcade-line {
+  stroke: #9c9fa6;
+  stroke-dasharray: 3 4;
+  vector-effect: non-scaling-stroke;
+}
+
+.arcade-player {
+  fill: var(--color-signal);
+}
+
+.arcade-traffic {
+  fill: var(--color-silver);
+}
+
+.arcade-instruction {
+  color: var(--color-muted);
+}
+
+.arcade-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.arcade-control {
+  min-height: 44px;
+  min-width: 44px;
+  justify-self: start;
+  padding: 0.45rem 0.65rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-line-control);
+  background: var(--color-raised);
+  color: var(--color-ink);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.arcade-control:hover:not(:disabled) {
+  color: var(--color-signal);
+}
+
+.arcade-control:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.arcade-source summary {
+  cursor: pointer;
+  padding-block: 0.35rem;
+}

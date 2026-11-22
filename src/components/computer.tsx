@@ -1,6 +1,54 @@
-import { useEffect, useRef, useState } from 'react'
-import { Pause, Play, RotateCw } from 'lucide-react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
+import { CatchBoundary } from '@tanstack/react-router'
+import { Gamepad2, Pause, Play, RotateCw, X } from 'lucide-react'
 import type { ComputerScene } from './computer-scene'
+
+const Arcade = lazy(() => import('./computer-arcade'))
+
+function ArcadeDialog({ onClose }: { onClose: () => void }) {
+  const dialog = useRef<HTMLDialogElement>(null)
+  useEffect(() => {
+    dialog.current?.showModal()
+  }, [])
+  return createPortal(
+    <dialog
+      ref={dialog}
+      className="arcade-dialog"
+      aria-labelledby="arcade-title"
+      onClose={onClose}
+    >
+      <div className="arcade-heading">
+        <div>
+          <p className="arcade-eyebrow">Spicey BASIC / Driveway arcade</p>
+          <h2 id="arcade-title">Night Shift</h2>
+        </div>
+        <button
+          type="button"
+          className="arcade-close"
+          aria-label="Close Night Shift"
+          onClick={() => dialog.current?.close()}
+        >
+          <X size={20} aria-hidden="true" />
+        </button>
+      </div>
+      <CatchBoundary
+        getResetKey={() => 'night-shift'}
+        errorComponent={() => (
+          <p>
+            The arcade couldn’t load. Close this window and refresh the page to
+            try again.
+          </p>
+        )}
+      >
+        <Suspense fallback={<output>Loading BASIC…</output>}>
+          <Arcade />
+        </Suspense>
+      </CatchBoundary>
+    </dialog>,
+    document.body,
+  )
+}
 
 function ComputerIllustration() {
   return (
@@ -67,6 +115,9 @@ function ComputerIllustration() {
   )
 }
 export function Computer() {
+  const launch = useRef<HTMLButtonElement>(null)
+  const stage = useRef<HTMLElement>(null)
+  const [arcadeOpen, setArcadeOpen] = useState(false)
   const host = useRef<HTMLDivElement>(null)
   const scene = useRef<ComputerScene | null>(null)
   const [ready, setReady] = useState(false)
@@ -85,13 +136,14 @@ export function Computer() {
     return () => preference.removeEventListener('change', update)
   }, [])
   useEffect(() => {
-    pausedRef.current = paused || reducedMotion
+    pausedRef.current = paused || reducedMotion || arcadeOpen
     scene.current?.setPaused(pausedRef.current)
-  }, [paused, reducedMotion])
+  }, [paused, reducedMotion, arcadeOpen])
   useEffect(() => {
     let cancelled = false
     const element = host.current
-    if (!element) return
+    const pointerTarget = stage.current
+    if (!element || !pointerTarget) return
     const observer = new IntersectionObserver(
       async ([entry]) => {
         if (!entry?.isIntersecting) return
@@ -101,6 +153,7 @@ export function Computer() {
           if (cancelled) return
           scene.current = mountComputer(
             element,
+            pointerTarget,
             window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
               pausedRef.current,
             () => {
@@ -132,6 +185,7 @@ export function Computer() {
         a little old-school. a little new-school.
       </span>
       <figure
+        ref={stage}
         aria-label="A silver retro desktop computer with a dark Hello World screen"
         className="computer-stage"
       >
@@ -140,7 +194,26 @@ export function Computer() {
           ref={host}
           className={`computer-canvas ${ready && !failed ? 'is-ready' : ''}`}
         />
+        <button
+          ref={launch}
+          type="button"
+          className="arcade-launch"
+          aria-haspopup="dialog"
+          onClick={() => setArcadeOpen(true)}
+        >
+          <span>
+            <Gamepad2 size={16} aria-hidden="true" /> Play Night Shift
+          </span>
+        </button>
       </figure>
+      {arcadeOpen && (
+        <ArcadeDialog
+          onClose={() => {
+            setArcadeOpen(false)
+            launch.current?.focus({ preventScroll: true })
+          }}
+        />
+      )}
       <div className="scene-controls">
         <span className="font-mono text-[10px] scene-hint">
           {failed

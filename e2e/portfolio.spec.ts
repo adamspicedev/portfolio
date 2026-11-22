@@ -485,25 +485,44 @@ test('public and private routes expose safe server-rendered social previews', as
   expect((await request.get('/images/social-preview.jpg')).status()).toBe(200)
 })
 
-test('browser and touch icons use the shared site mark', async ({
+test('browser, touch and install icons use the graphite site mark', async ({
   request,
 }) => {
   const html = await (await request.get('/')).text()
-  expect(html).toContain('href="/favicon.svg"')
-  expect(html).toContain('href="/favicon-32x32.png"')
-  expect(html).toContain('href="/apple-icon-180x180.png"')
-  expect(html).toContain('rel="manifest" href="/manifest.json"')
+  const iconRoot = '/icons/graphite'
   for (const path of [
-    '/favicon.svg',
     '/favicon.ico',
-    '/favicon-16x16.png',
-    '/favicon-32x32.png',
-    '/apple-icon-180x180.png',
-  ])
+    `${iconRoot}/favicon.svg`,
+    `${iconRoot}/favicon-16x16.png`,
+    `${iconRoot}/favicon-32x32.png`,
+    `${iconRoot}/apple-icon-180x180.png`,
+  ]) {
+    expect(html).toContain(`href="${path}"`)
     expect((await request.get(path)).status()).toBe(200)
+  }
+  const vector = await request.get(`${iconRoot}/favicon.svg`)
+  const mark = await vector.text()
+  for (const colour of ['#2b2d31', '#d9dadc', '#ffc93c'])
+    expect(mark).toContain(colour)
+  expect(await (await request.get('/favicon.svg')).text()).toBe(mark)
+  expect(html).toContain('rel="manifest" href="/manifest.json"')
   const manifest = await (await request.get('/manifest.json')).json()
   expect(manifest.name).toBe('Adam Spice')
+  expect(manifest.short_name).toBe('spicey')
   expect(manifest.theme_color).toBe('#2b2d31')
+  for (const size of [36, 48, 72, 96, 144, 192, 512]) {
+    const src = `${iconRoot}/android-icon-${size}x${size}.png`
+    expect(manifest.icons).toContainEqual(
+      expect.objectContaining({
+        src,
+        sizes: `${size}x${size}`,
+        type: 'image/png',
+      }),
+    )
+    const asset = await request.get(src)
+    expect(asset.ok()).toBe(true)
+    expect(asset.headers()['content-type']).toContain('image/png')
+  }
 })
 
 test('homepage entrances respect reduced motion and keep content visible', async ({

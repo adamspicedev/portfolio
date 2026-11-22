@@ -21,6 +21,7 @@ export default defineConfig({
         'edge-hydration.spec.ts',
         'contact-antispam.spec.ts',
         'home-parallax.spec.ts',
+        'basic-arcade.spec.ts',
       ],
       use: { ...devices['iPhone 13'], launchOptions: {} },
     },
