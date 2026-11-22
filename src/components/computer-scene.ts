@@ -8,6 +8,7 @@ export type ComputerScene = {
 }
 export function mountComputer(
   host: HTMLElement,
+  pointerTarget: HTMLElement,
   initiallyPaused: boolean,
   onLost: () => void,
 ): ComputerScene {
@@ -163,8 +164,8 @@ export function mountComputer(
     { threshold: 0.05 },
   )
   intersection.observe(host)
-  host.addEventListener('pointermove', pointerMove)
-  host.addEventListener('pointerleave', pointerLeave)
+  pointerTarget.addEventListener('pointermove', pointerMove)
+  pointerTarget.addEventListener('pointerleave', pointerLeave)
   renderer.domElement.addEventListener('webglcontextlost', contextLost)
   document.addEventListener('visibilitychange', visibility)
   resize()
@@ -198,8 +199,8 @@ export function mountComputer(
       stop()
       resizeObserver.disconnect()
       intersection.disconnect()
-      host.removeEventListener('pointermove', pointerMove)
-      host.removeEventListener('pointerleave', pointerLeave)
+      pointerTarget.removeEventListener('pointermove', pointerMove)
+      pointerTarget.removeEventListener('pointerleave', pointerLeave)
       renderer.domElement.removeEventListener('webglcontextlost', contextLost)
       document.removeEventListener('visibilitychange', visibility)
       scene.traverse((object) => {

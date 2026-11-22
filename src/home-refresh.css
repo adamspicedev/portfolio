@@ -337,3 +337,84 @@
     transform: none;
   }
 }
+
+.arcade-launch {
+  position: absolute;
+  inset: 8% 10% 19%;
+  z-index: 1;
+  display: grid;
+  place-items: end center;
+  border-radius: 1rem;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.arcade-launch span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-block-size: 44px;
+  padding: 0.5rem 0.8rem;
+  background: var(--color-graphite);
+  color: var(--color-signal);
+  border: 1px solid var(--color-line-control);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 650;
+}
+
+.arcade-launch:hover span,
+.arcade-launch:focus-visible span {
+  color: var(--color-on-signal);
+  background: var(--color-signal);
+}
+
+.arcade-dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(36rem, calc(100% - 1.5rem));
+  max-block-size: calc(100dvh - 1.5rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--color-line-control);
+  border-radius: 1rem;
+  padding: clamp(0.85rem, 3vw, 1.5rem);
+  background: var(--color-graphite);
+  color: var(--color-ink);
+}
+
+.arcade-dialog::backdrop {
+  background: #17181bd9;
+}
+
+.arcade-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-bottom: 0.8rem;
+}
+
+.arcade-heading h2 {
+  font-size: clamp(1.5rem, 5vw, 2.1rem);
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.arcade-eyebrow {
+  color: var(--color-signal);
+  font: 0.7rem var(--font-mono);
+  text-transform: uppercase;
+}
+
+.arcade-close {
+  display: grid;
+  min-block-size: 44px;
+  min-inline-size: 44px;
+  place-items: center;
+  border: 1px solid var(--color-line-control);
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
