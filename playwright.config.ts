@@ -22,6 +22,7 @@ export default defineConfig({
         'contact-antispam.spec.ts',
         'home-parallax.spec.ts',
         'basic-arcade.spec.ts',
+        'margin-notes.spec.ts',
       ],
       use: { ...devices['iPhone 13'], launchOptions: {} },
     },

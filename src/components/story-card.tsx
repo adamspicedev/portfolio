@@ -2,6 +2,7 @@ import { track } from '../lib/analytics'
 import { Link } from '@tanstack/react-router'
 import { ArrowUpRight, Terminal } from 'lucide-react'
 import { usePostHog } from 'posthog-js/react'
+import { sketchCover } from '../lib/sketch-covers'
 import { formatStoryDate, type StorySummary } from '../lib/story-schema'
 
 export function StoryCard({
@@ -12,6 +13,7 @@ export function StoryCard({
   placement: 'home' | 'blog'
 }) {
   const posthog = usePostHog()
+  const sketch = sketchCover(story.slug)
   return (
     <Link
       to="/blog/$slug"
@@ -22,7 +24,14 @@ export function StoryCard({
       }
     >
       <div className="story-art">
-        {story.cover ? (
+        {sketch ? (
+          <img
+            src={sketch}
+            alt=""
+            loading="lazy"
+            className="h-full w-full object-contain"
+          />
+        ) : story.cover ? (
           <img
             src={story.cover}
             alt={story.coverAlt ?? ''}

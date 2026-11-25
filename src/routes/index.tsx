@@ -55,15 +55,16 @@ function Home() {
             <span>PORTFOLIO</span>
           </div>
           <div className="hero-intro">
-            <img src="/images/avatar-96.webp" width="38" height="38" alt="" />
-            <span className="font-mono text-xs">Hey, I'm Adam Spice.</span>
+            <span className="font-mono text-xs">
+              Adam Spice / software developer
+            </span>
           </div>
           <h1>
-            I build things
+            A website
             <br />
-            for the{' '}
+            in{' '}
             <span className="hero-web">
-              web<span className="hero-period">.</span>
+              pencil<span className="hero-period">.</span>
             </span>
           </h1>
           <p className="hero-description">
@@ -156,8 +157,16 @@ function Home() {
                     </span>
                   </div>
                   <img
-                    src={project.image}
-                    alt={project.imageAlt}
+                    src={
+                      new URL(project.link).hostname === 'rowberry.spicey.dev'
+                        ? '/sketch/sketch-rowberry.svg'
+                        : project.image
+                    }
+                    alt={
+                      new URL(project.link).hostname === 'rowberry.spicey.dev'
+                        ? 'Hand-drawn diagram of the Rowberry workspace'
+                        : project.imageAlt
+                    }
                     width={1000}
                     height={650}
                     loading="lazy"
@@ -359,7 +368,7 @@ function Home() {
           ))}
         </div>
       </section>
-      <section className="stories-section section-space">
+      <section id="writing" className="stories-section section-space">
         <div className="page-width">
           <div className="section-heading">
             <div>

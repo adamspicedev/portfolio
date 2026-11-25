@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 580 420" fill="none">
+  <defs><pattern id="hatch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(-14)"><path d="M0 9L9 0" stroke="#3b5271" opacity=".3"/></pattern></defs>
+  <g stroke="#697285" stroke-dasharray="3 7" opacity=".43"><path d="m63 75 443 7M69 340l448-9M102 48l-7 317M466 49l13 317"/></g>
+  <path d="M99 338q169 31 406-10l-32 45q-193 34-375-5z" fill="url(#hatch)"/>
+  <g stroke="#263e62" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M137 93q1-15 24-17l271 12 54 36 8 143-65 29-296-6-12-22 11-88z" fill="#faf4e7" stroke-width="3"/>
+    <path d="M135 98q105-4 188 3l92 4 16 184m-18-182 68 21m-343-32q12-13 45-14m95 8 118 1m95 52 6 100m-18 32-46 23-133-4" stroke-width="1.4" opacity=".75"/>
+    <path d="M163 115q65-8 114-1t99 0q17 2 20 19l8 105q1 19-19 19l-221 5q-19-3-17-21l9-111q2-9 7-15Z" fill="#d8e3dd" stroke-width="2.4"/>
+    <path d="M166 123q56-4 102 0t108-2q12 1 13 15l8 99q3 14-15 16-57-2-106 3l-112-1q-10-2-9-13l9-104q0-8 2-13zM160 139l-5 99m12 18q94 2 135-1m78-130q12-2 14 11" stroke-width="1.45" opacity=".83"/>
+    <path d="m440 135 30 9m-30-3 31 9m-29-4 29 9m-30-3 31 9m-19 29 26-5m-29 11 28-5m-28 12 29-3m-28 10 27-4m-27 10 27-3m-28 13 27-6" stroke-width="1.8" opacity=".62"/>
+    <path d="M107 276q161-1 314 9l66 45-27 28q-81 6-175 4l-192 4-34-23z" fill="#fff8e8" stroke-width="2.9"/>
+    <path d="M108 283q214 4 301 5l58 40q-140 9-230 7l-166 5m7 8q187-8 271-8l128-6m-368 28q95-4 174-3m106-3 75-3 18-18" stroke-width="1.65"/>
+    <path d="m119 290 289 6 41 26-354 9 7-13z" fill="#eee7d5" stroke-width="1.4"/>
+    <path d="M112 301q121-1 185 1l125 1m-317 7q119-2 218-1l105 1m-329 10 86-1m150-2 103-1M133 290l-17 38m36-36-17 35m35-34-14 34m36-35-14 28m36-26-7 22m26-21-5 20m23-20-3 16m24-15-1 17m24-18 3 18m19-17 9 20m13-21 13 28m7-26 15 27m4-26 21 24m-2-22 25 23" stroke-width="1.25" opacity=".83"/>
+    <path d="M190 319q49-3 90-3l42-1 14 7-150 4z" fill="#faf4e7" stroke-width="1.5"/>
+  </g>
+  <g stroke="#963f32" stroke-width="2.1" stroke-linecap="round"><path d="M516 78q-25-20-64-6l-19 11m8-17-8 17 19-1m-359 195-15-10m9 18-19-2m16 12-13 8"/><path d="m496 309 13-9 5-15m-14 4 14-4 3 13" opacity=".82"/></g>
+</svg>
