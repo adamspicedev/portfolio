@@ -69,7 +69,9 @@ function AdminPage() {
             <p className="my-6 text-muted">
               Sign in to manage stories and projects.
             </p>
-            <SignIn routing="hash" forceRedirectUrl="/admin" />
+            <div className="cms-auth-widget">
+              <SignIn routing="hash" forceRedirectUrl="/admin" />
+            </div>
           </div>
         ) : data.status === 'forbidden' ? (
           <div className="cms-notice">
