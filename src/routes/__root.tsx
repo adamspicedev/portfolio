@@ -6,6 +6,7 @@ import { usePostHog } from 'posthog-js/react'
 import { reportHandledError } from '../lib/client-telemetry'
 import { Footer, Header, NotFound } from '../components/site-shell'
 import appCss from '../styles.css?url'
+import sketchCss from '../margin-notes.css?url'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -19,11 +20,12 @@ export const Route = createRootRoute({
       }).meta,
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { name: 'theme-color', content: '#2b2d31' },
+      { name: 'theme-color', content: '#f5efdf' },
       { property: 'og:site_name', content: 'Adam Spice' },
     ],
     links: [
       { rel: 'stylesheet', href: appCss },
+      { rel: 'stylesheet', href: sketchCss },
       { rel: 'icon', href: '/favicon.ico', sizes: '16x16 32x32 48x48 96x96' },
       {
         rel: 'icon',

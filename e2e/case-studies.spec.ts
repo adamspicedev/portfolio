@@ -35,7 +35,12 @@ test('project cards lead to case studies with screenshots and live links', async
     await expect(
       page.getByRole('link', { name: 'Visit project website' }),
     ).toHaveAttribute('href', liveUrl!)
-    const screenshot = page.locator('article img')
+    const drawing = page.locator('.workspace-sketch img')
+    const screenshot = page.locator('article img:not(.workspace-sketch img)')
+    if (await drawing.count()) {
+      await expect(drawing).toBeVisible()
+      await page.getByText('See the real workspace', { exact: true }).click()
+    }
     await screenshot.scrollIntoViewIfNeeded()
     await expect
       .poll(() =>

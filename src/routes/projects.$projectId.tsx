@@ -32,6 +32,8 @@ export const Route = createFileRoute('/projects/$projectId')({
 
 function ProjectCaseStudy() {
   const project = Route.useLoaderData()
+  const hasWorkspaceSketch =
+    new URL(project.link).hostname === 'rowberry.spicey.dev'
   const posthog = usePostHog()
   return (
     <main id="main-content" className="article-page">
@@ -91,20 +93,26 @@ function ProjectCaseStudy() {
           )}
           <section>
             <h2>A look at the app</h2>
-            <figure>
-              <img
-                src={project.image}
-                alt={
-                  project.imageAlt || `${project.title} application screenshot`
-                }
-                width={1000}
-                height={650}
-                loading="lazy"
-              />
-              <figcaption className="mt-3 text-sm text-muted">
-                {project.title} — application screenshot.
-              </figcaption>
-            </figure>
+            {hasWorkspaceSketch && (
+              <figure className="workspace-sketch">
+                <img
+                  src="/sketch/sketch-rowberry.svg"
+                  alt="Pen sketch of the schema explorer, SQL editor and results grid"
+                  width={360}
+                  height={240}
+                  loading="lazy"
+                />
+                <figcaption>Rowberry workspace, drawn in pen.</figcaption>
+              </figure>
+            )}
+            {hasWorkspaceSketch ? (
+              <details className="project-screenshot">
+                <summary>See the real workspace</summary>
+                <ProjectScreenshot project={project} />
+              </details>
+            ) : (
+              <ProjectScreenshot project={project} />
+            )}
           </section>
         </article>
         <Link to="/" hash="contact" className="button button-outline mt-10">
@@ -112,5 +120,26 @@ function ProjectCaseStudy() {
         </Link>
       </div>
     </main>
+  )
+}
+
+function ProjectScreenshot({
+  project,
+}: {
+  project: ReturnType<typeof Route.useLoaderData>
+}) {
+  return (
+    <figure>
+      <img
+        src={project.image}
+        alt={project.imageAlt || `${project.title} application screenshot`}
+        width={1000}
+        height={650}
+        loading="lazy"
+      />
+      <figcaption className="mt-3 text-sm text-muted">
+        {project.title} — application screenshot.
+      </figcaption>
+    </figure>
   )
 }

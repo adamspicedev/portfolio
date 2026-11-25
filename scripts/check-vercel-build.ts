@@ -67,7 +67,7 @@ try {
 import handler from './index.mjs'
 
 for (const [path, content] of [
-  ['/', 'I build things'],
+  ['/', 'A website'],
   ['/admin', 'Connect Clerk to get started'],
 ]) {
   const response = await handler.fetch(new Request('http://localhost' + path))

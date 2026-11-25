@@ -1,3 +1,4 @@
+import { sketchCover } from '../lib/sketch-covers'
 import { pageSeo, storySeo } from '../lib/seo'
 import { createFileRoute, Link, notFound } from '@tanstack/react-router'
 import { ArrowLeft, ArrowUpRight } from 'lucide-react'
@@ -31,6 +32,7 @@ export const Route = createFileRoute('/blog/$slug')({
 })
 function Story() {
   const story = Route.useLoaderData()
+  const sketch = sketchCover(story.slug)
   return (
     <main id="main-content" className="article-page">
       <div className="article-width">
@@ -58,10 +60,10 @@ function Story() {
             ))}
           </div>
         </header>
-        {story.cover && (
+        {(sketch || story.cover) && (
           <img
-            src={story.cover}
-            alt={story.coverAlt ?? ''}
+            src={sketch ?? story.cover}
+            alt={sketch ? '' : (story.coverAlt ?? '')}
             className="article-cover"
             fetchPriority="high"
             decoding="async"

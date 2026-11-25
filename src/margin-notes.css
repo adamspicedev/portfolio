@@ -1,0 +1,490 @@
+@font-face {
+  font-family: 'Margin Notes';
+  src: url('/sketch/MarginNotes-Regular.woff2') format('woff2');
+  font-display: swap;
+  font-weight: 400;
+}
+
+html:not(:has(.cms-page)) {
+  --font-sans: 'Margin Notes', 'Segoe Print', system-ui, sans-serif;
+  --font-mono: var(--font-sans);
+  --font-serif: var(--font-sans);
+  --color-graphite: #263e62;
+  --color-silver: #263752;
+  --color-signal: #963f32;
+  --color-paper: #f5efdf;
+  --color-panel: #fffaed;
+  --color-raised: #fbf0ce;
+  --color-ink: #213757;
+  --color-muted: #4e5861;
+  --color-line: #786b534a;
+  --color-line-control: #746b5d;
+  --color-on-signal: #fff8eb;
+  --pen-frame: url('/sketch/ink-frame.svg');
+  --pen-frame-alt: url('/sketch/ink-frame-alt.svg');
+  --pen-rule: url('/sketch/ink-rule.svg');
+  color-scheme: light;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  background: var(--color-paper);
+}
+html:not(:has(.cms-page)) body {
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0 4vw,
+      #a5463d24 4vw calc(4vw + 1px),
+      transparent calc(4vw + 1px)
+    ),
+    repeating-linear-gradient(0deg, transparent 0 27px, #324f6810 27px 28px),
+    var(--color-paper);
+  font-size: clamp(1.45rem, 2vw, 1.68rem);
+  line-height: 1.3;
+}
+html:not(:has(.cms-page)) :is(.font-mono, .eyebrow, .tag, .form-heading) {
+  font-size: max(1.02rem, 0.71em);
+  line-height: 1.15;
+  letter-spacing: 0.035em;
+}
+html:not(:has(.cms-page))
+  :is(.text-sm, .text-xs, .filter-button, .form-heading span) {
+  font-size: max(1.12rem, 0.75em);
+}
+html:not(:has(.cms-page)) :is(.text-lg, .text-xl) {
+  font-size: max(1.55rem, 1em);
+}
+html:not(:has(.cms-page)) :is(.text-2xl, .contribution-card h3) {
+  font-size: clamp(1.85rem, 2.7vw, 2.45rem);
+}
+html:not(:has(.cms-page))
+  :is(
+    .wordmark,
+    .section-title,
+    .article-header h1,
+    .article-prose h2,
+    .article-prose h3
+  ) {
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.02;
+}
+html:not(:has(.cms-page)) .main-nav {
+  font-size: 1.45rem;
+}
+html:not(:has(.cms-page)) .main-nav.is-open {
+  background: var(--color-panel);
+}
+html:not(:has(.cms-page))
+  :is(
+    .site-header,
+    .site-footer,
+    .section-heading,
+    .article-header,
+    .experience-row,
+    .form-heading,
+    .blog-filters,
+    .article-signoff
+  ) {
+  border: 0;
+}
+html:not(:has(.cms-page))
+  :is(.site-header, .article-header, .experience-row, .form-heading) {
+  background-image: var(--pen-rule);
+  background-position: center bottom;
+  background-size: 100% 8px;
+  background-repeat: no-repeat;
+}
+html:not(:has(.cms-page)) :is(.site-footer, .blog-filters, .article-signoff) {
+  background-image: var(--pen-rule);
+  background-position: center top;
+  background-size: 100% 8px;
+  background-repeat: no-repeat;
+}
+html:not(:has(.cms-page))
+  :is(
+    .button,
+    .main-nav > .nav-contact,
+    .menu-toggle,
+    .project-card,
+    .story-card,
+    .contribution-card,
+    .toolbox-item,
+    .tag,
+    .portrait-frame,
+    .contact-form,
+    .contact-form input:not([name='website']),
+    .contact-form textarea,
+    .filter-button,
+    .story-search,
+    .empty-stories,
+    .arcade-launch span,
+    .arcade-dialog,
+    .arcade-close,
+    .arcade-control
+  ) {
+  border: 7px solid transparent;
+  border-radius: 0;
+  border-image: var(--pen-frame) 19 / 9px / 1px stretch;
+  box-shadow: none;
+}
+html:not(:has(.cms-page))
+  :is(
+    .story-card:nth-child(even),
+    .project-card:nth-child(even),
+    .contribution-card:nth-child(even),
+    .contact-form textarea,
+    .button-outline
+  ) {
+  border-image-source: var(--pen-frame-alt);
+}
+html:not(:has(.cms-page))
+  :is(.button, .main-nav > .nav-contact, .filter-button) {
+  font-size: 1.3rem;
+  padding: 0.25rem 0.62rem 0.32rem;
+  min-height: 44px;
+  line-height: 1.06;
+  color: var(--color-ink);
+  background: var(--color-panel);
+}
+html:not(:has(.cms-page))
+  :is(
+    .button-primary,
+    .button-dark,
+    .filter-button.is-selected,
+    .arcade-launch span
+  ) {
+  color: var(--color-ink);
+  background: var(--color-raised);
+}
+html:not(:has(.cms-page))
+  :is(
+    .button:hover:not(:disabled),
+    .main-nav > .nav-contact:hover,
+    .arcade-launch:hover span
+  ) {
+  color: var(--color-ink);
+  background: #f0dda7;
+}
+html:not(:has(.cms-page)) .tag {
+  color: var(--color-muted);
+  background: transparent;
+  padding: 0 0.3em;
+  border-width: 4px;
+  border-image-width: 5px;
+}
+html:not(:has(.cms-page)) :is(.project-card, .story-card, .contribution-card) {
+  overflow: visible;
+  background: var(--color-panel);
+  transition: background 0.2s;
+}
+html:not(:has(.cms-page)) .story-card:hover {
+  transform: none;
+  background: #fff7e0;
+}
+html:not(:has(.cms-page))
+  :is(
+    .project-art,
+    .story-art,
+    .toolbox-item,
+    .stories-section,
+    .about-section,
+    .contact-section
+  ) {
+  background: transparent;
+}
+html:not(:has(.cms-page)) :is(.project-art, .story-art) {
+  border-radius: 0;
+  border: 0;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 23px, #263e6210 23px 24px),
+    repeating-linear-gradient(0deg, transparent 0 23px, #263e6210 23px 24px),
+    #f6efdf;
+}
+html:not(:has(.cms-page)) .project-browser {
+  box-shadow: none;
+  background: var(--color-panel);
+  border-radius: 0;
+}
+html:not(:has(.cms-page)) .project-browser .browser-address {
+  color: var(--color-muted);
+}
+html:not(:has(.cms-page))
+  :is(
+    .story-art img,
+    .article-cover,
+    .portrait-frame img,
+    .project-browser img
+  ) {
+  filter: grayscale(1) sepia(0.24) contrast(0.96);
+  mix-blend-mode: multiply;
+  border-radius: 0;
+}
+html:not(:has(.cms-page)) .story-art img[src^='/sketch/'] {
+  filter: none;
+  object-fit: contain;
+}
+html:not(:has(.cms-page)) .story-arrow,
+html:not(:has(.cms-page)) .project-open {
+  color: var(--color-signal);
+  background: var(--color-raised);
+  border-radius: 40% 54% 37% 46%;
+}
+html:not(:has(.cms-page))
+  :is(
+    .story-search input,
+    .contact-form input:not([name='website']),
+    .contact-form textarea
+  ) {
+  font-size: 1.45rem;
+  line-height: 1.22;
+}
+html:not(:has(.cms-page)) .contact-section {
+  border-block: 0;
+}
+html:not(:has(.cms-page)) .contact-form {
+  position: relative;
+  overflow: visible;
+  background: var(--color-panel);
+  min-width: 0;
+}
+html:not(:has(.cms-page))
+  :is(.contact-form input:not([name='website']), .contact-form textarea) {
+  appearance: none;
+  background: #fffdf4;
+  padding: 0.5rem 0.65rem;
+}
+html:not(:has(.cms-page)) .contact-form label {
+  font-size: 1.42rem;
+}
+html:not(:has(.cms-page)) .contact-form textarea {
+  min-height: 8rem;
+}
+html:not(:has(.cms-page)) .contact-form [role='alert'] {
+  color: #963f32;
+}
+html:not(:has(.cms-page))
+  .contact-form
+  :is(input, textarea, button):focus-visible {
+  outline: 2px solid #963f32;
+  outline-offset: 3px;
+}
+html:not(:has(.cms-page)) :is(.contact-email, .text-link, .article-prose a) {
+  text-decoration: underline;
+  text-decoration-color: var(--color-signal);
+  text-underline-offset: 0.2em;
+}
+html:not(:has(.cms-page)) .article-prose {
+  font-family: var(--font-sans);
+  font-size: clamp(1.48rem, 2.5vw, 1.8rem);
+  line-height: 1.36;
+}
+html:not(:has(.cms-page)) .article-prose :is(pre, code) {
+  font-family: var(--font-sans);
+  font-variant-ligatures: none;
+  background: var(--color-raised);
+  color: var(--color-ink);
+}
+html:not(:has(.cms-page)) .article-prose pre {
+  border: 7px solid transparent;
+  border-image: var(--pen-frame-alt) 19 / 8px / 1px stretch;
+  border-radius: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 1.42rem;
+}
+html:not(:has(.cms-page)) .article-prose pre code {
+  white-space: inherit;
+}
+html:not(:has(.cms-page)) .arcade-terminal {
+  background: #faf2dc;
+  color: var(--color-ink);
+}
+html:not(:has(.cms-page)) .arcade-road {
+  background: #faf2dc;
+  border-color: var(--color-line-control);
+}
+html:not(:has(.cms-page)) .arcade-content {
+  font-size: 1.15rem;
+}
+html:not(:has(.cms-page)) .arcade-eyebrow {
+  font-size: 1.05rem;
+}
+html:not(:has(.cms-page)) .arcade-dialog {
+  background: var(--color-panel);
+}
+html:not(:has(.cms-page)) .arcade-dialog::backdrop {
+  background: #213757aa;
+}
+html:not(:has(.cms-page)) .skip-link {
+  background: var(--color-signal);
+  color: var(--color-on-signal);
+}
+
+.home-page {
+  --home-graphite: #263e62;
+  --home-silver: #263752;
+  --home-yellow: #963f32;
+  --home-hairline: #263e6240;
+  --home-quiet: #4e5861;
+}
+body .home-page .hero h1 {
+  font-size: clamp(4.4rem, 9vw, 8.25rem);
+  font-weight: 400;
+  line-height: 0.84;
+  letter-spacing: -0.022em;
+}
+body .home-page .hero-web {
+  background: url('/sketch/pen-line.svg') center bottom / 100% 0.25em no-repeat;
+  padding: 0 0 0.12em;
+  letter-spacing: inherit;
+  color: var(--color-ink);
+  border-radius: 0;
+}
+body .home-page .hero-description {
+  font-size: clamp(1.52rem, 2.6vw, 1.8rem);
+  line-height: 1.22;
+}
+body .home-page .hero-index,
+body .home-page .hero-visual-frame {
+  font-size: 1.1rem;
+}
+body .home-page .hero-visual {
+  border: 0;
+  background: transparent;
+  border-radius: 0;
+  padding: 1rem 0;
+}
+body .home-page .hero-visual-grid {
+  background-image:
+    linear-gradient(#263e6210 1px, transparent 1px),
+    linear-gradient(90deg, #263e6210 1px, transparent 1px);
+  mask-image: radial-gradient(ellipse, #000 10%, transparent 67%);
+}
+body .home-page .hero-visual-ring {
+  border: 0;
+}
+body .home-page .hero-visual-ring::after {
+  display: none;
+}
+body .home-page .hero .hero-cv:hover {
+  background: var(--color-raised);
+}
+body .home-page .status-dot {
+  box-shadow: none;
+}
+body .home-page .hero-visual .scene-sticker {
+  font-family: var(--font-sans);
+  font-size: clamp(1.15rem, 2.3vw, 1.85rem);
+  color: var(--color-signal);
+  background: transparent;
+  top: 14%;
+  right: 1.5%;
+  padding: 0;
+  pointer-events: none;
+}
+body .home-page .hero-visual .scene-label {
+  bottom: 46px;
+  left: 7%;
+  transform: rotate(-3deg);
+}
+body .home-page .hero-visual .scene-controls {
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+body .home-page .hero-visual .scene-hint {
+  margin-right: auto;
+}
+body .home-page .hero-visual .scene-button {
+  background: var(--color-raised);
+  color: var(--color-ink);
+}
+body .home-page .hero-visual .scene-button:hover {
+  background: #f0dda7;
+}
+.computer-illustration {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  width: min(100%, 580px);
+  height: auto;
+  padding: 0;
+  aspect-ratio: 580 / 420;
+  transform: translate(-50%, -50%);
+}
+.computer-illustration img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.computer-pencil-screen {
+  position: absolute;
+  top: 34%;
+  left: 31%;
+  color: #304e4c;
+  font-size: clamp(0.78rem, 1.5vw, 1.38rem);
+  line-height: 1.17;
+  transform: rotate(-1.5deg);
+}
+body .home-page .arcade-launch {
+  inset: 4% 6% 18%;
+}
+body .home-page .arcade-launch span {
+  font-size: 1.15rem;
+}
+
+@media (max-width: 800px) {
+  body .home-page .hero h1 {
+    font-size: clamp(3.85rem, 13vw, 6.8rem);
+  }
+  body .home-page .hero-visual {
+    min-height: 0;
+  }
+  body .home-page .hero-visual .computer-playground {
+    height: clamp(16rem, 70vw, 25rem);
+  }
+  body .home-page .hero-visual .scene-sticker {
+    top: 12%;
+  }
+  body .home-page .hero-visual .scene-label {
+    bottom: 39px;
+  }
+  body .home-page .hero-visual .scene-controls {
+    bottom: 0;
+  }
+  .computer-pencil-screen {
+    font-size: clamp(0.75rem, 3.6vw, 1.4rem);
+  }
+}
+@media (max-width: 600px) {
+  html:not(:has(.cms-page)) .contact-section .page-width {
+    width: calc(100% - 28px);
+    grid-template-columns: minmax(0, 1fr);
+  }
+  html:not(:has(.cms-page)) .contact-form .space-y-5 {
+    padding-inline: 1rem;
+  }
+  html:not(:has(.cms-page)) .article-page {
+    padding-inline: 1rem;
+  }
+  html:not(:has(.cms-page)) .site-footer > div {
+    flex-wrap: wrap;
+  }
+}
+
+html:not(:has(.cms-page)) .article-cover[src^='/sketch/'],
+html:not(:has(.cms-page)) .workspace-sketch img {
+  filter: none;
+  mix-blend-mode: multiply;
+}
+
+html:not(:has(.cms-page)) .workspace-sketch {
+  width: min(100%, 28rem);
+  margin-inline: auto;
+}
+
+html:not(:has(.cms-page)) .project-screenshot summary {
+  min-height: 44px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--color-signal);
+}

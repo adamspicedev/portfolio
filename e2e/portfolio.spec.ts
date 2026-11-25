@@ -87,10 +87,10 @@ test('homepage renders on the server and links to the real résumé', async ({
 }) => {
   const response = await request.get('/')
   expect(response.ok()).toBe(true)
-  expect(await response.text()).toContain('I build things')
+  expect(await response.text()).toContain('A website')
   await page.goto('/')
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-    'I build thingsfor the web.',
+    'A websitein pencil.',
   )
   const homeStories = page.locator('.stories-section a.story-card')
   await expect(homeStories).toHaveCount(6)
@@ -173,6 +173,7 @@ test('3D controls work with the keyboard and remain responsive when resized', as
   const errors: string[] = []
   page.on('pageerror', (error) => errors.push(error.message))
   await page.goto('/')
+  await page.getByRole('button', { name: 'Show 3D model' }).click()
   await expect(page.locator('.computer-canvas canvas')).toHaveCount(1)
   await page
     .getByRole('button', { name: 'Pause animation', exact: true })
@@ -204,6 +205,7 @@ test('mobile navigation closes after selection and reduced motion keeps the scen
   await page.setViewportSize({ width: 390, height: 844 })
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await page.goto('/')
+  await page.getByRole('button', { name: 'Show 3D model' }).click()
   await expect(
     page.getByRole('button', { name: 'Rotate computer', exact: true }),
   ).toBeVisible()
@@ -222,6 +224,7 @@ test('a lost WebGL context restores the illustration and removes the canvas', as
   page,
 }) => {
   await page.goto('/')
+  await page.getByRole('button', { name: 'Show 3D model' }).click()
   await expect(
     page.getByRole('button', { name: 'Spin computer', exact: true }),
   ).toBeVisible()
@@ -278,7 +281,9 @@ test('new technology stories render their covers and source links', async ({
     const cover = page.locator('.article-cover')
     await expect(cover).toHaveAttribute(
       'src',
-      `/images/stories/graphite/${image}.webp`,
+      image === 'passkeys'
+        ? '/sketch/sketch-passkey.svg'
+        : `/images/stories/graphite/${image}.webp`,
     )
     await expect
       .poll(() =>
