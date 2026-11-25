@@ -13,7 +13,7 @@ export function StoryCard({
   placement: 'home' | 'blog'
 }) {
   const posthog = usePostHog()
-  const sketch = sketchCover(story.slug)
+  const sketch = sketchCover(story.cover)
   return (
     <Link
       to="/blog/$slug"
@@ -26,7 +26,7 @@ export function StoryCard({
       <div className="story-art">
         {sketch ? (
           <img
-            src={sketch}
+            src={sketch.src}
             alt=""
             loading="lazy"
             className="h-full w-full object-contain"

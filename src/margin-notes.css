@@ -124,7 +124,7 @@ html:not(:has(.cms-page))
   ) {
   border: 7px solid transparent;
   border-radius: 0;
-  border-image: var(--pen-frame) 19 / 9px / 1px stretch;
+  border-image: var(--tag-frame, var(--pen-frame)) 19 / 9px / 1px stretch;
   box-shadow: none;
 }
 html:not(:has(.cms-page))
@@ -164,6 +164,28 @@ html:not(:has(.cms-page))
   ) {
   color: var(--color-ink);
   background: #f0dda7;
+}
+/* Spread different pen strokes through a row while keeping the labels aligned. */
+html:not(:has(.cms-page)) :is(.toolbox-item, .tag):nth-child(7n + 2) {
+  --tag-frame: url('/sketch/ink-tag-rounded.svg');
+}
+html:not(:has(.cms-page)) :is(.toolbox-item, .tag):nth-child(7n + 3) {
+  --tag-frame: url('/sketch/ink-tag-overshot.svg');
+}
+html:not(:has(.cms-page)) :is(.toolbox-item, .tag):nth-child(7n + 4) {
+  --tag-frame: var(--pen-frame-alt);
+}
+html:not(:has(.cms-page)) :is(.toolbox-item, .tag):nth-child(7n + 5) {
+  --tag-frame: url('/sketch/ink-tag-tilted.svg');
+}
+html:not(:has(.cms-page)) :is(.toolbox-item, .tag):nth-child(7n + 6) {
+  --tag-frame: url('/sketch/ink-tag-folded.svg');
+}
+html:not(:has(.cms-page)) :is(.toolbox-item, .tag):nth-child(7n + 7) {
+  --tag-frame: url('/sketch/ink-tag-swept.svg');
+}
+html:not(:has(.cms-page)) .toolbox-grid {
+  gap: 13px 15px;
 }
 html:not(:has(.cms-page)) .tag {
   color: var(--color-muted);
