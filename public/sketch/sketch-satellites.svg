@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 270" fill="none">
+<defs><pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(25)"><path d="M0 0v7" stroke="#30486a" stroke-width="1.4" opacity=".29"/></pattern></defs>
+<rect width="480" height="270" fill="#f7efde"/>
+<path d="M21 44l437-4M21 103l438-4M21 163l439-3M21 220l436-2M33 25l-3 220M447 24l3 222" stroke="#a79882" stroke-width="1" stroke-dasharray="3 7" opacity=".52"/>
+<path d="M141 88l76-40 34 22-76 40zM301 97l73-36 42 23-77 42zM232 59l35-15 39 26-6 44-35 18-42-24 2-39z" fill="url(#hatch)" opacity=".65"/>
+<g stroke-linecap="round" stroke-linejoin="round">
+<path d="M27 226q192-70 431-6M141 88l76-40 34 22-76 40zM232 59l35-15 39 26-6 44-35 18-42-24 2-39m42-25-5 43 38 27m-38-27-37-18m37 18 3 45m36-35 73-36 42 23-77 42zM153 82l37 23m-12-39 38 24m-14-37 38 23m-83 23 79-42m78 33 42 27m-17-40 42 27m-19-38 39 26m-72 27 74-41M93 160l39-4 8 57-39 9zM100 167l24-3 6 42-24 5z" stroke="#263e62" stroke-width="2.6"/>
+<path d="M27 226q192-70 431-6M141 88l76-40 34 22-76 40zM232 59l35-15 39 26-6 44-35 18-42-24 2-39m42-25-5 43 38 27m-38-27-37-18m37 18 3 45m36-35 73-36 42 23-77 42zM153 82l37 23m-12-39 38 24m-14-37 38 23m-83 23 79-42m78 33 42 27m-17-40 42 27m-19-38 39 26m-72 27 74-41M93 160l39-4 8 57-39 9zM100 167l24-3 6 42-24 5z" transform="translate(-1.8 1.4)" stroke="#263e62" stroke-width=".8" opacity=".34"/>
+<path d="M262 144q-41-11-79 22m55-13q-29-4-52 22m30-12-28 21m-18-26 8 13m-14-2 6 10m219-30 17-10m-8-6 1 19M63 142l19-14m-9 1 1 17" stroke="#963f32" stroke-width="2"/>
+</g></svg>

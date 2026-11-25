@@ -34,3 +34,29 @@ test('handwritten form controls and story cards stay usable at phone widths', as
     true,
   )
 })
+
+test('neighbouring toolbox tags use distinct pen outlines on desktop and mobile', async ({
+  page,
+  request,
+}) => {
+  for (const width of [390, 1280]) {
+    await page.setViewportSize({ width, height: 820 })
+    await page.goto('/')
+    const tags = page
+      .getByRole('list', { name: 'Frontend skills' })
+      .getByRole('listitem')
+    await expect(tags).toHaveCount(7)
+    const outlines = await tags.evaluateAll((items) =>
+      items.map((item) => getComputedStyle(item).borderImageSource),
+    )
+    expect(new Set(outlines).size).toBe(outlines.length)
+    for (const outline of outlines) {
+      const url = outline.match(/^url\("(.*)"\)$/)?.[1]
+      expect(url).toBeDefined()
+      if (url) expect((await request.get(url)).ok()).toBe(true)
+    }
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth),
+    ).toBe(width)
+  }
+})

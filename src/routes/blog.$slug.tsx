@@ -32,7 +32,7 @@ export const Route = createFileRoute('/blog/$slug')({
 })
 function Story() {
   const story = Route.useLoaderData()
-  const sketch = sketchCover(story.slug)
+  const sketch = sketchCover(story.cover)
   return (
     <main id="main-content" className="article-page">
       <div className="article-width">
@@ -62,8 +62,8 @@ function Story() {
         </header>
         {(sketch || story.cover) && (
           <img
-            src={sketch ?? story.cover}
-            alt={sketch ? '' : (story.coverAlt ?? '')}
+            src={sketch?.src ?? story.cover}
+            alt={sketch?.alt ?? story.coverAlt ?? ''}
             className="article-cover"
             fetchPriority="high"
             decoding="async"

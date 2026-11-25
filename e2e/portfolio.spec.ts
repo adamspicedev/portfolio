@@ -279,11 +279,11 @@ test('new technology stories render their covers and source links', async ({
       title ?? '',
     )
     const cover = page.locator('.article-cover')
-    await expect(cover).toHaveAttribute(
-      'src',
-      image === 'passkeys'
-        ? '/sketch/sketch-passkey.svg'
-        : `/images/stories/graphite/${image}.webp`,
+    const sketch = `/sketch/sketch-${image === 'passkeys' ? 'passkey' : image}.svg`
+    await expect(cover).toHaveAttribute('src', sketch)
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+      'content',
+      new RegExp(`/images/stories/graphite/${image}\\.webp$`),
     )
     await expect
       .poll(() =>
@@ -485,7 +485,7 @@ test('public and private routes expose safe server-rendered social previews', as
     'property="og:image:alt" content="A data centre connects',
   )
   expect(await (await request.get('/blog')).text()).toContain(
-    'alt="A data centre connects',
+    'src="/sketch/sketch-power.svg" alt=""',
   )
   expect((await request.get('/images/social-preview.jpg')).status()).toBe(200)
 })
