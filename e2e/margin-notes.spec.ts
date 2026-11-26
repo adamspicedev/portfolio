@@ -126,3 +126,33 @@ test('story editor keeps Markdown legible and previews it in the notebook typefa
     390,
   )
 })
+
+test('story editor previews the public sketch and preserves a replacement cover', async ({
+  page,
+}) => {
+  await page.goto('http://127.0.0.1:4177/story-editor')
+  const cover = page.getByLabel('Cover image URL')
+  const original = '/images/stories/graphite/power.webp'
+  const sketch = '/sketch/sketch-power.svg'
+  const replacement = '/sketch/sketch-postgres.svg'
+  await cover.fill(original)
+  const thumbnail = page.locator('.cms-cover-preview')
+  await expect(thumbnail).toHaveAttribute('src', sketch)
+  await page.getByRole('button', { name: 'Preview', exact: true }).click()
+  const previewImage = page.locator('.cms-preview img')
+  await expect(previewImage).toHaveAttribute('src', sketch)
+  await expect
+    .poll(() =>
+      previewImage.evaluate((img: HTMLImageElement) => img.naturalWidth),
+    )
+    .toBeGreaterThan(0)
+  await expect(previewImage).toHaveAttribute(
+    'alt',
+    'A data centre connects to wind turbines and a large power plug.',
+  )
+  await expect(cover).toHaveValue(original)
+  await cover.fill(replacement)
+  await expect(thumbnail).toHaveAttribute('src', replacement)
+  await expect(previewImage).toHaveAttribute('src', replacement)
+  await expect(cover).toHaveValue(replacement)
+})
