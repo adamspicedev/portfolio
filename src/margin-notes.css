@@ -5,7 +5,7 @@
   font-weight: 400;
 }
 
-html:not(:has(.cms-page)) {
+html {
   --font-sans: 'Margin Notes', 'Segoe Print', system-ui, sans-serif;
   --font-mono: var(--font-sans);
   --font-serif: var(--font-sans);
@@ -28,7 +28,7 @@ html:not(:has(.cms-page)) {
   font-size: 16px;
   background: var(--color-paper);
 }
-html:not(:has(.cms-page)) body {
+body {
   background:
     linear-gradient(
       90deg,
@@ -38,6 +38,8 @@ html:not(:has(.cms-page)) body {
     ),
     repeating-linear-gradient(0deg, transparent 0 27px, #324f6810 27px 28px),
     var(--color-paper);
+}
+html:not(:has(.cms-page)) body {
   font-size: clamp(1.45rem, 2vw, 1.68rem);
   line-height: 1.3;
 }
@@ -509,4 +511,212 @@ html:not(:has(.cms-page)) .project-screenshot summary {
   cursor: pointer;
   text-decoration: underline;
   text-decoration-color: var(--color-signal);
+}
+
+/* Publishing desk: notebook chrome, with a stable reading font for form values. */
+.cms-page {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  line-height: 1.55;
+  padding-block: clamp(2rem, 6vw, 5.25rem);
+}
+
+html:has(.cms-page) :is(.site-header, .site-footer) {
+  border: 0;
+  background: var(--pen-rule) center bottom / 100% 8px no-repeat;
+}
+html:has(.cms-page) .site-footer {
+  background-position: center top;
+}
+html:has(.cms-page) .main-nav {
+  font-size: 1.4rem;
+}
+html:has(.cms-page) .main-nav.is-open {
+  background: var(--color-panel);
+}
+
+.cms-page
+  :is(
+    .eyebrow,
+    .section-title,
+    .cms-heading,
+    .cms-toolbar > .font-mono,
+    .cms-story-info h2,
+    .cms-status,
+    .cms-editor label,
+    .cms-editor legend,
+    .cms-notice h2,
+    .button,
+    .text-link
+  ) {
+  font-family: var(--font-sans);
+  font-weight: 400;
+}
+.cms-page :is(.section-title, .cms-heading) {
+  line-height: 1.08;
+  letter-spacing: 0;
+}
+.cms-page .eyebrow {
+  font-size: 1.3rem;
+  letter-spacing: 0.025em;
+  margin-bottom: 0.5rem;
+}
+.cms-page .cms-toolbar {
+  gap: 0.75rem 1.25rem;
+}
+.cms-page .cms-toolbar > .font-mono {
+  font-size: 1.25rem;
+}
+.cms-page > .cms-toolbar:first-child,
+.cms-page .cms-save-bar {
+  background: var(--pen-rule) center bottom / 100% 8px no-repeat;
+  padding-bottom: 1rem;
+}
+.cms-page .cms-save-bar {
+  border-top: 0;
+  background-position: center top;
+}
+.cms-page .cms-dashboard-heading {
+  margin-block: 1.75rem 1.1rem;
+}
+.cms-page .cms-story-info h2 {
+  font-size: clamp(1.5rem, 3vw, 1.95rem);
+  line-height: 1.18;
+}
+.cms-page .cms-status {
+  display: inline-block;
+  background: var(--color-raised);
+  border-radius: 38% 31% 40% 34%;
+  padding: 0.12rem 0.45rem;
+  line-height: 1.2;
+  font-size: 0.95rem;
+  letter-spacing: 0.045em;
+}
+.cms-page :is(.cms-story-thumb, .cms-cover-preview) {
+  border-radius: 2% 5% 3% 4%;
+  background-color: var(--color-raised);
+}
+
+.cms-page :is(.cms-story-row, .cms-notice, .cms-fields, .cms-preview) {
+  background-color: var(--color-panel);
+  border: 7px solid transparent;
+  border-image: var(--pen-frame) 19 / 8px / 1px stretch;
+  border-radius: 0;
+}
+.cms-page :is(.cms-story-row:nth-child(even), .cms-notice, .cms-preview) {
+  border-image-source: var(--pen-frame-alt);
+}
+.cms-page .cms-notice[role='alert'] {
+  color: var(--color-signal);
+}
+.cms-page .cms-fields {
+  padding: clamp(0.85rem, 3vw, 1.65rem);
+}
+.cms-page
+  :is(.cms-editor, .cms-fields, .cms-field-row, .cms-body, .cms-auth-widget) {
+  min-width: 0;
+}
+.cms-page .cms-field-row {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.cms-page .cms-editor label {
+  font-size: 1.35rem;
+  line-height: 1.2;
+  min-width: 0;
+}
+.cms-page .cms-editor small {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-size: 0.82rem;
+  overflow-wrap: anywhere;
+}
+.cms-page .cms-editor :is(input:not([type='checkbox']), textarea, select) {
+  font:
+    400 1rem / 1.5 'Space Grotesk',
+    system-ui,
+    sans-serif;
+  padding: 0.55rem 0.7rem;
+  min-height: 44px;
+  min-width: 0;
+  background: #fffdf4;
+  border: 5px solid transparent;
+  border-image: var(--studio-input-frame, var(--pen-frame)) 19 / 6px / 1px
+    stretch;
+  border-radius: 0;
+}
+.cms-page .cms-editor :is(textarea, select) {
+  --studio-input-frame: var(--pen-frame-alt);
+}
+.cms-page .cms-editor .cms-markdown-label textarea {
+  font-family: 'Space Mono', ui-monospace, monospace;
+  line-height: 1.65;
+  tab-size: 2;
+}
+.cms-page .cms-search-preview {
+  overflow-wrap: anywhere;
+  background: var(--color-raised);
+  padding: 0.75rem;
+}
+.cms-page .cms-preview {
+  font-family: var(--font-sans);
+  font-size: clamp(1.48rem, 2.5vw, 1.8rem);
+  line-height: 1.36;
+}
+.cms-page .cms-auth {
+  grid-template-columns: minmax(0, 1fr);
+  padding-block: 2rem;
+}
+.cms-page .cms-auth-widget {
+  width: min(100%, 27rem);
+}
+
+.cms-page .button,
+html:has(.cms-page) .main-nav > .nav-contact {
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.35rem 0.75rem;
+  color: var(--color-ink);
+  background: var(--color-panel);
+  font-size: 1.28rem;
+  line-height: 1.1;
+  box-shadow: none;
+  border: 5px solid transparent;
+  border-image: var(--pen-frame) 19 / 6px / 1px stretch;
+  border-radius: 0;
+}
+.cms-page .button-outline {
+  border-image-source: var(--pen-frame-alt);
+}
+.cms-page .button-primary {
+  background: var(--color-raised);
+}
+.cms-page .button:hover:not(:disabled),
+html:has(.cms-page) .main-nav > .nav-contact:hover {
+  transform: none;
+  background: #f0dda7;
+}
+.cms-page :is(button, a).text-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 1.28rem;
+  text-decoration: underline;
+  text-decoration-color: var(--color-signal);
+  text-underline-offset: 0.2em;
+}
+@media (max-width: 640px) {
+  .cms-page .cms-field-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cms-page .cms-notice {
+    padding: 1rem;
+    overflow-wrap: anywhere;
+  }
+  .cms-page .cms-story-row {
+    padding: 0.85rem;
+  }
+  .cms-page .cms-story-actions {
+    gap: 0.8rem;
+  }
+  html:has(.cms-page) .site-footer > div {
+    flex-wrap: wrap;
+  }
 }

@@ -6,9 +6,11 @@ import {
   createRoute,
   RouterProvider,
 } from '@tanstack/react-router'
+import { CmsEditor } from '../../../src/components/cms-editor'
 import { ProjectDashboard } from '../../../src/components/project-dashboard'
 import type { CmsProject } from '../../../src/lib/project-schema'
 import '../../../src/styles.css'
+import '../../../src/margin-notes.css'
 function Fixture() {
   const [projects, setProjects] = useState<CmsProject[]>([])
   return (
@@ -32,7 +34,18 @@ const indexRoute = createRoute({
   path: '/',
   component: Fixture,
 })
-const router = createRouter({ routeTree: rootRoute.addChildren([indexRoute]) })
+const storyEditorRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/story-editor',
+  component: () => (
+    <main className="page-width cms-page">
+      <CmsEditor onSaved={() => {}} onClose={() => {}} />
+    </main>
+  ),
+})
+const router = createRouter({
+  routeTree: rootRoute.addChildren([indexRoute, storyEditorRoute]),
+})
 createRoot(document.getElementById('root')!).render(
   <RouterProvider router={router} />,
 )

@@ -9,6 +9,10 @@ export default defineConfig({
   resolve: {
     alias: [
       {
+        find: '../lib/cms.functions',
+        replacement: resolve('e2e/fixtures/projects/story-actions.ts'),
+      },
+      {
         find: '../lib/projects.functions',
         replacement: resolve('e2e/fixtures/projects/actions.ts'),
       },
