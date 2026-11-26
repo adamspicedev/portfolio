@@ -17,6 +17,7 @@ import { ProjectDashboard } from '../components/project-dashboard'
 import type { CmsProject } from '../lib/project-schema'
 import { CmsEditor } from '../components/cms-editor'
 import type { CmsStory } from '../lib/cms-schema'
+import { sketchCover } from '../lib/sketch-covers'
 import { publicationDate } from '../lib/story-schema'
 
 export const Route = createFileRoute('/admin')({
@@ -254,7 +255,10 @@ function CmsDashboard({
           <article key={story.id} className="cms-story-row">
             <div className="cms-story-thumb">
               {story.cover ? (
-                <img src={story.cover} alt="" />
+                <img
+                  src={sketchCover(story.cover)?.src ?? story.cover}
+                  alt=""
+                />
               ) : (
                 <FilePenLine size={26} />
               )}

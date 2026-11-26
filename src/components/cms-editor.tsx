@@ -7,6 +7,7 @@ import remarkGfm from 'remark-gfm'
 import { usePostHog } from 'posthog-js/react'
 import { editorSchema, type CmsStory } from '../lib/cms-schema'
 import { saveCmsStory } from '../lib/cms.functions'
+import { sketchCover } from '../lib/sketch-covers'
 import { publicationDate, safeContentUrl } from '../lib/story-schema'
 import { CoverUpload } from './cover-upload'
 
@@ -38,6 +39,9 @@ export function CmsEditor({
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [message, setMessage] = useState('')
+  const sketch = sketchCover(form.cover)
+  const previewCover = sketch?.src ?? safeContentUrl(form.cover)
+  const previewCoverAlt = sketch?.alt ?? form.coverAlt
   const dirty = JSON.stringify(form) !== JSON.stringify(initial)
   useBlocker({
     shouldBlockFn: () =>
@@ -223,8 +227,8 @@ export function CmsEditor({
             </small>
           </label>
           <CoverUpload
-            cover={form.cover}
-            alt={form.coverAlt}
+            cover={previewCover ?? ''}
+            alt={previewCoverAlt}
             disabled={saving}
             onBusy={setUploading}
             onUploaded={(cover) =>
@@ -307,9 +311,7 @@ export function CmsEditor({
             <div className="cms-preview article-prose">
               <h2>{form.title || 'Untitled story'}</h2>
               <p>{form.description}</p>
-              {safeContentUrl(form.cover) && (
-                <img src={safeContentUrl(form.cover)} alt={form.coverAlt} />
-              )}
+              {previewCover && <img src={previewCover} alt={previewCoverAlt} />}
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 urlTransform={(url) => safeContentUrl(url) ?? ''}
