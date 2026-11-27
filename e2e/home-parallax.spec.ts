@@ -54,3 +54,48 @@ test('narrow viewports move only the decorative layers', async ({ page }) => {
     .poll(() => page.evaluate(readDepth))
     .toEqual({ grid: 0, computer: 0 })
 })
+
+test('handwritten hero text keeps at least 6:1 contrast on paper', async ({
+  page,
+}) => {
+  await page.goto('/')
+  const readings = await page.evaluate(() => {
+    function luminance(color: string) {
+      const rgb = color
+        .match(/\d+(?:\.\d+)?/g)
+        ?.slice(0, 3)
+        .map(Number)
+      if (!rgb || rgb.length !== 3)
+        throw new Error(`Unexpected colour: ${color}`)
+      const [r, g, b] = rgb.map((value) => {
+        const channel = value / 255
+        return channel <= 0.04045
+          ? channel / 12.92
+          : ((channel + 0.055) / 1.055) ** 2.4
+      })
+      return 0.2126 * r + 0.7152 * g + 0.0722 * b
+    }
+
+    const paper = luminance(getComputedStyle(document.body).backgroundColor)
+    return [
+      '.hero-index',
+      '.hero-intro span',
+      '.hero-description',
+      '.hero-footnote',
+      '.hero-visual-frame',
+      '.hero-visual .scene-label',
+      '.hero-visual .scene-hint',
+    ].map((selector) => {
+      const text = document.querySelector(selector)
+      if (!text) throw new Error(`Missing hero text: ${selector}`)
+      const ink = luminance(getComputedStyle(text).color)
+      return {
+        selector,
+        ratio: (Math.max(paper, ink) + 0.05) / (Math.min(paper, ink) + 0.05),
+      }
+    })
+  })
+  for (const { selector, ratio } of readings) {
+    expect(ratio, selector).toBeGreaterThanOrEqual(6)
+  }
+})

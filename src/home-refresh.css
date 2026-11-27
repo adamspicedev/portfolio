@@ -3,7 +3,7 @@
   --home-silver: var(--color-silver);
   --home-yellow: var(--color-signal);
   --home-hairline: #d9dadc30;
-  --home-quiet: #aeb0b4;
+  --home-quiet: var(--color-muted);
 }
 
 .home-page .hero {

@@ -349,7 +349,6 @@ html:not(:has(.cms-page)) .skip-link {
   --home-silver: #263752;
   --home-yellow: #963f32;
   --home-hairline: #263e6240;
-  --home-quiet: #4e5861;
 }
 body .home-page .hero h1 {
   font-size: clamp(4.4rem, 9vw, 8.25rem);
